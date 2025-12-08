@@ -1,0 +1,23 @@
+syntax = "proto3";
+
+enum Waveform_Status {
+	WAVEFORM_SUCCESS = 0;
+	WAVEFORM_ERR_INVALID_ID = 100;
+	WAVEFORM_ERR_PERMISSION = 101;
+	WAVEFORM_ERR_NO_RESOURCES = 102;
+	WAVEFORM_ERR_OTHER = 103;
+}
+
+// This is the most outer message for Waveform Request
+// Message topic: geisa/api/waveform-req/<userid>
+message Waveform_Req {
+	int32 instance_id = 1;
+	bool activate = 2;  // true to activate, false to deactivate
+}
+
+// This is the most outer message for Waveform Response
+// Message topic: geisa/api/waveform-rsp/<userid>
+message Waveform_Rsp {
+	Waveform_Status status = 1;
+}
+
