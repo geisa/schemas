@@ -4,10 +4,10 @@ message PlatformDiscovery_GEISA {
 	int32 ver_major = 1;
 	int32 ver_minor = 2;
 	int32 ver_rev = 3;
-	bool pillar_adm = 10;
-	bool pillar_api = 11;
-	bool pillar_lee = 12;
-	bool pillar_vee = 13;
+	bool piller_adm = 10;
+	bool piller_api = 11;
+	bool piller_lee = 12;
+	bool piller_vee = 13;
 }
 
 enum PlatformDiscovery_Type {
