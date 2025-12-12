@@ -185,6 +185,7 @@ message BillingQuantities {
 }
 
 // This is the most outer message for Instantanous quantities
+// Message topic: geisa/api/instantaneous-data
 message InstantaneousQuantities {
 	uint64 timestamp = 1;
 	TypeInstantaneousQuantities_PerPhase phase_A = 2;
