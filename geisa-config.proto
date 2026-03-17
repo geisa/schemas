@@ -1,0 +1,9 @@
+syntax = "proto3";
+
+message GeisaConfig {
+  string host = 1; //e.g. localhost
+  int32 port = 2; //e.g. 1883
+  string userid = 3; // platform defined
+  string token = 4; // platform defined
+}
+
