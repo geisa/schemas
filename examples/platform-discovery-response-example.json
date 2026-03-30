@@ -1,0 +1,72 @@
+{
+  "$comment": "Copyright 2025-2026, Contributors to the Grid Edge Interoperability & Security Alliance (GEISA), a Series of LF Projects, LLC. This file is licensed under the Community Specification License 1.0 available at: https://github.com/geisa/specification/blob/main/LICENSE.md or https://github.com/CommunitySpecification/Community_Specification/blob/main/1._Community_Specification_License-v1.md",
+  "geisa-platform-discovery-rsp": {
+    "geisa": {
+      "ver-major": 0,
+      "ver-minor": 9,
+      "ver-rev": 0,
+      "pillar-adm": true,
+      "pillar-api": true,
+      "pillar-lee": true,
+      "pillar-vee": false
+    },
+    "device": {
+      "top-module": {
+        "type": "electric-meter",
+        "manufacturer": "Example Meter Vendor",
+        "model": "XM-2000",
+        "serial-number": "SN-000123456",
+        "hw-revision": "A1",
+        "fw-revision": "3.2.1"
+      },
+      "sub-modules": [
+        {
+          "type": "compute-card",
+          "manufacturer": "Example Compute/NIC Vendor",
+          "model": "Compute Module 1",
+          "serial-number": "CM-000987654",
+          "hw-revision": "B2",
+          "fw-revision": "1.8.4"
+        }
+      ]
+    },
+    "operator": {
+      "operator-name": "Example Utility",
+      "operator-identifier": "MTR-42-000123456"
+    },
+    "metrology": {
+        "meter-rating-class": "CL200",
+        "meter-form": "2S",
+        "phase-count": 1,
+        "neutral-connected": true,
+        "nominal-phase-angle-deg": 180.0,
+        "nominal-frequency-hz": 60,
+        "nominal-phase-to-phase-voltage-v": 240.0,
+        "nominal-phase-to-neutral-voltage-v": 120.0
+    },
+    "sensor": {},
+    "network": {},
+    "waveform": {
+    "streams": [
+        {
+        "stream-id": "waveform-full",
+        "name": "Full Waveform Stream",
+        "description": "Baseline interoperable waveform stream for GEISA applications.",
+        "datatype": "int16",
+        "voltage-multiplier": 0.003662109375,
+        "current-multiplier": 0.001220703125,
+        "num-voltage-ch": 1,
+        "num-current-ch": 2,
+        "num-other-ch": 0,
+        "total-channel-count": 3,
+        "cycle-aligned": true,
+        "zero-crossing-aligned": true,
+        "sample-rate": 7680,
+        "samples-per-cycle": 128,
+        "nominal-frequency-hz": 60,
+        "expected-frame-period-ms": 200
+        }
+    ]
+    }
+  }
+}

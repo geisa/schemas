@@ -1,0 +1,52 @@
+/*
+ * Copyright 2025-2026, Contributors to the Grid Edge Interoperability &
+ * Security Alliance (GEISA), a Series of LF Projects, LLC
+ *
+ * This file is licensed under the Community Specification License 1.0
+ * available at:
+ * https://github.com/geisa/specification/blob/main/LICENSE.md or
+ * https://github.com/CommunitySpecification/Community_Specification/blob/main/1._Community_Specification_License-v1.md
+ */
+
+syntax = "proto3";
+
+/*
+ * GEISA Application Deployment Manifest messages.
+ *
+ * MQTT topics:
+ *   Application Deployment Manifest Request:
+ *     geisa/api/app/manifest/req/<userid>
+ *   Application Deployment Manifest Response:
+ *     geisa/api/app/manifest/rsp/<userid>
+ *
+ * These messages are separated from discovery.proto so that Platform Discovery
+ * remains focused on static or semi-static platform metadata.
+ */
+
+
+/*
+ * This is the outermost message for Application Deployment Manifest Request.
+ *
+ * Message topic:
+ *   geisa/api/app/manifest/req/<userid>
+ *
+ * Empty message for now but may be used in the future.
+ */
+message GeisaApplicationDeploymentManifest_Req {
+}
+
+
+/*
+ * This is the outermost message for Application Deployment Manifest Response.
+ *
+ * Message topic:
+ *   geisa/api/app/manifest/rsp/<userid>
+ *
+ * The returned manifest is the operator-approved Deployment Application
+ * Manifest, serialized as UTF-8 JSON.
+ */
+message GeisaApplicationDeploymentManifest_Rsp {
+
+  // UTF-8 JSON serialized operator-approved Deployment Application Manifest
+  string manifest = 1;
+}
