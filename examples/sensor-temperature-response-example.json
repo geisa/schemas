@@ -1,0 +1,27 @@
+{
+  "geisa-sensor-readings-rsp": {
+    "$comment": "Example multi-reading response showing both board and ambient temperature observations.",
+    "readings": [
+      {
+        "sensor-id": "board_temp1",
+        "timestamp-ms": 1735689600000,
+        "value": {
+          "double-value": 47.25
+        },
+        "unit": "C",
+        "quality": "GOOD",
+        "status": "OK"
+      },
+      {
+        "sensor-id": "ambient_temp1",
+        "timestamp-ms": 1735689600000,
+        "value": {
+          "double-value": 33.0
+        },
+        "unit": "C",
+        "quality": "GOOD",
+        "status": "OK"
+      }
+    ]
+  }
+}

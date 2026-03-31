@@ -1,0 +1,13 @@
+{
+  "geisa-sensor-reading": {
+    "$comment": "Example runtime reading for a lower-rate temperature sensor using the generic scalar value model.",
+    "sensor-id": "board_temp1",
+    "timestamp-ms": 1735689600000,
+    "value": {
+      "double-value": 47.25
+    },
+    "unit": "C",
+    "quality": "GOOD",
+    "status": "OK"
+  }
+}
