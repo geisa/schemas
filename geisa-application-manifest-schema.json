@@ -75,6 +75,7 @@
         "geisaArtifact": {
             "type": "object",
             "$comment": "A GEISA app will have at least one artifact.  GEISA 1.0.0 supports a single type.  Other image types may be added in the future.",
+	    "additionalProperties": false,
             "required": [
                 "image-name",
                 "image-type",
@@ -119,6 +120,7 @@
     "properties": {
         "geisa-application-manifest": {
             "type": "object",
+	    "additionalProperties": false,
             "required": [
                 "manifest",
                 "signature"
@@ -126,6 +128,7 @@
             "properties": {
                 "manifest": {
                     "type": "object",
+		    "additionalProperties": false,
                     "required": [
                         "api-access",
                         "app-id",
@@ -208,6 +211,7 @@
                         "compatibility": {
                             "description": "Details about what platforms this application is compatible with",
                             "type": "object",
+			    "additionalProperties": false,
                             "required": [
                                 "GEISA-API",
                                 "GEISA-LEE",
@@ -242,6 +246,7 @@
                         },
                         "resources": {
                             "type": "object",
+			    "additionalProperties": false,
                             "required": [
                                 "app-ram",
                                 "storage-nonpersistent",
@@ -326,6 +331,7 @@
                         "default-launch-strategy": {
                             "type": "object",
                             "description": "Default settings for launching & restarting the application.",
+			    "additionalProperties": false,
                             "required": [
                                 "max-restarts",
                                 "restart-period",
