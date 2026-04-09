@@ -10,6 +10,8 @@
 
 syntax = "proto3";
 
+import "geisa-rsp.proto";
+
 /*
  * GEISA Platform Discovery messages.
  *
@@ -292,11 +294,12 @@ message GeisaPlatformDiscovery_Req {
  *   geisa/api/platform/discovery/rsp/<userid>
  */
 message GeisaPlatformDiscovery_Rsp {
-  GeisaPlatformDiscovery_GEISA geisa = 1;
-  GeisaPlatformDiscovery_Device device = 2;
-  GeisaPlatformDiscovery_Operator operator = 3;
-  GeisaPlatformDiscovery_Metrology metrology = 4;
-  GeisaPlatformDiscovery_Sensor sensor = 5;
-  GeisaPlatformDiscovery_Network network = 6;
-  GeisaPlatformDiscovery_Waveform waveform = 7;
+  GeisaRsp rsp = 1;
+  GeisaPlatformDiscovery_GEISA geisa = 2;
+  GeisaPlatformDiscovery_Device device = 3;
+  GeisaPlatformDiscovery_Operator operator = 4;
+  GeisaPlatformDiscovery_Metrology metrology = 5;
+  GeisaPlatformDiscovery_Sensor sensor = 6;
+  GeisaPlatformDiscovery_Network network = 7;
+  GeisaPlatformDiscovery_Waveform waveform = 8;
 }

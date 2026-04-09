@@ -10,6 +10,8 @@
 
 syntax = "proto3";
 
+import "geisa-rsp.proto";
+
 /*
  * GEISA Waveform API control-plane messages.
  *
@@ -88,10 +90,12 @@ message GeisaWaveform_Req {
  * This is the outer message for a Waveform API response.
  */
 message GeisaWaveform_Rsp {
+    GeisaRsp rsp = 1;
+
   /*
    * Operation result.
    */
-  GeisaWaveform_Status status = 1;
+  GeisaWaveform_Status status = 2;
 
   /*
    * Waveform stream identifier.
@@ -103,13 +107,13 @@ message GeisaWaveform_Rsp {
    * Applications SHALL use waveform metadata to interpret a stream and SHALL
    * NOT infer stream characteristics by parsing the stream_id value.
    */
-  string stream_id = 2;
+  string stream_id = 3;
 
   /*
    * Whether the requesting application instance is subscribed to the waveform
    * stream after processing this request.
    */
-  bool subscribed = 3;
+  bool subscribed = 4;
 
   /*
    * Runtime AF_UNIX SOCK_SEQPACKET socket path for this application instance.
@@ -120,69 +124,69 @@ message GeisaWaveform_Rsp {
    * the application is not subscribed. The socket path is runtime state for
    * the requesting application instance and is not static discovery metadata.
    */
-  string socket_path = 4;
+  string socket_path = 5;
 
   /*
    * Sample encoding used in waveform frames delivered on the returned socket.
    */
-  GeisaWaveform_SampleType sample_type = 5;
+  GeisaWaveform_SampleType sample_type = 6;
 
   /*
    * Number of voltage channels present in each sample time step.
    */
-  uint32 voltage_channel_count = 6;
+  uint32 voltage_channel_count = 7;
 
   /*
    * Number of current channels present in each sample time step.
    */
-  uint32 current_channel_count = 7;
+  uint32 current_channel_count = 8;
 
   /*
    * Total number of channels present in each sample time step.
    */
-  uint32 total_channel_count = 8;
+  uint32 total_channel_count = 9;
 
   /*
    * Sampling rate in hertz for the waveform stream.
    */
-  uint32 sample_rate_hz = 9;
+  uint32 sample_rate_hz = 10;
 
   /*
    * Samples per cycle for the waveform stream, when applicable.
    */
-  uint32 samples_per_cycle = 10;
+  uint32 samples_per_cycle = 11;
 
   /*
    * Nominal AC frequency in hertz, when applicable.
    */
-  uint32 nominal_frequency_hz = 11;
+  uint32 nominal_frequency_hz = 12;
 
   /*
    * Whether delivered frames are aligned to cycle boundaries.
    */
-  bool cycle_aligned = 12;
+  bool cycle_aligned = 13;
 
   /*
    * Whether delivered frames are aligned to a zero-crossing reference.
    */
-  bool zero_crossing_aligned = 13;
+  bool zero_crossing_aligned = 14;
 
   /*
    * Scaling factor for voltage channels when integer sample formats are used
    * (INT16, INT32). For floating-point sample formats (FLOAT32, FLOAT64),
    * implementations SHOULD omit this field or set it to 1.0.
    */
-  double voltage_scale = 14;
+  double voltage_scale = 15;
 
   /*
    * Scaling factor for current channels when integer sample formats are used.
    * For floating-point sample formats, implementations may omit this field or
    * set it to 1.0 by convention.
    */
-  double current_scale = 15;
+  double current_scale = 16;
 
   /*
    * Expected period between delivered waveform frames in milliseconds.
    */
-  uint32 expected_frame_period_ms = 16;
+  uint32 expected_frame_period_ms = 17;
 }

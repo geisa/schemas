@@ -2,6 +2,8 @@
 
 syntax = "proto3";
 
+import "geisa-rsp.proto";
+
 //Enum of types of actuators.  Future actuators may include loadtap changers, cap banks etc.
 //Current design combines type and position/priority in a single setting.
 enum GeisaTypeActuator {
@@ -23,9 +25,18 @@ message GeisaActuatorSet_Req {
 	repeated GeisaActuatorStatus newSettings = 1; //What is/are the actuator(s) being set to?
 }
 
+message GeisaActuatorSet_Rsp {
+	GeisaRsp rsp = 1;
+}
+
 //This is the outer most message for requesting the current Actuator Status
 message GeisaActuatorGet_Req {
 	GeisaTypeActuator actuator = 1; //Which actuator is being requested?
+}
+
+message GeisaActuatorGet_Rsp {
+	GeisaRsp rsp = 1;
+	GeisaActuatorStatus act_status = 2;
 }
 
 enum GeisaTypeOnOff {
