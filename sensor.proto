@@ -29,7 +29,7 @@
 
 syntax = "proto3";
 
-import "geisa-rsp.proto";
+import "geisa-status.proto";
 
 //-----------------------------------------------------------------------------
 // Sensor Type Enumeration
@@ -194,7 +194,7 @@ message GeisaSensorReadings_Req {
 // Response containing one or more sensor readings
 //-----------------------------------------------------------------------------
 message GeisaSensorReadings_Rsp {
-  GeisaRsp rsp = 1;
+  GeisaStatus status = 1;
   repeated GeisaSensorReading readings = 2;
 }
 

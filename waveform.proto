@@ -10,7 +10,7 @@
 
 syntax = "proto3";
 
-import "geisa-rsp.proto";
+import "geisa-status.proto";
 
 /*
  * GEISA Waveform API control-plane messages.
@@ -90,12 +90,12 @@ message GeisaWaveform_Req {
  * This is the outer message for a Waveform API response.
  */
 message GeisaWaveform_Rsp {
-    GeisaRsp rsp = 1;
+    GeisaStatus status = 1;
 
   /*
    * Operation result.
    */
-  GeisaWaveform_Status status = 2;
+  GeisaWaveform_Status waveform_status = 2;
 
   /*
    * Waveform stream identifier.

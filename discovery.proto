@@ -10,7 +10,7 @@
 
 syntax = "proto3";
 
-import "geisa-rsp.proto";
+import "geisa-status.proto";
 
 /*
  * GEISA Platform Discovery messages.
@@ -294,7 +294,7 @@ message GeisaPlatformDiscovery_Req {
  *   geisa/api/platform/discovery/rsp/<userid>
  */
 message GeisaPlatformDiscovery_Rsp {
-  GeisaRsp rsp = 1;
+  GeisaStatus status = 1;
   GeisaPlatformDiscovery_GEISA geisa = 2;
   GeisaPlatformDiscovery_Device device = 3;
   GeisaPlatformDiscovery_Operator operator = 4;

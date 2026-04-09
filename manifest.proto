@@ -10,7 +10,7 @@
 
 syntax = "proto3";
 
-import "geisa-rsp.proto";
+import "geisa-status.proto";
 
 /*
  * GEISA Application Deployment Manifest messages.
@@ -48,7 +48,7 @@ message GeisaApplicationDeploymentManifest_Req {
  * Manifest, serialized as UTF-8 JSON.
  */
 message GeisaApplicationDeploymentManifest_Rsp {
-  GeisaRsp rsp = 1;
+  GeisaStatus status = 1;
 
   // UTF-8 JSON serialized operator-approved Deployment Application Manifest
   string manifest = 2;

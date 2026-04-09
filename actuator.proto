@@ -2,7 +2,7 @@
 
 syntax = "proto3";
 
-import "geisa-rsp.proto";
+import "geisa-status.proto";
 
 //Enum of types of actuators.  Future actuators may include loadtap changers, cap banks etc.
 //Current design combines type and position/priority in a single setting.
@@ -26,7 +26,7 @@ message GeisaActuatorSet_Req {
 }
 
 message GeisaActuatorSet_Rsp {
-	GeisaRsp rsp = 1;
+	GeisaStatus status = 1;
 }
 
 //This is the outer most message for requesting the current Actuator Status
@@ -35,7 +35,7 @@ message GeisaActuatorGet_Req {
 }
 
 message GeisaActuatorGet_Rsp {
-	GeisaRsp rsp = 1;
+	GeisaStatus status = 1;
 	GeisaActuatorStatus act_status = 2;
 }
 
