@@ -1,13 +1,20 @@
 {
+  "$comment": "Copyright 2025-2026, Contributors to the Grid Edge Interoperability & Security Alliance (GEISA), a Series of LF Projects, LLC. This file is licensed under the Community Specification License 1.0 available at: https://github.com/geisa/specification/blob/main/LICENSE.md or https://github.com/CommunitySpecification/Community_Specification/blob/main/1._Community_Specification_License-v1.md",
   "geisa-sensor-readings-rsp": {
-    "$comment": "Example multi-reading response showing both board and ambient temperature observations.",
+    "$comment": "Example successful multi-reading response. The first reading demonstrates multiple values within a single sensor reading; the second demonstrates a separate sensor/value pair.",
+    "status": "GEISA_STATUS_SUCCESS",
     "readings": [
       {
         "sensor-id": "board_temp1",
         "timestamp-ms": 1735689600000,
-        "value": {
-          "double-value": 47.25
-        },
+        "values": [
+          {
+            "double-value": 47.25
+          },
+          {
+            "double-value": 47.38
+          }
+        ],
         "unit": "C",
         "quality": "GOOD",
         "status": "OK"
@@ -15,9 +22,11 @@
       {
         "sensor-id": "ambient_temp1",
         "timestamp-ms": 1735689600000,
-        "value": {
-          "double-value": 33.0
-        },
+        "values": [
+          {
+            "double-value": 33.0
+          }
+        ],
         "unit": "C",
         "quality": "GOOD",
         "status": "OK"
