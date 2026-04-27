@@ -22,13 +22,15 @@
 // - The API avoids overfitting to specific sensor implementations
 //
 // VERSION NOTES:
-// - The runtime value model is intentionally scalar in this version
-// - Some sensor types (e.g., geolocation) may require structured runtime
-//   value extensions in future GEISA specification revisions
+// - The runtime value model supports one or more scalar values per reading in
+//   this version of the specification
+// - Multi-value readings are allowed, but value meaning and ordering are not
+//   yet self-describing in the schema
+// - Some sensor types (e.g., geolocation) may require richer structured
+//   runtime value extensions in future GEISA specification revisions
 //-----------------------------------------------------------------------------
 
 syntax = "proto3";
-
 import "geisa-status.proto";
 
 //-----------------------------------------------------------------------------
@@ -44,30 +46,29 @@ enum GeisaSensorType {
   GEISA_SENSOR_TYPE_UNSPECIFIED = 0;
 
   // Environmental / physical measurements
-  GEISA_SENSOR_TYPE_TEMPERATURE = 1;
-  GEISA_SENSOR_TYPE_HUMIDITY = 2;
-  GEISA_SENSOR_TYPE_PRESSURE = 3;
+  GEISA_SENSOR_TYPE_TEMPERATURE = 10;
+  GEISA_SENSOR_TYPE_HUMIDITY = 20;
+  GEISA_SENSOR_TYPE_PRESSURE = 30;
 
-  // Electrical measurements
-  GEISA_SENSOR_TYPE_VOLTAGE = 4;
-  GEISA_SENSOR_TYPE_CURRENT = 5;
-  GEISA_SENSOR_TYPE_POWER = 6;
-  GEISA_SENSOR_TYPE_ENERGY = 7;
+  // Electrical measurements - non-meter
+  GEISA_SENSOR_TYPE_VOLTAGE = 40;
+  GEISA_SENSOR_TYPE_CURRENT = 50;
+  GEISA_SENSOR_TYPE_POWER = 60;
+  GEISA_SENSOR_TYPE_ENERGY = 70;
 
   // State / event-oriented sensors
-  GEISA_SENSOR_TYPE_CONTACT_STATE = 8;
-  GEISA_SENSOR_TYPE_TAMPER = 9;
+  GEISA_SENSOR_TYPE_CONTACT_STATE = 80;
+  GEISA_SENSOR_TYPE_TAMPER = 90;
 
   // Motion / physical condition
-  GEISA_SENSOR_TYPE_TILT = 10;
-  GEISA_SENSOR_TYPE_VIBRATION = 11;
+  GEISA_SENSOR_TYPE_TILT = 100;
+  GEISA_SENSOR_TYPE_VIBRATION = 110;
 
   // Position / advanced sensing
-  GEISA_SENSOR_TYPE_GEOLOCATION = 12;  // May require structured runtime value support in a future revision.
-  GEISA_SENSOR_TYPE_MICRO_ARC = 13;    // Generic first-pass classification only.
-  GEISA_SENSOR_TYPE_SEISMIC = 14;      // Generic first-pass classification only.
-  
-  GEISA_SENSOR_TYPE_CUSTOM = 15;       // Use only when no GEISA-defined type applies.
+  GEISA_SENSOR_TYPE_GEOLOCATION = 120;  // May require structured runtime value support in a future rev
+  GEISA_SENSOR_TYPE_MICRO_ARC = 130;    // Generic first-pass classification
+  GEISA_SENSOR_TYPE_SEISMIC = 140;      // Generic first-pass classification
+  GEISA_SENSOR_TYPE_CUSTOM = 500;       // Use only when no GEISA-defined type applies.
 }
 
 //-----------------------------------------------------------------------------
@@ -79,7 +80,7 @@ enum GeisaSensorType {
 // sensor. It does not carry runtime readings.
 //-----------------------------------------------------------------------------
 message GeisaSensorDescriptor {
-  // Platform-local identifier for the sensor.
+  // Platform-local unique identifier for the sensor.
   string sensor_id = 1;
 
   // GEISA-defined interoperable sensor type
@@ -91,10 +92,10 @@ message GeisaSensorDescriptor {
   // Required when sensor_type == GEISA_SENSOR_TYPE_CUSTOM.
   optional string custom_sensor_type = 4;
 
-  // Optional display name
+  // Optional display name - platform defined.
   optional string name = 5;
 
-  // Optional description
+  // Optional description - platform defined.
   optional string description = 6;
 
   // Optional manufacturer name - highly desired but not required
@@ -112,6 +113,14 @@ message GeisaSensorDescriptor {
   optional GeisaGeolocation geolocation = 9;
 
   // Engineering unit used for reported values
+  // For sensors that return a single value, this is the expected unit for that
+  // value unless overridden in the reading.
+  //
+  // For sensors that return multiple values in a single reading, this field
+  // applies only when all returned values share the same unit. When multiple
+  // values have different meanings or units, the interpretation SHALL be
+  // defined by the sensor descriptor, sensor subtype, or platform-specific
+  // documentation.  This may be revised in a future specification version.
   string unit = 10;
 
   // Whether explicit read is supported
@@ -120,10 +129,10 @@ message GeisaSensorDescriptor {
   // Whether platform-driven publish is supported
   bool supports_publish = 12;
 
-  // Optional minimum reporting period 
+  // Optional minimum reporting period
   optional uint64 min_report_period_ms = 13;
 
-  // Optional maximum reporting period 
+  // Optional maximum reporting period
   optional uint64 max_report_period_ms = 14;
 }
 
@@ -132,8 +141,9 @@ message GeisaSensorDescriptor {
 //-----------------------------------------------------------------------------
 // Generic scalar value model for lower-rate sensor observations
 //
-// This model intentionally supports simple scalar values only in this version.
-// Future GEISA revisions may introduce structured value types.
+// Each individual value remains scalar in this version. A reading may contain
+// one or more values. Future GEISA revisions may introduce richer structured
+// types for self-describing multi-value observations..
 //
 // Mapping guidance (informational):
 // - double_value: temperature, humidity, pressure
@@ -153,7 +163,8 @@ message GeisaSensorValue {
 //-----------------------------------------------------------------------------
 // Runtime Sensor Reading
 //-----------------------------------------------------------------------------
-// Represents a single sensor observation at a point in time.
+// Represents a single sensor observation at a point in time, containing one
+// or more values.
 //-----------------------------------------------------------------------------
 message GeisaSensorReading {
   // Sensor identifier (must match descriptor)
@@ -162,10 +173,22 @@ message GeisaSensorReading {
   // UTC epoch time in milliseconds
   uint64 timestamp_ms = 2;
 
-  // Sensor value.
-  GeisaSensorValue value = 3;
+  // One or more sensor values for this observation.
+  //
+  // Most sensors will likely provide a single value.
+  // Some sensors may provide multiple related values at the same timestamp.
+  // When multiple values are returned, their meaning and ordering SHALL be
+  // defined by the sensor descriptor, sensor subtype, or platform-specific
+  // documentation until a future GEISA version may define a richer structured
+  // model
+  repeated GeisaSensorValue values = 3;
 
-  // Optional unit override (otherwise descriptor unit applies)
+  // Optional unit override for this reading.
+  //
+  // For single-value readings, this overrides the descriptor unit.
+  // For multi-value readings, this field is only appropriate when all values
+  // share the same unit. Otherwise, unit interpretation SHALL be defined by the
+  // sensor descriptor, sensor subtype, or platform-specific documentation.
   optional string unit = 4;
 
   // Optional quality indicator
@@ -181,7 +204,7 @@ message GeisaSensorReading {
 // Request one or more sensor readings
 //
 // Behavior:
-// - Empty list MAY be interpreted as "all readable sensors" accessible to an 
+// - Empty list MAY be interpreted as "all readable sensors" accessible to an
 //   application.
 //-----------------------------------------------------------------------------
 message GeisaSensorReadings_Req {
@@ -191,7 +214,8 @@ message GeisaSensorReadings_Req {
 //-----------------------------------------------------------------------------
 // Sensor Read Response
 //-----------------------------------------------------------------------------
-// Response containing one or more sensor readings
+// Response containing zero or more sensor readings. Each reading may contain
+// one or more values.
 //-----------------------------------------------------------------------------
 message GeisaSensorReadings_Rsp {
   GeisaStatus status = 1;

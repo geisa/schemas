@@ -1,31 +1,36 @@
 {
   "$schema": "https://json-schema.org/draft/2020-12/schema",
   "title": "GEISA Sensor v0.9.0",
-  "description": "Canonical structure for a GEISA sensor descriptor and generic lower-rate sensor observations.",
+  "description": "Canonical structure for GEISA sensor descriptor, read request, single reading, and read response messages aligned to sensor.proto.",
   "$defs": {
     "geisaSensorType": {
       "type": "string",
       "description": "GEISA-defined sensor type for interoperability.",
       "enum": [
-        "temperature",
-        "humidity",
-        "pressure",
-        "voltage",
-        "current",
-        "power",
-        "energy",
-        "contact-state",
-        "tamper",
-        "tilt",
-        "vibration",
-        "geolocation",
-        "micro-arc",
-        "seismic",
-        "custom"
+        "GEISA_SENSOR_TYPE_UNSPECIFIED",
+        "GEISA_SENSOR_TYPE_TEMPERATURE",
+        "GEISA_SENSOR_TYPE_HUMIDITY",
+        "GEISA_SENSOR_TYPE_PRESSURE",
+        "GEISA_SENSOR_TYPE_VOLTAGE",
+        "GEISA_SENSOR_TYPE_CURRENT",
+        "GEISA_SENSOR_TYPE_POWER",
+        "GEISA_SENSOR_TYPE_ENERGY",
+        "GEISA_SENSOR_TYPE_CONTACT_STATE",
+        "GEISA_SENSOR_TYPE_TAMPER",
+        "GEISA_SENSOR_TYPE_TILT",
+        "GEISA_SENSOR_TYPE_VIBRATION",
+        "GEISA_SENSOR_TYPE_GEOLOCATION",
+        "GEISA_SENSOR_TYPE_MICRO_ARC",
+        "GEISA_SENSOR_TYPE_SEISMIC",
+        "GEISA_SENSOR_TYPE_CUSTOM"
       ]
     },
+    "geisaStatus": {
+      "type": "string",
+      "description": "GEISA status enum string as defined in the status protobuf/schema set.",
+      "minLength": 1
+    },
     "geolocation": {
-      "$comment": "Optional geospatial location for sensors or devices that provide GPS or other coordinate-based positioning. This is distinct from service point, customer address, or other upstream PII-associated data.",
       "type": "object",
       "required": [
         "latitude",
@@ -49,8 +54,8 @@
       "additionalProperties": false
     },
     "sensorValue": {
-      "$comment": "Generic scalar value model for lower-rate sensor observations. High-frequency waveform-style data is handled by the Waveform API rather than this schema.",
       "type": "object",
+      "description": "One scalar value entry within a reading. A reading may contain one or more values.",
       "properties": {
         "double-value": {
           "type": "number"
@@ -89,12 +94,98 @@
         }
       ]
     },
+    "sensorDescriptor": {
+      "type": "object",
+      "required": [
+        "sensor-id",
+        "sensor-type",
+        "unit",
+        "supports-read",
+        "supports-publish"
+      ],
+      "properties": {
+        "sensor-id": {
+          "description": "Platform-local unique identifier for the sensor.",
+          "type": "string",
+          "minLength": 1
+        },
+        "sensor-type": {
+          "$ref": "#/$defs/geisaSensorType"
+        },
+        "sensor-subtype": {
+          "type": "string",
+          "minLength": 1
+        },
+        "custom-sensor-type": {
+          "type": "string",
+          "minLength": 1
+        },
+        "name": {
+          "type": "string",
+          "minLength": 1
+        },
+        "description": {
+          "type": "string",
+          "minLength": 1
+        },
+        "manufacturer": {
+          "type": "string",
+          "minLength": 1
+        },
+        "model": {
+          "type": "string",
+          "minLength": 1
+        },
+        "geolocation": {
+          "$ref": "#/$defs/geolocation"
+        },
+        "unit": {
+          "description": "Engineering unit used for reported values. For multi-value readings, applies only when all values share the same unit.",
+          "type": "string",
+          "minLength": 1
+        },
+        "supports-read": {
+          "type": "boolean"
+        },
+        "supports-publish": {
+          "type": "boolean"
+        },
+        "min-report-period-ms": {
+          "type": "integer",
+          "minimum": 0
+        },
+        "max-report-period-ms": {
+          "type": "integer",
+          "minimum": 0
+        }
+      },
+      "additionalProperties": false,
+      "allOf": [
+        {
+          "if": {
+            "properties": {
+              "sensor-type": {
+                "const": "GEISA_SENSOR_TYPE_CUSTOM"
+              }
+            },
+            "required": [
+              "sensor-type"
+            ]
+          },
+          "then": {
+            "required": [
+              "custom-sensor-type"
+            ]
+          }
+        }
+      ]
+    },
     "sensorReading": {
       "type": "object",
       "required": [
         "sensor-id",
         "timestamp-ms",
-        "value"
+        "values"
       ],
       "properties": {
         "sensor-id": {
@@ -106,21 +197,24 @@
           "type": "integer",
           "minimum": 0
         },
-        "value": {
-          "$ref": "#/$defs/sensorValue"
+        "values": {
+          "description": "One or more scalar values for this observation.",
+          "type": "array",
+          "minItems": 1,
+          "items": {
+            "$ref": "#/$defs/sensorValue"
+          }
         },
         "unit": {
-          "description": "Engineering unit associated with the reading. If omitted, the descriptor unit applies.",
+          "description": "Optional unit override for this reading. For multi-value readings, use only when all values share the same unit.",
           "type": "string",
           "minLength": 1
         },
         "quality": {
-          "description": "Optional quality indicator supplied by the platform.",
           "type": "string",
           "minLength": 1
         },
         "status": {
-          "description": "Optional status text associated with the reading.",
           "type": "string",
           "minLength": 1
         }
@@ -128,123 +222,89 @@
       "additionalProperties": false
     }
   },
-  "type": "object",
-  "required": [
-    "geisa-sensor"
-  ],
-  "properties": {
-    "geisa-sensor": {
+  "oneOf": [
+    {
       "type": "object",
       "required": [
-        "sensor"
+        "geisa-sensor"
       ],
       "properties": {
-        "sensor": {
+        "geisa-sensor": {
           "type": "object",
           "required": [
-            "sensor-id",
-            "sensor-type",
-            "unit",
-            "supports-read",
-            "supports-publish"
+            "sensor"
           ],
           "properties": {
-            "sensor-id": {
-              "description": "Platform-local identifier for the sensor.",
-              "type": "string",
-              "minLength": 1
-            },
-            "sensor-type": {
-              "$ref": "#/$defs/geisaSensorType"
-            },
-            "sensor-subtype": {
-              "description": "Optional platform-specific refinement of the GEISA sensor type.",
-              "type": "string",
-              "minLength": 1
-            },
-            "custom-sensor-type": {
-              "description": "Implementation-specific sensor type used only when sensor-type is custom.",
-              "type": "string",
-              "minLength": 1
-            },
-            "name": {
-              "description": "Optional display name for the sensor.",
-              "type": "string",
-              "minLength": 1
-            },
-            "description": {
-              "description": "Optional human-readable description of the sensor.",
-              "type": "string",
-              "minLength": 1
-            },
-            "manufacturer": {
-              "description": "Optional manufacturer name for the sensor implementation, if available.",
-              "type": "string",
-              "minLength": 1
-            },
-            "model": {
-              "description": "Optional model identifier for the sensor implementation, if available.",
-              "type": "string",
-              "minLength": 1
-            },
-            "geolocation": {
-              "$ref": "#/$defs/geolocation"
-            },
-            "unit": {
-              "description": "Engineering unit used for reported values.",
-              "type": "string",
-              "minLength": 1
-            },
-            "supports-read": {
-              "description": "Whether the sensor supports explicit read via the request/response API.",
-              "type": "boolean"
-            },
-            "supports-publish": {
-              "description": "Whether the platform may publish observations for this sensor.",
-              "type": "boolean"
-            },
-            "min-report-period-ms": {
-              "description": "Optional minimum platform-supported reporting period hint in milliseconds.",
-              "type": "integer",
-              "minimum": 0
-            },
-            "max-report-period-ms": {
-              "description": "Optional maximum platform-supported reporting period hint in milliseconds.",
-              "type": "integer",
-              "minimum": 0
+            "sensor": {
+              "$ref": "#/$defs/sensorDescriptor"
             }
           },
-          "additionalProperties": false,
-          "allOf": [
-            {
-              "if": {
-                "properties": {
-                  "sensor-type": {
-                    "const": "custom"
-                  }
-                },
-                "required": [
-                  "sensor-type"
-                ]
-              },
-              "then": {
-                "required": [
-                  "custom-sensor-type"
-                ]
-              },
-              "else": {
-                "not": {
-                  "required": [
-                    "custom-sensor-type"
-                  ]
-                }
+          "additionalProperties": false
+        }
+      },
+      "additionalProperties": false
+    },
+    {
+      "type": "object",
+      "required": [
+        "geisa-sensor-reading"
+      ],
+      "properties": {
+        "geisa-sensor-reading": {
+          "$ref": "#/$defs/sensorReading"
+        }
+      },
+      "additionalProperties": false
+    },
+    {
+      "type": "object",
+      "required": [
+        "geisa-sensor-readings-req"
+      ],
+      "properties": {
+        "geisa-sensor-readings-req": {
+          "type": "object",
+          "properties": {
+            "sensor-id": {
+              "type": "array",
+              "items": {
+                "type": "string",
+                "minLength": 1
               }
             }
-          ]
+          },
+          "additionalProperties": false
+        }
+      },
+      "additionalProperties": false
+    },
+    {
+      "type": "object",
+      "required": [
+        "geisa-sensor-readings-rsp"
+      ],
+      "properties": {
+        "geisa-sensor-readings-rsp": {
+          "type": "object",
+          "required": [
+            "status",
+            "readings"
+          ],
+          "properties": {
+            "status": {
+              "$ref": "#/$defs/geisaStatus"
+            },
+            "readings": {
+              "type": "array",
+              "items": {
+                "$ref": "#/$defs/sensorReading"
+              }
+            }
+          },
+          "additionalProperties": false
         }
       },
       "additionalProperties": false
     }
-  },
-  "additionalProperties": false
+  ]
 }

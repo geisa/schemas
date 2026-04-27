@@ -1,16 +1,10 @@
 {
   "$comment": "Copyright 2025-2026, Contributors to the Grid Edge Interoperability & Security Alliance (GEISA), a Series of LF Projects, LLC. This file is licensed under the Community Specification License 1.0 available at: https://github.com/geisa/specification/blob/main/LICENSE.md or https://github.com/CommunitySpecification/Community_Specification/blob/main/1._Community_Specification_License-v1.md",
-  "geisa-sensor-reading": {
-    "$comment": "Example runtime reading for a lower-rate temperature sensor. The proto allows one or more scalar values per reading; this example uses a single value in the values array.",
-    "sensor-id": "board_temp1",
-    "timestamp-ms": 1735689600000,
-    "values": [
-      {
-        "double-value": 47.25
-      }
-    ],
-    "unit": "C",
-    "quality": "GOOD",
-    "status": "OK"
+  "geisa-sensor-readings-req": {
+    "$comment": "Example read request for multiple readable sensors..",
+    "sensor-id": [
+      "board_temp1",
+      "ambient_temp1"
+    ]
   }
 }

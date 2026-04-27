@@ -1,8 +1,8 @@
 {
   "$comment": "Copyright 2025-2026, Contributors to the Grid Edge Interoperability & Security Alliance (GEISA), a Series of LF Projects, LLC. This file is licensed under the Community Specification License 1.0 available at: https://github.com/geisa/specification/blob/main/LICENSE.md or https://github.com/CommunitySpecification/Community_Specification/blob/main/1._Community_Specification_License-v1.md",
   "geisa-sensor": {
-    "$comment": "Example temperature sensor descriptor. Runtime reading examples are provided in the separate sensor-temperature-reading-example.json and sensor-temperature-response-example.json files.",
-    "sensor": {
+    "$comment": "Example temperature sensor descriptor. Runtime reading examples are provided in the separate sensor-temperature-reading-example.json and sensor-temperature-response-example.json files. Runtime readings may contain one or more scalar values per observation as defined by sensor.proto.",
+       "sensor": {
       "$comment": "Descriptor metadata for a readable and publishable lower-rate temperature sensor.",
       "sensor-id": "board_temp1",
       "sensor-type": "temperature",
