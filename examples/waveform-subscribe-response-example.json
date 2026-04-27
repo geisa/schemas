@@ -3,9 +3,9 @@
   "geisa-waveform-rsp": {
     "$comment": "Example successful response for an application instance subscribing to the required baseline waveform stream. The runtime socket path is per-application and is used for native waveform frame delivery.",
     "status": "success",
-    "stream-id": "waveform-full",
+    "stream-id": "waveform-base",
     "subscribed": true,
-    "socket-path": "/run/geisa/waveform/app-42/waveform-full.sock",
+    "socket-path": "/run/geisa/waveform/app-42/waveform-base.sock",
     "sample-type": "int16",
     "voltage-channel-count": 1,
     "current-channel-count": 2,

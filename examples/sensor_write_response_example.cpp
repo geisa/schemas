@@ -4,7 +4,8 @@
 // This file is licensed under the Community Specification License 1.0
 // available at:
 // https://github.com/geisa/specification/blob/main/LICENSE.md or
-// https://github.com/CommunitySpecification/Community_Specification/blob/main/1._Community_Specification_License-v1.md
+// https://github.com/CommunitySpecification/Community_Specification/blob/main/
+// 1._Community_Specification_License-v1.md
 //-----------------------------------------------------------------------------
 //
 // Example GEISA sensor response encoder.
@@ -24,7 +25,8 @@
 #include "geisa-status.pb.h"
 #include "sensor.pb.h"
 
-static bool write_file(const char *path, const GeisaSensorReadings_Rsp &response)
+static bool write_file(const char *path,
+                       const GeisaSensorReadings_Rsp &response)
 {
     std::ofstream output(path, std::ios::binary);
     if (!output)

@@ -90,7 +90,7 @@ python: $(PYTHON_STAMP)
 ###############################################################################
 $(BINPBDIR)/%.binpb: %.proto
 	@mkdir -p $(@D)
-	$(PROTOC) $(PROTOC_FLAGS) -o $@ $<
+	$(PROTOC) $(PROTOC_FLAGS) -I. -o $@ $<
 
 ###############################################################################
 # C generation using protoc-c plugin
