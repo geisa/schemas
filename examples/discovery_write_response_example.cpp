@@ -1,0 +1,194 @@
+//-----------------------------------------------------------------------------
+// Copyright 2025-2026, Contributors to the Grid Edge Interoperability &
+// Security Alliance (GEISA), a Series of LF Projects, LLC
+// This file is licensed under the Community Specification License 1.0
+// available at:
+// https://github.com/geisa/specification/blob/main/LICENSE.md or
+// https://github.com/CommunitySpecification/Community_Specification/blob/main/
+// 1._Community_Specification_License-v1.md
+//-----------------------------------------------------------------------------
+//
+// Example GEISA platform discovery response encoder.
+//
+// This example creates a sample GeisaPlatformDiscovery_Rsp protobuf payload
+// and writes it to a binary file for decoding with the companion reader.
+//
+//-----------------------------------------------------------------------------
+
+#include <fstream>
+#include <iostream>
+#include <cstdlib>
+#include <string>
+#include <sys/wait.h>
+
+#include "geisa-status.pb.h"
+#include "discovery.pb.h"
+
+// Writes serialized protobuf bytes to disk for the discovery response sample
+// and demo output.
+static bool write_file(const char *path,
+                       const GeisaPlatformDiscovery_Rsp &response)
+{
+    std::ofstream output(path, std::ios::binary);
+    if (!output)
+    {
+        std::cerr << "failed to open output file: " << path << '\n';
+        return false;
+    }
+
+    if (!response.SerializeToOstream(&output))
+    {
+        std::cerr << "Failed to serialize GeisaPlatformDiscovery_Rsp\n";
+        return false;
+    }
+
+    return true;
+}
+
+static void print_post_write_guidance(const std::string &output_path)
+{
+    std::cout << "Wrote discovery response to: " << output_path << '\n';
+    std::cout
+        << "The output file contains raw bytes of a serialized "
+        << "GeisaPlatformDiscovery_Rsp protobuf payload\n";
+    std::cout << "Output path: " << output_path << '\n';
+    std::cout << "Decode with: /tmp/discovery_read_example "
+              << output_path << '\n';
+    std::cout
+        << "integration note (secondary): in an operational GEISA "
+        << "platform, these protobuf bytes are carried via the Platform "
+        << "Discovery response path and applications typically decode "
+        << "protobuf and/or convert to JSON for processing if/as desired.\n";
+}
+
+static int run_reader_subprocess(const std::string &output_path)
+{
+    const std::string command = "/tmp/discovery_read_example " + output_path;
+    const int rc = std::system(command.c_str());
+    if (rc == -1)
+    {
+        std::cerr << "Failed to launch reader subprocess\n";
+        return 1;
+    }
+
+    if (WIFEXITED(rc))
+    {
+        return WEXITSTATUS(rc);
+    }
+
+    if (WIFSIGNALED(rc))
+    {
+        std::cerr << "Reader subprocess terminated by signal "
+                  << WTERMSIG(rc) << '\n';
+        return 1;
+    }
+
+    std::cerr << "Reader subprocess failed\n";
+    return 1;
+}
+
+int main(int argc, char *argv[])
+{
+    GOOGLE_PROTOBUF_VERIFY_VERSION;
+
+    const bool positional = (argc == 2);
+    const bool explicit_write =
+        (argc == 3 && std::string(argv[1]) == "--write-rsp-sample");
+    const bool demo_mode = (argc == 2 && std::string(argv[1]) == "--demo");
+
+    if (!positional && !explicit_write && !demo_mode)
+    {
+        std::cerr << "usage: " << argv[0]
+                  << " discovery-response.bin | --write-rsp-sample "
+                  << "discovery-response.bin | --demo\n";
+        return 2;
+    }
+
+    const std::string output_path =
+        demo_mode ? std::string("/tmp/discovery-response.bin")
+                  : std::string(positional ? argv[1] : argv[2]);
+
+    // Populate a deterministic sample discovery response with 2S-ish metrology,
+    // one baseline waveform stream, and an intentionally empty sensor list.
+    GeisaPlatformDiscovery_Rsp response;
+
+    response.mutable_status()->set_code(GEISA_STATUS_SUCCESS);
+    response.mutable_status()->set_message("ok");
+
+    response.mutable_geisa()->set_ver_major(0);
+    response.mutable_geisa()->set_ver_minor(9);
+    response.mutable_geisa()->set_ver_rev(0);
+    response.mutable_geisa()->set_pillar_api(true);
+    response.mutable_geisa()->set_pillar_adm(false);
+    response.mutable_geisa()->set_pillar_lee(false);
+    response.mutable_geisa()->set_pillar_vee(false);
+
+    GeisaPlatformDiscovery_Module *top_module =
+        response.mutable_device()->mutable_top_module();
+    top_module->set_type(TYPE_ELECTRIC_METER);
+    top_module->set_manufacturer("ExampleCompany");
+    top_module->set_model("ExampleMeter");
+    top_module->set_serial_number("SN123456");
+    top_module->set_hw_revision("A");
+    top_module->set_fw_revision("0.9-demo");
+
+    response.mutable_operator_()->set_operator_name("Example Utility");
+    response.mutable_operator_()->set_operator_identifier("MTR-0001");
+
+    response.mutable_metrology()->set_meter_form("2S");
+    response.mutable_metrology()->set_phase_count(1);
+    response.mutable_metrology()->set_neutral_connected(true);
+    response.mutable_metrology()->set_nominal_frequency_hz(60);
+    response.mutable_metrology()->set_nominal_phase_to_neutral_voltage_v(120);
+    response.mutable_metrology()->set_nominal_phase_to_phase_voltage_v(240);
+
+    response.mutable_sensor();
+
+    GeisaPlatformDiscovery_Waveform_Instance *stream =
+        response.mutable_waveform()->add_streams();
+    stream->set_stream_id("waveform-base");
+    stream->set_name("Baseline Waveform Stream");
+    stream->set_description(
+        "Baseline interoperable waveform stream for GEISA applications.");
+    stream->set_datatype(DATA_INT16);
+    stream->set_voltage_multiplier(1.0);
+    stream->set_current_multiplier(1.0);
+    stream->set_num_voltage_ch(1);
+    stream->set_num_current_ch(2);
+    stream->set_num_other_ch(0);
+    stream->set_total_channel_count(3);
+    stream->set_cycle_aligned(true);
+    stream->set_zero_crossing_aligned(true);
+    stream->set_sample_rate(7680);
+    stream->set_samples_per_cycle(128);
+    stream->set_nominal_frequency_hz(60);
+    stream->set_expected_frame_period_ms(200);
+
+    if (!write_file(output_path.c_str(), response))
+    {
+        return 1;
+    }
+
+    if (demo_mode)
+    {
+        std::cout << "Running discovery demo...\n";
+    }
+
+    print_post_write_guidance(output_path);
+
+    // In demo mode, the sample binary payload is immediately decoded by the
+    // companion reader so the end-to-end write/decode flow is visible in one
+    // run.
+    if (demo_mode)
+    {
+        const int reader_rc = run_reader_subprocess(output_path);
+        if (reader_rc != 0)
+        {
+            google::protobuf::ShutdownProtobufLibrary();
+            return reader_rc;
+        }
+    }
+
+    google::protobuf::ShutdownProtobufLibrary();
+    return 0;
+}

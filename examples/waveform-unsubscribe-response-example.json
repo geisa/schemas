@@ -3,7 +3,7 @@
   "geisa-waveform-rsp": {
     "$comment": "Example successful response for an application instance unsubscribing from the required baseline waveform stream.",
     "status": "success",
-    "stream-id": "waveform-full",
+    "stream-id": "waveform-base",
     "subscribed": false
   }
 }
