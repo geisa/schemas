@@ -23,6 +23,18 @@ Build from the repository root:
 
     make clean
     make cpp
+    c++ -std=c++17 -O2 \
+      -Ibuild/cpp \
+      $(pkg-config --cflags protobuf) \
+      examples/sensor_read_example.cpp \
+      build/cpp/sensor.pb.cc \
+      build/cpp/geisa-status.pb.cc \
+      $(pkg-config --libs protobuf) \
+      -pthread \
+      -o /tmp/sensor_read_example
+
+If protobuf headers/libs are already on default paths, this also works:
+
     g++ -std=c++17 \
       -Ibuild/cpp \
       examples/sensor_read_example.cpp \

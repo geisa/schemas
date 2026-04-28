@@ -98,6 +98,31 @@
       },
       "additionalProperties": false
     },
+    "geisaStatus": {
+      "type": "object",
+      "description": "Generic GEISA response status aligned to geisa-status.proto (code/message/details).",
+      "required": [
+        "code"
+      ],
+      "properties": {
+        "code": {
+          "type": "string",
+          "minLength": 1,
+          "description": "GEISA status code enum name (e.g., GEISA_STATUS_SUCCESS)."
+        },
+        "message": {
+          "type": "string",
+          "minLength": 1,
+          "description": "Human-readable status message."
+        },
+        "details": {
+          "type": "string",
+          "minLength": 1,
+          "description": "Optional additional details."
+        }
+      },
+      "additionalProperties": false
+    },
     "deviceInfo": {
       "type": "object",
       "required": [
@@ -189,7 +214,7 @@
       ],
       "properties": {
         "stream-id": {
-          "description": "Waveform stream identifier. Platforms that support waveform data SHALL expose a baseline waveform stream with the identifier 'waveform-full'. Platforms MAY expose additional stream identifiers for alternate waveform views. Applications SHALL use waveform metadata to interpret a stream and SHALL NOT infer stream characteristics by parsing the stream-id value.",
+          "description": "Waveform stream identifier. Platforms that support waveform SHALL expose 'waveform-base'. Platforms MAY expose additional stream identifiers for alternate waveform views. Applications SHALL use waveform metadata to interpret a stream and SHALL NOT parse stream-id.",
           "type": "string",
           "minLength": 1
         },
@@ -244,8 +269,9 @@
           "minimum": 1
         },
         "samples-per-cycle": {
+          "description": "Discrete nominal samples-per-cycle count when applicable. For baseline waveform-base streams, this SHALL be at least 128 where AC cycle semantics apply. Sample-rate is the authoritative samples-per-second value. A value of 0 indicates not applicable or not provided.",
           "type": "integer",
-          "minimum": 1
+          "minimum": 0
         },
         "nominal-frequency-hz": {
           "type": "integer",
@@ -289,10 +315,14 @@
     "platformDiscoveryResponse": {
       "type": "object",
       "required": [
+        "status",
         "geisa",
         "device"
       ],
       "properties": {
+        "status": {
+          "$ref": "#/$defs/geisaStatus"
+        },
         "geisa": {
           "$ref": "#/$defs/geisaInfo"
         },
@@ -307,6 +337,14 @@
         },
         "sensor": {
           "type": "object",
+          "properties": {
+            "sensors": {
+              "type": "array",
+              "items": {
+                "$ref": "geisa-sensor-schema.json#/$defs/sensorDescriptor"
+              }
+            }
+          },
           "additionalProperties": false
         },
         "network": {
