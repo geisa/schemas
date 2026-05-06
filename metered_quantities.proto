@@ -193,7 +193,7 @@ message GeisaInstantaneousQuantities {
 	GeisaTypeInstantaneousQuantities_PerPhase phase_B = 3;
 	GeisaTypeInstantaneousQuantities_PerPhase phase_C = 4;
 	GeisaTypeInstantaneousQuantities_PerPhase phase_N = 5;// Neutral "phase" measurements
-	GeisaTypeInstantaneousQuantities_Other other = 6; // Various other instantaneous quantities that are nto per phase or system
+	GeisaTypeInstantaneousQuantities_Other other = 6; // Various other instantaneous quantities that are not per phase or system
 	float frequency_hz = 7;
 	float temperature_celsius = 8;
 }
