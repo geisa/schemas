@@ -20,7 +20,9 @@
 
 #include <fstream>
 #include <iostream>
+#include <cstdlib>
 #include <string>
+#include <sys/wait.h>
 
 #include "geisa-status.pb.h"
 #include "sensor.pb.h"
@@ -44,15 +46,49 @@ static bool write_file(const char *path,
     return true;
 }
 
+static int run_reader_subprocess(const std::string &output_path)
+{
+    const std::string command = "/tmp/sensor_read_example " + output_path;
+    const int rc = std::system(command.c_str());
+    if (rc == -1)
+    {
+        std::cerr << "Failed to launch reader subprocess\n";
+        return 1;
+    }
+
+    if (WIFEXITED(rc))
+    {
+        return WEXITSTATUS(rc);
+    }
+
+    if (WIFSIGNALED(rc))
+    {
+        std::cerr << "Reader subprocess terminated by signal "
+                  << WTERMSIG(rc) << '\n';
+        return 1;
+    }
+
+    std::cerr << "Reader subprocess failed\n";
+    return 1;
+}
+
 int main(int argc, char *argv[])
 {
     GOOGLE_PROTOBUF_VERIFY_VERSION;
 
-    if (argc != 2)
+    const bool demo_mode = (argc == 2 && std::string(argv[1]) == "--demo");
+    const bool positional = (argc == 2 && !demo_mode);
+
+    if (!demo_mode && !positional)
     {
-        std::cerr << "usage: " << argv[0] << " sensor-response.bin\n";
+        std::cerr << "usage: " << argv[0]
+                  << " sensor-response.bin | --demo\n";
         return 2;
     }
+
+    const std::string output_path =
+        demo_mode ? std::string("/tmp/sensor-response.bin")
+                  : std::string(argv[1]);
 
     GeisaSensorReadings_Rsp response;
 
@@ -82,9 +118,24 @@ int main(int argc, char *argv[])
     GeisaSensorValue *ambient_value = ambient_reading->add_values();
     ambient_value->set_double_value(33.0);
 
-    if (!write_file(argv[1], response))
+    if (!write_file(output_path.c_str(), response))
     {
         return 1;
+    }
+
+    if (demo_mode)
+    {
+        std::cout << "Running sensor demo...\n";
+        std::cout << "Wrote sensor response to /tmp/sensor-response.bin\n";
+        std::cout << "Decode with: /tmp/sensor_read_example "
+                     "/tmp/sensor-response.bin\n";
+
+        const int reader_rc = run_reader_subprocess(output_path);
+        if (reader_rc != 0)
+        {
+            google::protobuf::ShutdownProtobufLibrary();
+            return reader_rc;
+        }
     }
 
     google::protobuf::ShutdownProtobufLibrary();

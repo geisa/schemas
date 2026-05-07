@@ -11,6 +11,7 @@
 syntax = "proto3";
 
 import "geisa-status.proto";
+import "sensor.proto";
 
 /*
  * GEISA Platform Discovery messages.
@@ -153,11 +154,11 @@ message GeisaPlatformDiscovery_Metrology {
 
 
 /*
- * Sensor discovery placeholder.
- *
- * Reserved for future definition.
+ * Sensor descriptors exposed through Platform Discovery.
  */
 message GeisaPlatformDiscovery_Sensor {
+  // Sensor descriptors exposed through Platform Discovery.
+  repeated GeisaSensorDescriptor sensors = 1;
 }
 
 

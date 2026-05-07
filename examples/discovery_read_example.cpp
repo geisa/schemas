@@ -155,6 +155,79 @@ static void print_waveform_stream(
     std::cout << '}';
 }
 
+static void print_sensor_descriptor(const GeisaSensorDescriptor &sensor)
+{
+    std::cout << "{\"sensor-id\":";
+    print_json_escaped(sensor.sensor_id());
+
+    std::cout << ",\"sensor-type\":";
+    print_json_escaped(GeisaSensorType_Name(sensor.sensor_type()));
+
+    if (sensor.has_sensor_subtype())
+    {
+        std::cout << ",\"sensor-subtype\":";
+        print_json_escaped(sensor.sensor_subtype());
+    }
+
+    if (sensor.has_name())
+    {
+        std::cout << ",\"name\":";
+        print_json_escaped(sensor.name());
+    }
+
+    if (sensor.has_description())
+    {
+        std::cout << ",\"description\":";
+        print_json_escaped(sensor.description());
+    }
+
+    if (sensor.has_manufacturer())
+    {
+        std::cout << ",\"manufacturer\":";
+        print_json_escaped(sensor.manufacturer());
+    }
+
+    if (sensor.has_model())
+    {
+        std::cout << ",\"model\":";
+        print_json_escaped(sensor.model());
+    }
+
+    std::cout << ",\"unit\":";
+    print_json_escaped(sensor.unit());
+    std::cout << ",\"supports-read\":"
+              << (sensor.supports_read() ? "true" : "false");
+    std::cout << ",\"supports-publish\":"
+              << (sensor.supports_publish() ? "true" : "false");
+
+    if (sensor.has_min_report_period_ms())
+    {
+        std::cout << ",\"min-report-period-ms\":"
+                  << sensor.min_report_period_ms();
+    }
+
+    if (sensor.has_max_report_period_ms())
+    {
+        std::cout << ",\"max-report-period-ms\":"
+                  << sensor.max_report_period_ms();
+    }
+
+    if (sensor.has_geolocation())
+    {
+        std::cout << ",\"geolocation\":{";
+        std::cout << "\"latitude\":" << sensor.geolocation().latitude();
+        std::cout << ",\"longitude\":" << sensor.geolocation().longitude();
+        if (sensor.geolocation().has_altitude_m())
+        {
+            std::cout << ",\"altitude-m\":"
+                      << sensor.geolocation().altitude_m();
+        }
+        std::cout << '}';
+    }
+
+    std::cout << '}';
+}
+
 // Parses GeisaPlatformDiscovery_Rsp and prints a JSON-like representation,
 // including enum names for status and waveform/device fields.
 static void print_discovery_response(const GeisaPlatformDiscovery_Rsp &rsp)
@@ -244,6 +317,16 @@ static void print_discovery_response(const GeisaPlatformDiscovery_Rsp &rsp)
 
     std::cout << ",\"sensor\":{";
     std::cout << "\"sensor-count\":" << rsp.sensor().sensors_size();
+    std::cout << ",\"sensors\":[";
+    for (int i = 0; i < rsp.sensor().sensors_size(); ++i)
+    {
+        if (i > 0)
+        {
+            std::cout << ',';
+        }
+        print_sensor_descriptor(rsp.sensor().sensors(i));
+    }
+    std::cout << ']';
     std::cout << '}';
 
     std::cout << ",\"waveform\":{";

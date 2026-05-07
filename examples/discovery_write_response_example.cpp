@@ -109,7 +109,7 @@ int main(int argc, char *argv[])
                   : std::string(positional ? argv[1] : argv[2]);
 
     // Populate a deterministic sample discovery response with 2S-ish metrology,
-    // one baseline waveform stream, and an intentionally empty sensor list.
+    // one sensor descriptor, and one baseline waveform stream.
     GeisaPlatformDiscovery_Rsp response;
 
     response.mutable_status()->set_code(GEISA_STATUS_SUCCESS);
@@ -142,7 +142,20 @@ int main(int argc, char *argv[])
     response.mutable_metrology()->set_nominal_phase_to_neutral_voltage_v(120);
     response.mutable_metrology()->set_nominal_phase_to_phase_voltage_v(240);
 
-    response.mutable_sensor();
+    GeisaSensorDescriptor *sensor = response.mutable_sensor()->add_sensors();
+    sensor->set_sensor_id("board_temp1");
+    sensor->set_sensor_type(GEISA_SENSOR_TYPE_TEMPERATURE);
+    sensor->set_sensor_subtype("board");
+    sensor->set_name("Board Temperature Sensor 1");
+    sensor->set_description(
+        "Internal board or electronics temperature sensor.");
+    sensor->set_manufacturer("Example Sensor Vendor");
+    sensor->set_model("TMP1075");
+    sensor->set_unit("C");
+    sensor->set_supports_read(true);
+    sensor->set_supports_publish(true);
+    sensor->set_min_report_period_ms(1000);
+    sensor->set_max_report_period_ms(60000);
 
     GeisaPlatformDiscovery_Waveform_Instance *stream =
         response.mutable_waveform()->add_streams();
