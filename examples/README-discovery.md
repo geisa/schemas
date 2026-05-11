@@ -5,14 +5,16 @@ Security Alliance (GEISA), a Series of LF Projects, LLC
 This file is licensed under the Community Specification License 1.0
 available at:
 https://github.com/geisa/specification/blob/main/LICENSE.md or
-https://github.com/CommunitySpecification/Community_Specification/blob/main/1._Community_Specification_License-v1.md
+https://github.com/CommunitySpecification/
+Community_Specification/blob/main/
+1._Community_Specification_License-v1.md
 -->
 
 # Platform Discovery examples (C++)
 
-These examples demonstrate how to write and decode binary protobuf payloads 
-for the GEISA Platform Discovery response message (`GeisaPlatformDiscovery_Rsp`)
-and render them in a JSON-like form.
+These examples demonstrate how to write and decode binary protobuf payloads
+for the GEISA Platform Discovery response message
+(`GeisaPlatformDiscovery_Rsp`) and render them in a JSON-like form.
 
 ## Build
 
@@ -49,12 +51,13 @@ Reader:
       -pthread \
       -o /tmp/discovery_read_example
 
-If protobuf headers/libs are already on default paths, you can omit the pkg-config pieces and use
--lprotobuf directly.
+If protobuf headers/libs are already on default paths, you can omit the
+pkg-config pieces and use `-lprotobuf` directly.
 
 ## Quick start (recommended)
 
-Run an end-to-end demo (writes a binary discovery response and immediately decodes it):
+Run an end-to-end demo (writes a binary discovery response and immediately
+decodes it):
 
     /tmp/discovery_write_response_example --demo
 

@@ -5,28 +5,30 @@ Security Alliance (GEISA), a Series of LF Projects, LLC
 This file is licensed under the Community Specification License 1.0
 available at:
 https://github.com/geisa/specification/blob/main/LICENSE.md or
-https://github.com/CommunitySpecification/Community_Specification/blob/main/1._Community_Specification_License-v1.md
+https://github.com/CommunitySpecification/
+Community_Specification/blob/main/
+1._Community_Specification_License-v1.md
 -->
 
 # Waveform example (C++)
 
-This example demonstrates GEISA waveform control-plane protobuf payloads and 
+This example demonstrates GEISA waveform control-plane protobuf payloads and
 the waveform frame format (geisa_waveform_frame).
 
 It currently supports two use cases:
 
 1) **Local demo (no platform required)**: `--demo` generates a realistic sample
    `GeisaWaveform_Rsp` payload and a single `geisa_waveform_frame` sample, then
-    decodes and prints a summary plus the first 10 time steps in both raw and 
+    decodes and prints a summary plus the first 10 time steps in both raw and
     scaled units.
 
-2) **Platform response decode**: `--read-rsp <file>` parses a captured 
+2) **Platform response decode**: `--read-rsp <file>` parses a captured
   `GeisaWaveform_Rsp` response payload and attempts to read a waveform frame:
-   - On Linux: it first attempts to open `socket_path` as an 
+   - On Linux: it first attempts to open `socket_path` as an
    `AF_UNIX SOCK_SEQPACKET` socket.
-   - On macOS: SOCK_SEQPACKET is not supported so the example uses the file 
+   - On macOS: SOCK_SEQPACKET is not supported so the example uses the file
      fallback path.
-   - If that fails, or if `socket_path` is a regular file, it falls back to 
+   - If that fails, or if `socket_path` is a regular file, it falls back to
      reading raw frame bytes from the file path and decoding them.
 
 ## Build
@@ -65,10 +67,12 @@ Run the local demo:
     /tmp/waveform_subscribe_and_read --demo
 
 This will create:
+
 - `/tmp/waveform-rsp.bin`
 - `/tmp/waveform-rsp.bin.frame`
 
 …and then outputs:
+
 - decoded response metadata
 - frame header fields
 - frame summary + per-channel min/max
@@ -94,12 +98,12 @@ transport and the platform returns a serialized `GeisaWaveform_Rsp` payload.
 
 ## Decoding a captured response payload
 
-If you have captured a real platform response payload to a file (e.g. 
+If you have captured a real platform response payload to a file (e.g.
   `/tmp/waveform-rsp.bin`):
 
     /tmp/waveform_subscribe_and_read --read-rsp /tmp/waveform-rsp.bin
 
 If `subscribed=true`, the response includes `socket_path`, which is either:
+
 - a unix socket path (Linux platforms), or
 - a file path for the local demo/fallback mode.
-
