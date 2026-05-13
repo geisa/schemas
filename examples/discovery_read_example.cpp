@@ -25,7 +25,7 @@
 #include "discovery.pb.h"
 
 // Escapes strings so the JSON-like output stays readable and valid for
-// control characters, quotes, and backslashes.
+// control characters, quotes, and backslashes..
 static void print_json_escaped(const std::string &value)
 {
     std::cout << '"';
@@ -58,7 +58,7 @@ static void print_json_escaped(const std::string &value)
     std::cout << '"';
 }
 
-// Reads a binary protobuf payload from disk into memory for decoding.
+// Reads a binary protobuf payload from disk into memory for decoding
 static bool read_file(const char *path, std::string *contents)
 {
     std::ifstream input(path, std::ios::binary);
@@ -228,10 +228,48 @@ static void print_sensor_descriptor(const GeisaSensorDescriptor &sensor)
     std::cout << '}';
 }
 
+// Diagnostic output prints protobuf enum identifiers; schema examples use
+// normalized JSON enum strings.
+static void print_network_interface(
+    const GeisaPlatformDiscovery_Network_Instance &network)
+{
+    std::cout << "{\"interface-id\":";
+    print_json_escaped(network.interface_id());
+    std::cout << ",\"network-class\":";
+    print_json_escaped(
+        GeisaPlatformDiscovery_NetworkClass_Name(network.network_class()));
+    std::cout << ",\"owner\":";
+    print_json_escaped(
+        GeisaPlatformDiscovery_NetworkOwner_Name(network.owner()));
+    std::cout << ",\"technology\":";
+    print_json_escaped(
+        GeisaPlatformDiscovery_NetworkTechnology_Name(network.technology()));
+    std::cout << ",\"supports-ipv4\":"
+              << (network.supports_ipv4() ? "true" : "false");
+    std::cout << ",\"supports-ipv6\":"
+              << (network.supports_ipv6() ? "true" : "false");
+
+    if (network.has_name())
+    {
+        std::cout << ",\"name\":";
+        print_json_escaped(network.name());
+    }
+
+    if (network.has_description())
+    {
+        std::cout << ",\"description\":";
+        print_json_escaped(network.description());
+    }
+
+    std::cout << '}';
+}
+
 // Parses GeisaPlatformDiscovery_Rsp and prints a JSON-like representation,
 // including enum names for status and waveform/device fields.
 static void print_discovery_response(const GeisaPlatformDiscovery_Rsp &rsp)
 {
+    // Discovery is static/semi-static capability metadata for apps to read
+    // on startup
     std::cout << "{\"geisa-platform-discovery-rsp\":{";
 
     std::cout << "\"status\":{";
@@ -329,6 +367,21 @@ static void print_discovery_response(const GeisaPlatformDiscovery_Rsp &rsp)
     std::cout << ']';
     std::cout << '}';
 
+    std::cout << ",\"network\":{";
+    std::cout << "\"interface-count\":"
+              << rsp.network().interfaces_size();
+    std::cout << ",\"interfaces\":[";
+    for (int i = 0; i < rsp.network().interfaces_size(); ++i)
+    {
+        if (i > 0)
+        {
+            std::cout << ',';
+        }
+        print_network_interface(rsp.network().interfaces(i));
+    }
+    std::cout << ']';
+    std::cout << '}';
+
     std::cout << ",\"waveform\":{";
     std::cout << "\"stream-count\":" << rsp.waveform().streams_size();
     std::cout << ",\"streams\":[";
@@ -362,15 +415,18 @@ int main(int argc, char *argv[])
     const char *input_path = positional ? argv[1] : argv[2];
 
     std::string payload;
+    // Reads a binary protobuf discovery payload captured from a response path
     if (!read_file(input_path, &payload))
     {
         return 1;
     }
 
     GeisaPlatformDiscovery_Rsp response;
+    // Parses the payload into the typed response and renders a JSON-like
+    // diagnostic view
     if (!response.ParseFromString(payload))
     {
-        std::cerr << "failed to decode GeisaPlatformDiscovery_Rsp "
+        std::cerr << "Failed to decode GeisaPlatformDiscovery_Rsp "
                      "payload\n";
         return 1;
     }

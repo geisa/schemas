@@ -8,14 +8,13 @@
 // 1._Community_Specification_License-v1.md
 //-----------------------------------------------------------------------------
 //
-// Example GEISA sensor response encoder.
+// Example GEISA sensor response encoder
 //
 // This example creates a GeisaSensorReadings_Rsp protobuf payload containing:
 // - one sensor reading with multiple values
 // - one additional sensor/value pair
 //
-// The generated binary payload can be decoded with sensor_read_example.cpp.
-//
+// The generated binary payload can be decoded with sensor_read_example.cpp
 //-----------------------------------------------------------------------------
 
 #include <fstream>
@@ -30,6 +29,7 @@
 static bool write_file(const char *path,
                        const GeisaSensorReadings_Rsp &response)
 {
+    // Persist a typed response as raw protobuf bytes for demo/fixture use
     std::ofstream output(path, std::ios::binary);
     if (!output)
     {
@@ -92,9 +92,11 @@ int main(int argc, char *argv[])
 
     GeisaSensorReadings_Rsp response;
 
+    // Populate top-level GEISA status envelope.
     response.mutable_status()->set_code(GEISA_STATUS_SUCCESS);
     response.mutable_status()->set_message("ok");
 
+    // First reading demonstrates repeated values in one observation
     GeisaSensorReading *board_reading = response.add_readings();
     board_reading->set_sensor_id("board_temp1");
     board_reading->set_timestamp_ms(1735689600000ULL);
@@ -108,6 +110,7 @@ int main(int argc, char *argv[])
     GeisaSensorValue *board_value_2 = board_reading->add_values();
     board_value_2->set_double_value(47.38);
 
+    // Second reading demonstrates repeated reading entries in one response
     GeisaSensorReading *ambient_reading = response.add_readings();
     ambient_reading->set_sensor_id("ambient_temp1");
     ambient_reading->set_timestamp_ms(1735689600000ULL);
@@ -125,6 +128,7 @@ int main(int argc, char *argv[])
 
     if (demo_mode)
     {
+        // Demo mode immediately runs the companion reader for end-to-end flow
         std::cout << "Running sensor demo...\n";
         std::cout << "Wrote sensor response to /tmp/sensor-response.bin\n";
         std::cout << "Decode with: /tmp/sensor_read_example "

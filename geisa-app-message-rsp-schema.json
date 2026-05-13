@@ -1,0 +1,94 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "title": "GEISA Application Message Response v0.9.0",
+  "description": "Canonical structure for GEISA application messaging per-request disposition payloads aligned to app-message.proto. The payload is serialized protobuf bytes carried as base64 in JSON examples.",
+  "type": "object",
+  "required": [
+    "geisa-app-message-rsp"
+  ],
+  "properties": {
+    "geisa-app-message-rsp": {
+      "type": "object",
+      "required": [
+        "request-id",
+        "status",
+        "priority",
+        "description-type",
+        "timestamp-ms",
+        "ttl-ms",
+        "content-type"
+      ],
+      "properties": {
+        "request-id": {
+          "description": "Application request identifier used for correlation.",
+          "type": "string",
+          "minLength": 1
+        },
+        "status": {
+          "description": "Platform disposition for the corresponding request-id (for example accepted, queued, rejected, permission-denied, quota-exceeded, unavailable, expired, or other).",
+          "type": "string",
+          "enum": [
+            "GEISA_APP_MESSAGE_STATUS_UNSPECIFIED",
+            "GEISA_APP_MESSAGE_STATUS_ACCEPTED",
+            "GEISA_APP_MESSAGE_STATUS_QUEUED",
+            "GEISA_APP_MESSAGE_STATUS_DELIVERED",
+            "GEISA_APP_MESSAGE_STATUS_REJECTED",
+            "GEISA_APP_MESSAGE_STATUS_PERMISSION_DENIED",
+            "GEISA_APP_MESSAGE_STATUS_QUOTA_EXCEEDED",
+            "GEISA_APP_MESSAGE_STATUS_UNAVAILABLE",
+            "GEISA_APP_MESSAGE_STATUS_EXPIRED",
+            "GEISA_APP_MESSAGE_STATUS_OTHER"
+          ]
+        },
+        "status-text": {
+          "description": "Optional human-readable diagnostic or status text.",
+          "type": "string",
+          "minLength": 1
+        },
+        "priority": {
+          "description": "ADM object 3600-style message priority for app-facing messaging.",
+          "type": "string",
+          "enum": [
+            "GEISA_APP_MESSAGE_PRIORITY_UNSPECIFIED",
+            "GEISA_APP_MESSAGE_PRIORITY_IMMEDIATE",
+            "GEISA_APP_MESSAGE_PRIORITY_BEST_EFFORT",
+            "GEISA_APP_MESSAGE_PRIORITY_LATEST"
+          ]
+        },
+        "description-type": {
+          "description": "ADM object 3600-style message description for app configuration or app data.",
+          "type": "string",
+          "enum": [
+            "GEISA_APP_MESSAGE_DESCRIPTION_TYPE_UNSPECIFIED",
+            "GEISA_APP_MESSAGE_DESCRIPTION_TYPE_APP_CONFIGURATION",
+            "GEISA_APP_MESSAGE_DESCRIPTION_TYPE_APP_DATA"
+          ]
+        },
+        "timestamp-ms": {
+          "description": "UTC epoch time in milliseconds when the message was created.",
+          "type": "integer",
+          "minimum": 0
+        },
+        "ttl-ms": {
+          "description": "Time-to-live in milliseconds for the message payload.",
+          "type": "integer",
+          "minimum": 0
+        },
+        "content-type": {
+          "description": "MIME type describing the opaque payload bytes.",
+          "type": "string",
+          "minLength": 1
+        },
+        "payload-base64": {
+          "description": "Optional base64-encoded protobuf payload bytes associated with the per-request disposition.",
+          "type": "string",
+          "contentEncoding": "base64",
+          "minLength": 1
+        }
+      },
+      "additionalProperties": false,
+      "$comment": "Quota counters/usage values are not carried here; those are reported through Platform/App Status."
+    }
+  },
+  "additionalProperties": false
+}

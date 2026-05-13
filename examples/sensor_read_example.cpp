@@ -25,7 +25,7 @@
 //     -lprotobuf -pthread \
 //     -o /tmp/sensor_read_example
 //
-// Run with a binary GeisaSensorReadings_Rsp payload:
+// Run with a binary GeisaSensorReadings_Rsp payload, e.g.:
 //
 //   /tmp/sensor_read_example sensor-response.bin
 //
@@ -73,6 +73,7 @@ static void print_json_escaped(const std::string &value)
 
 static void print_sensor_value(const GeisaSensorValue &value)
 {
+    // GeisaSensorValue is a protobuf oneof; exactly one value branch is set.
     switch (value.value_case())
     {
     case GeisaSensorValue::kDoubleValue:
@@ -99,6 +100,7 @@ static void print_sensor_value(const GeisaSensorValue &value)
 
 static void print_sensor_reading(const GeisaSensorReading &reading)
 {
+    // A reading can carry multiple scalar values at one timestamp
     std::cout << "{\"sensor-id\":";
     print_json_escaped(reading.sensor_id());
 
@@ -136,6 +138,7 @@ static void print_sensor_reading(const GeisaSensorReading &reading)
     std::cout << '}';
 }
 
+// Render status + repeated readings in a JSON-like output
 static void print_sensor_readings_response(const GeisaSensorReadings_Rsp &rsp)
 {
     std::cout << "{\"geisa-sensor-readings-rsp\":{";
@@ -195,12 +198,14 @@ int main(int argc, char *argv[])
     }
 
     std::string payload;
+    // Read raw serialized protobuf bytes captured from a GEISA response path
     if (!read_file(argv[1], &payload))
     {
         return 1;
     }
 
     GeisaSensorReadings_Rsp response;
+    // Parse bytes into the typed protobuf response for field-safe access
     if (!response.ParseFromString(payload))
     {
         std::cerr << "failed to decode GeisaSensorReadings_Rsp payload\n";

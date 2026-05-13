@@ -45,12 +45,45 @@
         "nominal-phase-to-neutral-voltage-v": 120.0
     },
     "sensor": {},
-    "network": {},
+    "network": {
+      "interfaces": [
+        {
+          "interface-id": "wan-operator-rfmesh-1",
+          "network-class": "operator",
+          "owner": "operator",
+          "technology": "wisun",
+          "supports-ipv4": true,
+          "supports-ipv6": true,
+          "name": "Utility FAN",
+          "description": "Utility-operated RF mesh/Wi-SUN field area network"
+        },
+        {
+          "interface-id": "wan-internet-cellular-1",
+          "network-class": "internet",
+          "owner": "operator",
+          "technology": "cellular",
+          "supports-ipv4": true,
+          "supports-ipv6": false,
+          "name": "Public Internet APN",
+          "description": "Public internet access path provided via cellular WAN."
+        },
+        {
+          "interface-id": "lan-consumer-wifi-1",
+          "network-class": "local",
+          "owner": "consumer",
+          "technology": "wifi",
+          "supports-ipv4": true,
+          "supports-ipv6": true,
+          "name": "Home Wi-Fi",
+          "description": "Consumer local network capability for LAN/HAN access"
+        }
+      ]
+    },
     "waveform": {
     "streams": [
         {
-        "stream-id": "waveform-full",
-        "name": "Full Waveform Stream",
+        "stream-id": "waveform-base",
+        "name": "Baseline Waveform Stream",
         "description": "Baseline interoperable waveform stream for GEISA applications.",
         "datatype": "int16",
         "voltage-multiplier": 0.003662109375,

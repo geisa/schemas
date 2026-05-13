@@ -1,0 +1,12 @@
+{
+  "$comment": "App data request example for the GEISA app-message MQTT request topic.",
+  "geisa-app-message-req": {
+    "request-id": "req-0001",
+    "priority": "GEISA_APP_MESSAGE_PRIORITY_IMMEDIATE",
+    "description-type": "GEISA_APP_MESSAGE_DESCRIPTION_TYPE_APP_DATA",
+    "timestamp-ms": 1762862400000,
+    "ttl-ms": 300000,
+    "content-type": "application/json",
+    "payload-base64": "eyJldmVudCI6Im1ldGVyLXNuYXBzaG90Iiwia3doIjoxMjM0NTY3fQ=="
+  }
+}

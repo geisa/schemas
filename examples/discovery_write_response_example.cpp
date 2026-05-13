@@ -12,7 +12,6 @@
 //
 // This example creates a sample GeisaPlatformDiscovery_Rsp protobuf payload
 // and writes it to a binary file for decoding with the companion reader.
-//
 //-----------------------------------------------------------------------------
 
 #include <fstream>
@@ -25,10 +24,11 @@
 #include "discovery.pb.h"
 
 // Writes serialized protobuf bytes to disk for the discovery response sample
-// and demo output.
+// and demo outputs
 static bool write_file(const char *path,
                        const GeisaPlatformDiscovery_Rsp &response)
 {
+    // Serializes the typed discovery response to raw protobuf bytes
     std::ofstream output(path, std::ios::binary);
     if (!output)
     {
@@ -55,10 +55,10 @@ static void print_post_write_guidance(const std::string &output_path)
     std::cout << "Decode with: /tmp/discovery_read_example "
               << output_path << '\n';
     std::cout
-        << "integration note (secondary): in an operational GEISA "
-        << "platform, these protobuf bytes are carried via the Platform "
-        << "Discovery response path and applications typically decode "
-        << "protobuf and/or convert to JSON for processing if/as desired.\n";
+        << "Integration note (secondary): In an operational GEISA "
+        << "conformat platform, these protobuf bytes are carried via the "
+        << "Platform Discovery response path and applications typically decode"
+        << " protobuf and/or convert to JSON for processing if/as desired.\n";
 }
 
 static int run_reader_subprocess(const std::string &output_path)
@@ -78,7 +78,7 @@ static int run_reader_subprocess(const std::string &output_path)
 
     if (WIFSIGNALED(rc))
     {
-        std::cerr << "Reader subprocess terminated by signal "
+        std::cerr << "Reader subprocess terminated by signal: "
                   << WTERMSIG(rc) << '\n';
         return 1;
     }
@@ -108,10 +108,12 @@ int main(int argc, char *argv[])
         demo_mode ? std::string("/tmp/discovery-response.bin")
                   : std::string(positional ? argv[1] : argv[2]);
 
-    // Populate a deterministic sample discovery response with 2S-ish metrology,
-    // one sensor descriptor, and one baseline waveform stream.
+    // Populates a sample discovery response with representative
+    // meter metrology, one sensor descriptor, static network capability
+    // descriptors, and one baseline waveform stream.
     GeisaPlatformDiscovery_Rsp response;
 
+    // Populates a top-level GEISA status + version/pillar metadata.
     response.mutable_status()->set_code(GEISA_STATUS_SUCCESS);
     response.mutable_status()->set_message("ok");
 
@@ -123,6 +125,7 @@ int main(int argc, char *argv[])
     response.mutable_geisa()->set_pillar_lee(false);
     response.mutable_geisa()->set_pillar_vee(false);
 
+    // Populates one representative descriptor for each discovery section
     GeisaPlatformDiscovery_Module *top_module =
         response.mutable_device()->mutable_top_module();
     top_module->set_type(TYPE_ELECTRIC_METER);
@@ -157,12 +160,48 @@ int main(int argc, char *argv[])
     sensor->set_min_report_period_ms(1000);
     sensor->set_max_report_period_ms(60000);
 
+    GeisaPlatformDiscovery_Network_Instance *network_operator =
+        response.mutable_network()->add_interfaces();
+    network_operator->set_interface_id("wan-operator-rfmesh-1");
+    network_operator->set_network_class(NETWORK_CLASS_OPERATOR);
+    network_operator->set_owner(NETWORK_OWNER_OPERATOR);
+    network_operator->set_technology(NETWORK_TECHNOLOGY_WISUN);
+    network_operator->set_supports_ipv4(true);
+    network_operator->set_supports_ipv6(true);
+    network_operator->set_name("Utility FAN");
+    network_operator->set_description(
+        "Utility-operated RF mesh/Wi-SUN field area network.");
+
+    GeisaPlatformDiscovery_Network_Instance *network_internet =
+        response.mutable_network()->add_interfaces();
+    network_internet->set_interface_id("wan-internet-cellular-1");
+    network_internet->set_network_class(NETWORK_CLASS_INTERNET);
+    network_internet->set_owner(NETWORK_OWNER_OPERATOR);
+    network_internet->set_technology(NETWORK_TECHNOLOGY_CELLULAR);
+    network_internet->set_supports_ipv4(true);
+    network_internet->set_supports_ipv6(false);
+    network_internet->set_name("Public Internet APN");
+    network_internet->set_description(
+        "Public internet access path provided through cellular WAN.");
+
+    GeisaPlatformDiscovery_Network_Instance *network_local =
+        response.mutable_network()->add_interfaces();
+    network_local->set_interface_id("lan-consumer-wifi-1");
+    network_local->set_network_class(NETWORK_CLASS_LOCAL);
+    network_local->set_owner(NETWORK_OWNER_CONSUMER);
+    network_local->set_technology(NETWORK_TECHNOLOGY_WIFI);
+    network_local->set_supports_ipv4(true);
+    network_local->set_supports_ipv6(true);
+    network_local->set_name("Home Wi-Fi");
+    network_local->set_description(
+        "Consumer local network capability for LAN/HAN access.");
+
     GeisaPlatformDiscovery_Waveform_Instance *stream =
         response.mutable_waveform()->add_streams();
     stream->set_stream_id("waveform-base");
     stream->set_name("Baseline Waveform Stream");
     stream->set_description(
-        "Baseline interoperable waveform stream for GEISA applications.");
+        "Baseline interoperable waveform stream for GEISA applications");
     stream->set_datatype(DATA_INT16);
     stream->set_voltage_multiplier(1.0);
     stream->set_current_multiplier(1.0);
@@ -184,14 +223,15 @@ int main(int argc, char *argv[])
 
     if (demo_mode)
     {
-        std::cout << "Running discovery demo...\n";
+        // Demo mode immediately decodes via reader so the output is visible
+        std::cout << "Running GEISA discovery demo...\n";
     }
 
     print_post_write_guidance(output_path);
 
     // In demo mode, the sample binary payload is immediately decoded by the
     // companion reader so the end-to-end write/decode flow is visible in one
-    // run.
+    // run
     if (demo_mode)
     {
         const int reader_rc = run_reader_subprocess(output_path);

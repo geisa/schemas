@@ -1,0 +1,210 @@
+//-----------------------------------------------------------------------------
+// Copyright 2025-2026, Contributors to the Grid Edge Interoperability &
+// Security Alliance (GEISA), a Series of LF Projects, LLC
+//
+// Licensed under the Community Specification License 1.0. See LICENSE.
+//-----------------------------------------------------------------------------
+//
+// Example GEISA application message decoder.
+//
+// This example decodes either GeisaAppMessage_Req or GeisaAppMessage_Rsp from
+// a binary protobuf file and prints a JSON-like representation. Payload bytes
+// are rendered as hex so the output stays readable in a terminal.
+//
+//-----------------------------------------------------------------------------
+
+#include <fstream>
+#include <iomanip>
+#include <iostream>
+#include <sstream>
+#include <string>
+
+#include "app-message.pb.h"
+
+static void print_json_escaped(const std::string &value)
+{
+    std::cout << '"';
+
+    for (const char ch : value)
+    {
+        switch (ch)
+        {
+        case '\\':
+            std::cout << "\\\\";
+            break;
+        case '"':
+            std::cout << "\\\"";
+            break;
+        case '\n':
+            std::cout << "\\n";
+            break;
+        case '\r':
+            std::cout << "\\r";
+            break;
+        case '\t':
+            std::cout << "\\t";
+            break;
+        default:
+            std::cout << ch;
+            break;
+        }
+    }
+
+    std::cout << '"';
+}
+
+static bool read_file(const char *path, std::string *contents)
+{
+    std::ifstream input(path, std::ios::binary);
+    if (!input)
+    {
+        std::cerr << "failed to open input file: " << path << '\n';
+        return false;
+    }
+
+    contents->assign(std::istreambuf_iterator<char>(input),
+                     std::istreambuf_iterator<char>());
+    return true;
+}
+
+static std::string bytes_to_hex(const std::string &bytes)
+{
+    // Render the opaque payload bytes in hex for a simple JSON-like preview.
+    std::ostringstream out;
+    out << std::hex << std::setfill('0');
+    for (unsigned char b : bytes)
+    {
+        out << std::setw(2) << static_cast<unsigned int>(b);
+    }
+    return out.str();
+}
+
+static void print_common_fields(const std::string &request_id,
+                                const std::string &priority,
+                                const std::string &description_type,
+                                const uint64_t timestamp_ms,
+                                const uint64_t ttl_ms,
+                                const std::string &content_type,
+                                const std::string &payload)
+{
+    // Common fields shared by both request and response examples.
+    std::cout << "\"request-id\":";
+    print_json_escaped(request_id);
+    std::cout << ",\"priority\":";
+    print_json_escaped(priority);
+    std::cout << ",\"description-type\":";
+    print_json_escaped(description_type);
+    std::cout << ",\"timestamp-ms\":" << timestamp_ms;
+    std::cout << ",\"ttl-ms\":" << ttl_ms;
+
+    if (!content_type.empty())
+    {
+        std::cout << ",\"content-type\":";
+        print_json_escaped(content_type);
+    }
+
+    if (!payload.empty())
+    {
+        std::cout << ",\"payload-hex\":";
+        print_json_escaped(bytes_to_hex(payload));
+    }
+}
+
+static void print_req(const GeisaAppMessage_Req &req)
+{
+    // Prints a compact JSON-like view of the request payload
+    std::cout << "{\"geisa-app-message-req\":{";
+    print_common_fields(req.request_id(),
+                        GeisaAppMessagePriority_Name(req.priority()),
+                        GeisaAppMessageDescriptionType_Name(req.description_type()),
+                        req.timestamp_ms(),
+                        req.ttl_ms(),
+                        req.content_type(),
+                        req.payload());
+    std::cout << "}}\n";
+}
+
+static void print_rsp(const GeisaAppMessage_Rsp &rsp)
+{
+    // Print a compact JSON-like view of the response payload.
+    // This response is per-request disposition, not quota/usage reporting.
+    std::cout << "{\"geisa-app-message-rsp\":{";
+    print_common_fields(rsp.request_id(),
+                        GeisaAppMessagePriority_Name(rsp.priority()),
+                        GeisaAppMessageDescriptionType_Name(rsp.description_type()),
+                        rsp.timestamp_ms(),
+                        rsp.ttl_ms(),
+                        rsp.content_type(),
+                        rsp.payload());
+
+    std::cout << ",\"status\":";
+    print_json_escaped(GeisaAppMessageStatus_Name(rsp.status()));
+
+    if (!rsp.status_text().empty())
+    {
+        std::cout << ",\"status-text\":";
+        print_json_escaped(rsp.status_text());
+    }
+
+    std::cout << "}}\n";
+}
+
+int main(int argc, char *argv[])
+{
+    GOOGLE_PROTOBUF_VERIFY_VERSION;
+
+    // Require explicit request/response mode. Protobuf payloads are not
+    // self-describing, and req/rsp wire compatibility can produce misleading
+    // output if auto-detected.
+    const bool req_mode = (argc == 3 && std::string(argv[1]) == "--req");
+    const bool rsp_mode = (argc == 3 && std::string(argv[1]) == "--rsp");
+
+    if (!req_mode && !rsp_mode)
+    {
+        std::cerr << "usage: " << argv[0]
+                  << " --req app-message-req.bin"
+                  << " | --rsp app-message-rsp.bin\n";
+        return 2;
+    }
+
+    std::string bytes;
+    const char *path = argv[2];
+    // Read the serialized protobuf bytes from disk before decoding.
+    if (!read_file(path, &bytes))
+    {
+        return 1;
+    }
+
+    if (req_mode)
+    {
+        GeisaAppMessage_Req req;
+        if (!req.ParseFromString(bytes) || req.request_id().empty())
+        {
+            std::cerr << "failed to decode GeisaAppMessage_Req\n";
+            google::protobuf::ShutdownProtobufLibrary();
+            return 1;
+        }
+
+        print_req(req);
+        google::protobuf::ShutdownProtobufLibrary();
+        return 0;
+    }
+
+    if (rsp_mode)
+    {
+        GeisaAppMessage_Rsp rsp;
+        if (!rsp.ParseFromString(bytes) || rsp.request_id().empty())
+        {
+            std::cerr << "failed to decode GeisaAppMessage_Rsp\n";
+            google::protobuf::ShutdownProtobufLibrary();
+            return 1;
+        }
+
+        print_rsp(rsp);
+        google::protobuf::ShutdownProtobufLibrary();
+        return 0;
+    }
+
+    google::protobuf::ShutdownProtobufLibrary();
+    return 2;
+}

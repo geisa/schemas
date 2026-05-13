@@ -33,8 +33,8 @@ import "geisa-status.proto";
  *
  * Optional name and description values associated with waveform streams are
  * platform-supplied informational metadata intended for display, diagnostics,
- * or logging. Applications SHALL NOT rely on such fields for interoperability
- * behavior.
+ * triage or logging. Applications SHALL NOT rely on such fields for
+ * interoperability behavior or runtime decisions..
  */
 
 enum GeisaWaveform_Status {
@@ -72,7 +72,7 @@ message GeisaWaveform_Req {
    * Waveform stream identifier.
    *
    * Platforms that support waveform data SHALL expose a baseline waveform
-   * stream with the identifier "waveform-full". Platforms MAY expose
+   * stream with the identifier "waveform-base". Platforms MAY expose
    * additional stream identifiers for alternate waveform views.
    *
    * Applications SHALL use waveform metadata to interpret a stream and SHALL
@@ -101,7 +101,7 @@ message GeisaWaveform_Rsp {
    * Waveform stream identifier.
    *
    * Platforms that support waveform data SHALL expose a baseline waveform
-   * stream with the identifier "waveform-full". Platforms MAY expose
+   * stream with the identifier "waveform-base". Platforms MAY expose
    * additional stream identifiers for alternate waveform views.
    *
    * Applications SHALL use waveform metadata to interpret a stream and SHALL
@@ -117,12 +117,13 @@ message GeisaWaveform_Rsp {
 
   /*
    * Runtime AF_UNIX SOCK_SEQPACKET socket path for this application instance.
-   * This per application instance is intention to allow future variantions 
-   * beyond consumption of the full waveform data stream.
+   * This per application instance is intentional to allow future variantions
+   * beyond consumption of the full waveform data stream without exposing this
+   * fact as a form of fingerprinting by neighoring applications.
    *
    * This field is populated on successful subscribe responses and omitted when
    * the application is not subscribed. The socket path is runtime state for
-   * the requesting application instance and is not static discovery metadata.
+   * the requesting application instance and is NOT static discovery metadata.
    */
   string socket_path = 5;
 
@@ -137,7 +138,7 @@ message GeisaWaveform_Rsp {
   uint32 voltage_channel_count = 7;
 
   /*
-   * Number of current channels present in each sample time step.
+   * Number of current channels present in each sample time step
    */
   uint32 current_channel_count = 8;
 

@@ -13,22 +13,42 @@ Community_Specification/blob/main/
 # Platform Discovery examples (C++)
 
 These examples demonstrate how to write and decode binary protobuf payloads
-for the GEISA Platform Discovery response message
-(`GeisaPlatformDiscovery_Rsp`) and render them in a JSON-like form.
+for the GEISA Platform Discovery request/response messages:
+
+- `GeisaPlatformDiscovery_Req`
+- `GeisaPlatformDiscovery_Rsp`
+
+The response reader renders `GeisaPlatformDiscovery_Rsp` in a JSON-like form.
+The sample response includes static network capability descriptors in addition
+to device, metrology, sensor, and waveform metadata.
+
+Note: the C++ reader prints protobuf enum identifiers for diagnostic output.
+JSON schema examples use the corresponding JSON enum strings.
 
 ## Build
 
-Generate C++ protobuf sources from the repository root:
+Generate the C++ protobuf sources from the repository root:
 
     make clean
     make cpp
 
-Compile the examples (portable):
+Compile the examples:
+
+Request writer:
+
+    c++ -std=c++17 -O2 \
+      -I build/cpp \
+      $(pkg-config --cflags protobuf) \
+      examples/discovery_write_request_example.cpp \
+      build/cpp/discovery.pb.cc \
+      $(pkg-config --libs protobuf) \
+      -pthread \
+      -o /tmp/discovery_write_request_example
 
 Writer:
 
     c++ -std=c++17 -O2 \
-      -Ibuild/cpp \
+      -I build/cpp \
       $(pkg-config --cflags protobuf) \
       examples/discovery_write_response_example.cpp \
       build/cpp/discovery.pb.cc \
@@ -41,7 +61,7 @@ Writer:
 Reader:
 
     c++ -std=c++17 -O2 \
-      -Ibuild/cpp \
+      -I build/cpp \
       $(pkg-config --cflags protobuf) \
       examples/discovery_read_example.cpp \
       build/cpp/discovery.pb.cc \
@@ -56,17 +76,27 @@ pkg-config pieces and use `-lprotobuf` directly.
 
 ## Quick start (recommended)
 
-Run an end-to-end demo (writes a binary discovery response and immediately
+Write a sample binary discovery request:
+
+    /tmp/discovery_write_request_example --demo
+
+Platform Discovery requests do not define payload fields in GEISA v0.9. The
+requesting application instance is identified by the `<userid>` segment in the
+MQTT topic (`geisa/api/platform/discovery/req/<userid>`), and the platform
+responds on `geisa/api/platform/discovery/rsp/<userid>` with the current
+Platform Discovery snapshot.
+
+To run an end-to-end demo (writes a binary discovery response and immediately
 decodes it):
 
     /tmp/discovery_write_response_example --demo
 
 ## Manual write + read loop
 
-Write a sample binary discovery response:
+To write a sample binary discovery response:
 
     /tmp/discovery_write_response_example /tmp/discovery-response.bin
 
-Decode and print it:
+To decode the response:
 
     /tmp/discovery_read_example /tmp/discovery-response.bin
