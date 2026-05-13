@@ -56,7 +56,7 @@ static void print_post_write_guidance(const std::string &output_path)
               << output_path << '\n';
     std::cout
         << "Integration note (secondary): In an operational GEISA "
-        << "conformat platform, these protobuf bytes are carried via the "
+        << "conformant platform, these protobuf bytes are carried via the "
         << "Platform Discovery response path and applications typically decode"
         << " protobuf and/or convert to JSON for processing if/as desired.\n";
 }
