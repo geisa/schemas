@@ -1,0 +1,13 @@
+{
+  "$comment": "Per-request disposition example showing quota exceeded for a submitted app message.",
+  "geisa-app-message-rsp": {
+    "request-id": "req-0002",
+    "status": "GEISA_APP_MESSAGE_STATUS_QUOTA_EXCEEDED",
+    "status-text": "daily message quota exceeded",
+    "priority": "GEISA_APP_MESSAGE_PRIORITY_BEST_EFFORT",
+    "description-type": "GEISA_APP_MESSAGE_DESCRIPTION_TYPE_APP_DATA",
+    "timestamp-ms": 1762862400200,
+    "ttl-ms": 600000,
+    "content-type": "application/json"
+  }
+}

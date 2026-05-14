@@ -60,7 +60,7 @@ message GeisaPlatformDiscovery_GEISA {
 
 
 /*
- * GEISA-defined platform or module device types.
+ * GEISA-defined platform or module device types
  */
 enum GeisaPlatformDiscovery_DeviceType {
   TYPE_ELECTRIC_METER = 0;
@@ -72,7 +72,7 @@ enum GeisaPlatformDiscovery_DeviceType {
 
 
 /*
- * Generic platform or sub-module descriptor.
+ * Generic platform or sub-module descriptor
  */
 message GeisaPlatformDiscovery_Module {
 
@@ -123,7 +123,7 @@ message GeisaPlatformDiscovery_Operator {
 
 
 /*
- * Metrology hardware characteristics.
+ * Metrology hardware characteristics
  */
 message GeisaPlatformDiscovery_Metrology {
 
@@ -152,7 +152,6 @@ message GeisaPlatformDiscovery_Metrology {
   double nominal_phase_to_neutral_voltage_v = 8;
 }
 
-
 /*
  * Sensor descriptors exposed through Platform Discovery.
  */
@@ -161,20 +160,91 @@ message GeisaPlatformDiscovery_Sensor {
   repeated GeisaSensorDescriptor sensors = 1;
 }
 
-
 /*
- * Network discovery placeholder.
+ * Logical network classes aligned to app-facing manifest/networking terms.
  *
- * Reserved for future definition.
+ * For 0.9, each network descriptor SHALL represent exactly one logical class.
  */
-message GeisaPlatformDiscovery_Network {
+enum GeisaPlatformDiscovery_NetworkClass {
+  NETWORK_CLASS_UNSPECIFIED = 0;
+  NETWORK_CLASS_OPERATOR = 10;
+  NETWORK_CLASS_INTERNET = 20;
+  NETWORK_CLASS_LOCAL = 30;
+  NETWORK_CLASS_OTHER = 90;
 }
 
+/*
+ * Administrative ownership domain for the network
+ *
+ * This is ownership/domain metadata, NOT app permission to use..
+ */
+enum GeisaPlatformDiscovery_NetworkOwner {
+  NETWORK_OWNER_UNSPECIFIED = 0;
+  NETWORK_OWNER_OPERATOR = 10;
+  NETWORK_OWNER_CONSUMER = 20;
+  NETWORK_OWNER_THIRD_PARTY = 30;
+  NETWORK_OWNER_SHARED = 40;
+  NETWORK_OWNER_OTHER = 90;
+}
 
 /*
- * Waveform sample encodings.
+ * Broad network technology family
  *
- * Kept as-is for minimal churn and compatibility with prior work.
+ * This is media/transport-family metadata, NOT application protocol detail
+ */
+enum GeisaPlatformDiscovery_NetworkTechnology {
+  NETWORK_TECHNOLOGY_UNSPECIFIED = 0;
+  NETWORK_TECHNOLOGY_RF_MESH = 10;
+  NETWORK_TECHNOLOGY_WISUN = 20;
+  NETWORK_TECHNOLOGY_CELLULAR = 30;
+  NETWORK_TECHNOLOGY_ETHERNET = 40;
+  NETWORK_TECHNOLOGY_FIBER = 50;
+  NETWORK_TECHNOLOGY_WIFI = 60;
+  NETWORK_TECHNOLOGY_OTHER = 90;
+}
+
+/*
+ * Static network capability descriptor exposed through Platform Discovery
+ *
+ * Runtime up/down state belongs to Platform/App Status.
+ * App permission/policy belongs to Deployment Manifest.
+ */
+message GeisaPlatformDiscovery_Network_Instance {
+  // Platform-local identifier for this network capability/interface.
+  string interface_id = 1;
+
+  // Logical app-facing network class for this descriptor.
+  GeisaPlatformDiscovery_NetworkClass network_class = 20;
+
+  // Administrative ownership domain for this network class.
+  GeisaPlatformDiscovery_NetworkOwner owner = 30;
+
+  // Broad technology family for this network capability.
+  GeisaPlatformDiscovery_NetworkTechnology technology = 40;
+
+  // Static support for IPv4 on this network capability.
+  bool supports_ipv4 = 50;
+
+  // Static support for IPv6 on this network capability.
+  bool supports_ipv6 = 60;
+
+  // Optional display name.
+  optional string name = 70;
+
+  // Optional human-readable description
+  optional string description = 80;
+}
+
+/*
+ * Static network capability descriptors exposed through Platform Discovery.
+ */
+message GeisaPlatformDiscovery_Network {
+  repeated GeisaPlatformDiscovery_Network_Instance interfaces = 1;
+}
+
+/*
+ * Waveform sample encodings
+ *
  */
 enum GeisaWaveform_Datatype {
   DATA_INT16 = 0;
@@ -185,14 +255,14 @@ enum GeisaWaveform_Datatype {
 
 
 /*
- * Descriptor for a discoverable waveform stream.
+ * Descriptor for discoverable waveform streams
  */
 message GeisaPlatformDiscovery_Waveform_Instance {
 
   // waveform stream identifier
   //
   // platforms that support waveform data SHALL expose a baseline waveform
-  // stream with the identifier "waveform-full". platforms MAY expose
+  // stream with the identifier "waveform-base". platforms MAY expose
   // additional stream identifiers for alternate waveform views.
   //
   // applications SHALL use waveform metadata to interpret a stream and SHALL
@@ -267,14 +337,13 @@ message GeisaPlatformDiscovery_Waveform_Instance {
 
 
 /*
- * Waveform discovery container.
+ * Waveform discovery container
  */
 message GeisaPlatformDiscovery_Waveform {
 
   // waveform streams offered by the platform
   repeated GeisaPlatformDiscovery_Waveform_Instance streams = 1;
 }
-
 
 /*
  * This is the outermost message for GEISA Platform Discovery Request.
@@ -287,9 +356,8 @@ message GeisaPlatformDiscovery_Waveform {
 message GeisaPlatformDiscovery_Req {
 }
 
-
 /*
- * This is the outermost message for GEISA Platform Discovery Response.
+ * This is the outermost message for GEISA Platform Discovery Response
  *
  * Message topic:
  *   geisa/api/platform/discovery/rsp/<userid>

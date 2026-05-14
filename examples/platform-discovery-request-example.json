@@ -1,0 +1,4 @@
+{
+  "$comment": "Platform discovery request example for the GEISA discovery request topic.",
+  "geisa-platform-discovery-req": {}
+}
