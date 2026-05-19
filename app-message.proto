@@ -33,7 +33,7 @@ enum GeisaAppMessageDescriptionType {
   GEISA_APP_MESSAGE_DESCRIPTION_TYPE_APP_DATA = 20;
 }
 
-// Per-request platform disposition for app messaging
+// Per-request platform disposition for app messaging for upstream messages only
 // Values describe request handling outcomes without promising transport-level
 // or business-system finality.
 enum GeisaAppMessageStatus {
@@ -54,17 +54,19 @@ enum GeisaAppMessageStatus {
 
 // This is the outermost message for GEISA application message requests.
 //
-// Message topic:
-//   geisa/api/message/req/<userid>
+// Message topics:
+//   geisa/api/message/upstream/req/<userid>
+//   geisa/api/message/downstream/req/<userid>
 //
-// Published by an application to geisa/api/message/req/<userid>.
+// For upstream messages, published by an application
+// For downstream messages, published by the platform
 //
 // The payload is opaque application data or app configuration. The platform
 // handles underlying ADM/LwM2M transport behavior behind the scenes; this
 // message is the app-facing GEISA MQTT request.
 
 message GeisaAppMessage_Req {
-  // Correlation identifier set by the application.
+  // Correlation identifier set by the sender.
   string request_id = 1;
   // Message priority aligned with ADM object 3600 concepts.
   GeisaAppMessagePriority priority = 2;
@@ -82,23 +84,26 @@ message GeisaAppMessage_Req {
 
 // This is the outermost message for GEISA application message responses
 //
-// Message topic:
-//   geisa/api/message/rsp/<userid>
+// Message topics:
+//   geisa/api/message/upstream/rsp/<userid>
+//   geisa/api/message/downstream/rsp/<userid>
 //
-// Published by the platform to geisa/api/message/rsp/<userid>
+// For upstream messages, published by the platform
+// For downstream messages, published by an application
 //
 // This message carries per-request disposition for a corresponding
-// GeisaAppMessage_Req identified by request_id. It is NOT a general
-// platform-to-app payload channel.
+// GeisaAppMessage_Req identified by request_id. It is NOT for delivery
+// of message payload.
 //
 // Quota counters and usage reporting are out-of-band via Platform/App Status
 // Internal EMS/EMA/LwM2M implementation details are not represented here..
+
 message GeisaAppMessage_Rsp {
   // Correlation identifier copied from the request when available.
   string request_id = 1;
-  // Platform-side disposition for the corresponding request.
+  // Upstream only: Platform-side disposition for the corresponding request.
   GeisaAppMessageStatus status = 2;
-  // Optional human-readable diagnostic or status text.
+  // Upstream only: Optional human-readable diagnostic or status text.
   string status_text = 3;
   // Echoed priority, when the platform preserves it in the response path.
   GeisaAppMessagePriority priority = 4;
@@ -108,8 +113,4 @@ message GeisaAppMessage_Rsp {
   uint64 timestamp_ms = 6;
   // Lifetime of the response, in milliseconds.
   uint64 ttl_ms = 7;
-  // MIME type for the opaque payload bytes.
-  string content_type = 8;
-  // Optional opaque payload associated with this per-request disposition.
-  bytes payload = 9;
 }
