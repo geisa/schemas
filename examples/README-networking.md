@@ -16,9 +16,9 @@ They are the GEISA message API flow, not direct IP socket policy.
 
 MQTT topics:
 
-- App publishes request to `geisa/api/message/req/<userid>`
+- App publishes request to `geisa/api/message/upstream/req/<userid>`
 - Platform publishes per-request disposition to
-  `geisa/api/message/rsp/<userid>`
+  `geisa/api/message/upstream/rsp/<userid>`
 
 Scope notes:
 

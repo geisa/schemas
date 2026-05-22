@@ -8,6 +8,5 @@
     "description-type": "GEISA_APP_MESSAGE_DESCRIPTION_TYPE_APP_DATA",
     "timestamp-ms": 1762862400200,
     "ttl-ms": 600000,
-    "content-type": "application/json"
   }
 }

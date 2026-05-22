@@ -121,7 +121,6 @@ int main(int argc, char *argv[])
     rsp.set_description_type(GEISA_APP_MESSAGE_DESCRIPTION_TYPE_APP_DATA);
     rsp.set_timestamp_ms(1762862400100ULL);
     rsp.set_ttl_ms(300000ULL);
-    rsp.set_content_type("application/json");
 
     std::string rsp_bytes;
     if (!rsp.SerializeToString(&rsp_bytes))
