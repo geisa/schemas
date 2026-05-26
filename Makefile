@@ -25,6 +25,7 @@ CDIR      = $(BUILDDIR)/c
 CPPDIR    = $(BUILDDIR)/cpp
 JAVADIR   = $(BUILDDIR)/java
 PYTHONDIR   = $(BUILDDIR)/python
+EXAMPLESDIR = $(BUILDDIR)/examples
 
 PROTOC ?= protoc
 
@@ -85,6 +86,51 @@ java: $(JAVA_STAMP)
 
 python: $(PYTHON_STAMP)
 
+examples: cpp
+	@mkdir -p $(EXAMPLESDIR)
+	c++ -std=c++17 -O2 -I$(CPPDIR) $$(pkg-config --cflags protobuf) \
+	  examples/app_message_read_example.cpp \
+	  $(CPPDIR)/app-message.pb.cc \
+	  $$(pkg-config --libs protobuf) -pthread \
+	  -o $(EXAMPLESDIR)/app_message_read_example
+	c++ -std=c++17 -O2 -I$(CPPDIR) $$(pkg-config --cflags protobuf) \
+	  examples/app_message_write_response_example.cpp \
+	  $(CPPDIR)/app-message.pb.cc \
+	  $$(pkg-config --libs protobuf) -pthread \
+	  -o $(EXAMPLESDIR)/app_message_write_response_example
+	c++ -std=c++17 -O2 -I$(CPPDIR) $$(pkg-config --cflags protobuf) \
+	  examples/discovery_read_example.cpp \
+	  $(CPPDIR)/discovery.pb.cc $(CPPDIR)/sensor.pb.cc $(CPPDIR)/geisa-status.pb.cc \
+	  $$(pkg-config --libs protobuf) -pthread \
+	  -o $(EXAMPLESDIR)/discovery_read_example
+	c++ -std=c++17 -O2 -I$(CPPDIR) $$(pkg-config --cflags protobuf) \
+	  examples/discovery_write_request_example.cpp \
+	  $(CPPDIR)/discovery.pb.cc $(CPPDIR)/sensor.pb.cc $(CPPDIR)/geisa-status.pb.cc \
+	  $$(pkg-config --libs protobuf) -pthread \
+	  -o $(EXAMPLESDIR)/discovery_write_request_example
+	c++ -std=c++17 -O2 -I$(CPPDIR) $$(pkg-config --cflags protobuf) \
+	  examples/discovery_write_response_example.cpp \
+	  $(CPPDIR)/discovery.pb.cc $(CPPDIR)/sensor.pb.cc $(CPPDIR)/geisa-status.pb.cc \
+	  $$(pkg-config --libs protobuf) -pthread \
+	  -o $(EXAMPLESDIR)/discovery_write_response_example
+	c++ -std=c++17 -O2 -I$(CPPDIR) $$(pkg-config --cflags protobuf) \
+	  examples/sensor_read_example.cpp \
+	  $(CPPDIR)/sensor.pb.cc $(CPPDIR)/geisa-status.pb.cc \
+	  $$(pkg-config --libs protobuf) -pthread \
+	  -o $(EXAMPLESDIR)/sensor_read_example
+	c++ -std=c++17 -O2 -I$(CPPDIR) $$(pkg-config --cflags protobuf) \
+	  examples/sensor_write_response_example.cpp \
+	  $(CPPDIR)/sensor.pb.cc $(CPPDIR)/geisa-status.pb.cc \
+	  $$(pkg-config --libs protobuf) -pthread \
+	  -o $(EXAMPLESDIR)/sensor_write_response_example
+	c++ -std=c++17 -O2 -I$(CPPDIR) $$(pkg-config --cflags protobuf) \
+	  examples/waveform_subscribe_and_read.cpp \
+	  $(CPPDIR)/waveform.pb.cc $(CPPDIR)/geisa-status.pb.cc \
+	  $$(pkg-config --libs protobuf) -pthread \
+	  -o $(EXAMPLESDIR)/waveform_subscribe_and_read
+
+examples-cpp: examples
+
 ###############################################################################
 # .binpb generation
 ###############################################################################
@@ -135,5 +181,4 @@ langs: c cpp java python
 clean:
 	rm -rf $(BUILDDIR)
 
-.PHONY: all c cpp java python langs clean
-
+.PHONY: all c cpp java python examples examples-cpp langs clean

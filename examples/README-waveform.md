@@ -33,6 +33,17 @@ It currently supports two use cases:
 
 ## Build
 
+From the repository root, the recommended build path is:
+
+    make clean
+    make examples
+
+This generates protobuf sources and compiles the C++ examples into
+`build/examples/`.
+
+The manual commands below are retained for developers who want to compile a
+single example directly or inspect the exact compiler inputs.
+
 Generate the C++ protobuf sources:
 
     make clean
@@ -61,6 +72,13 @@ If protobuf headers/libs are already on default paths, this also works:
       -o /tmp/waveform_subscribe_and_read
 
 ## Quick start (recommended)
+
+Using the Makefile-built binary:
+
+    build/examples/waveform_subscribe_and_read --demo
+
+If you used the manual compile commands below, use the `/tmp/...` paths shown
+in those commands.
 
 Run the local demo:
 

@@ -71,19 +71,23 @@ message GeisaConnAppInfo {
 	uint64 next_daily_reset_ms = 16;
 }
 
-enum GeisaPlatMode {
-	PLAT_MODE_NORMAL = 0;
-	PLAT_MODE_UNPROVISIONED = 10;
-	PLAT_MODE_MANUFACTURING = 20;
-	PLAT_MODE_TEST = 30;
+enum GeisaPlatformMode {
+	PLATFORM_MODE_NORMAL = 0;
+	PLATFORM_MODE_UNPROVISIONED = 10;
+	PLATFORM_MODE_MANUFACTURING = 20;
+	PLATFORM_MODE_TEST = 30;
 }
 
-enum GeisaAppToPlatStatType {
-	APPTOPLAT_RUNNING = 0;
-	APPTOPLAT_RUNNING_CLEARED_PII = 2;        // set to ack cmd_clear_pii
-	APPTOPLAT_SHUTTING_DOWN = 3;              // set on receipt of cmd_shut_down
-	APPTOPLAT_NEED_TERMINATE_RESTART = 4;
-	APPTOPLAT_NEED_TERMINATE_NORESTART = 5;
+enum GeisaAppToPlatformStatusType {
+	RUNNING = 0;
+	// set to ack cmd_clear_pii
+	CLEARED_PII = 2;
+	// set on receipt of cmd_shut_down
+	SHUTTING_DOWN = 3;
+	// Request from an application to terminate itself and restart
+	NEED_TERMINATE_RESTART = 4;
+	// Request from an. application to terminate itself and do NOT restart it
+	NEED_TERMINATE_NORESTART = 5;
 }
 
 
@@ -95,7 +99,7 @@ message GeisaPlatformStatus {
 	uint64 timestamp_ms = 1000;
 	// Platform mode plus the visibility of message, operator, internet, and
 	// local transport state
-	GeisaPlatMode mode = 10;
+	GeisaPlatformMode mode = 10;
 	GeisaConnState conn_msg = 20;
 	GeisaConnInfo conn_oper = 21;
 	GeisaConnInfo conn_inet = 22;
@@ -138,7 +142,7 @@ message GeisaPlatformToAppStatus {
 // Message topic: geisa/api/app/platform/status/<userid>
 message GeisaAppToPlatformStatus {
 	// App-side status sent back to the platform.
-	GeisaAppToPlatStatType type = 1;
+	GeisaAppToPlatformStatusType type = 1;
 	int32 next_status = 10;              // How long until App will send next status
 	int32 next_status_timeout = 11;      // Timeout platform should use (recommended 2.5x next_status)
 }

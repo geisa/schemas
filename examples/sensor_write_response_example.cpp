@@ -20,8 +20,10 @@
 #include <fstream>
 #include <iostream>
 #include <cstdlib>
+#include <sysexits.h>
 #include <string>
 #include <sys/wait.h>
+#include <unistd.h>
 
 #include "geisa-status.pb.h"
 #include "sensor.pb.h"
@@ -46,14 +48,34 @@ static bool write_file(const char *path,
     return true;
 }
 
-static int run_reader_subprocess(const std::string &output_path)
+static std::string resolve_reader_path(const std::string &argv0)
 {
-    const std::string command = "/tmp/sensor_read_example " + output_path;
+    const std::string fallback = "/tmp/sensor_read_example";
+    const std::size_t slash = argv0.find_last_of('/');
+    if (slash == std::string::npos)
+    {
+        return fallback;
+    }
+
+    const std::string sibling =
+        argv0.substr(0, slash + 1) + "sensor_read_example";
+    if (::access(sibling.c_str(), X_OK) == 0)
+    {
+        return sibling;
+    }
+
+    return fallback;
+}
+
+static int run_reader_subprocess(const std::string &reader_path,
+                                 const std::string &output_path)
+{
+    const std::string command = reader_path + " " + output_path;
     const int rc = std::system(command.c_str());
     if (rc == -1)
     {
         std::cerr << "Failed to launch reader subprocess\n";
-        return 1;
+        return EXIT_FAILURE;
     }
 
     if (WIFEXITED(rc))
@@ -65,11 +87,11 @@ static int run_reader_subprocess(const std::string &output_path)
     {
         std::cerr << "Reader subprocess terminated by signal "
                   << WTERMSIG(rc) << '\n';
-        return 1;
+        return EXIT_FAILURE;
     }
 
     std::cerr << "Reader subprocess failed\n";
-    return 1;
+    return EXIT_FAILURE;
 }
 
 int main(int argc, char *argv[])
@@ -83,7 +105,7 @@ int main(int argc, char *argv[])
     {
         std::cerr << "usage: " << argv[0]
                   << " sensor-response.bin | --demo\n";
-        return 2;
+        return EX_USAGE;
     }
 
     const std::string output_path =
@@ -123,18 +145,19 @@ int main(int argc, char *argv[])
 
     if (!write_file(output_path.c_str(), response))
     {
-        return 1;
+        return EXIT_FAILURE;
     }
 
     if (demo_mode)
     {
+        const std::string reader_path = resolve_reader_path(argv[0]);
         // Demo mode immediately runs the companion reader for end-to-end flow
         std::cout << "Running sensor demo...\n";
         std::cout << "Wrote sensor response to /tmp/sensor-response.bin\n";
-        std::cout << "Decode with: /tmp/sensor_read_example "
-                     "/tmp/sensor-response.bin\n";
+        std::cout << "Decode with: " << reader_path
+                  << " /tmp/sensor-response.bin\n";
 
-        const int reader_rc = run_reader_subprocess(output_path);
+        const int reader_rc = run_reader_subprocess(reader_path, output_path);
         if (reader_rc != 0)
         {
             google::protobuf::ShutdownProtobufLibrary();
@@ -143,5 +166,5 @@ int main(int argc, char *argv[])
     }
 
     google::protobuf::ShutdownProtobufLibrary();
-    return 0;
+    return EXIT_SUCCESS;
 }

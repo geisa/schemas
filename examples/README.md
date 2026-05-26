@@ -24,6 +24,16 @@ representation.
 Build from the repository root:
 
     make clean
+    make examples
+
+This generates protobuf sources and compiles the C++ examples into
+`build/examples/`.
+
+For manual or single-example builds, use the commands below.
+
+Manual build from the repository root:
+
+    make clean
     make cpp
     c++ -std=c++17 -O2 \
       -I build/cpp \
@@ -38,7 +48,7 @@ Build from the repository root:
 If protobuf headers/libs are already on default paths, this also works:
 
     g++ -std=c++17 \
-      -Ibuild/cpp \
+      -I build/cpp \
       examples/sensor_read_example.cpp \
       build/cpp/sensor.pb.cc \
       build/cpp/geisa-status.pb.cc \
@@ -46,6 +56,10 @@ If protobuf headers/libs are already on default paths, this also works:
       -o /tmp/sensor_read_example
 
 Run:
+
+    build/examples/sensor_read_example sensor-response.bin
+
+If you used the manual compile commands below, use:
 
     /tmp/sensor_read_example sensor-response.bin
 
@@ -87,6 +101,16 @@ response decoding and waveform frame parsing.
 Build from the repository root:
 
     make clean
+    make examples
+
+This generates protobuf sources and compiles the C++ examples into
+`build/examples/`.
+
+For manual or single-example builds, use the commands below.
+
+Manual build from the repository root:
+
+    make clean
     make cpp
 
 Compile (portable):
@@ -102,6 +126,10 @@ Compile (portable):
       -o /tmp/waveform_subscribe_and_read
 
 Run:
+
+    build/examples/waveform_subscribe_and_read --demo
+
+If you used the manual compile commands below, use:
 
     /tmp/waveform_subscribe_and_read --demo
 

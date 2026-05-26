@@ -51,11 +51,11 @@
           "interface-id": "wan-operator-rfmesh-1",
           "network-class": "operator",
           "owner": "operator",
-          "technology": "wisun",
+          "technology": "rf-mesh",
           "supports-ipv4": true,
           "supports-ipv6": true,
           "name": "Utility FAN",
-          "description": "Utility-operated RF mesh/Wi-SUN field area network"
+          "description": "Utility-operated RF mesh field area network"
         },
         {
           "interface-id": "wan-internet-cellular-1",

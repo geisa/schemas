@@ -27,6 +27,17 @@ JSON schema examples use the corresponding JSON enum strings.
 
 ## Build
 
+From the repository root, the recommended build path is:
+
+    make clean
+    make examples
+
+This generates protobuf sources and compiles the C++ examples into
+`build/examples/`.
+
+The manual commands below are retained for developers who want to compile a
+single example directly or inspect the exact compiler inputs.
+
 Generate the C++ protobuf sources from the repository root:
 
     make clean
@@ -76,15 +87,23 @@ pkg-config pieces and use `-lprotobuf` directly.
 
 ## Quick start (recommended)
 
+Using the Makefile-built binaries:
+
+    build/examples/discovery_write_request_example --demo
+    build/examples/discovery_write_response_example --demo
+
+If you used the manual compile commands below, use the `/tmp/...` paths shown
+in those commands.
+
 Write a sample binary discovery request:
 
     /tmp/discovery_write_request_example --demo
 
-Platform Discovery requests do not define payload fields in GEISA v0.9. The
-requesting application instance is identified by the `<userid>` segment in the
-MQTT topic (`geisa/api/platform/discovery/req/<userid>`), and the platform
-responds on `geisa/api/platform/discovery/rsp/<userid>` with the current
-Platform Discovery snapshot.
+GeisaPlatformDiscovery_Req currently has no payload fields. The requesting
+application instance is identified by the `<userid>` segment in the MQTT topic
+(`geisa/api/platform/discovery/req/<userid>`), and the platform responds on
+`geisa/api/platform/discovery/rsp/<userid>` with the current Platform Discovery
+snapshot. Future versions may add request parameters if needed.
 
 To run an end-to-end demo (writes a binary discovery response and immediately
 decodes it):

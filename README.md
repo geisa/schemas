@@ -65,6 +65,14 @@ Example-specific build and run instructions are in the `examples/` directory:
 - `examples/README-discovery.md`
 - `examples/README-waveform.md`
 
+You can build the C++ example binaries directly from the repository root:
+
+    make examples
+
+(Alias: `make examples-cpp`.)
+
+This compiles the examples into `build/examples/`.
+
 A typical C++ example workflow is:
 
     make clean

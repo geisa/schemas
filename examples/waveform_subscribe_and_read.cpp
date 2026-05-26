@@ -60,6 +60,8 @@
 #include <algorithm>
 #include <cmath>
 #include <cerrno>
+#include <cstdlib>
+#include <sysexits.h>
 #include <cstdint>
 #include <cstring>
 #include <fstream>
@@ -709,7 +711,7 @@ int main(int argc, char** argv) {
                 << "  " << argv[0] << " --write-rsp-sample <path>\n"
                 << "  " << argv[0] << " --read-rsp <path>\n"
                 << "  " << argv[0] << " --demo\n";
-      return 2;
+      return EX_USAGE;
     }
 
     std::string mode = argv[1];
@@ -724,7 +726,7 @@ int main(int argc, char** argv) {
                 << "then read/decode.\n";
       WriteRspSampleAndFrame(demo_rsp_path, argv[0]);
       ReadRspAndProcessFrame(demo_rsp_path);
-      return 0;
+      return EXIT_SUCCESS;
     }
 
     if (argc < 3) {
@@ -734,7 +736,7 @@ int main(int argc, char** argv) {
                 << "  " << argv[0] << " --write-rsp-sample <path>\n"
                 << "  " << argv[0] << " --read-rsp <path>\n"
                 << "  " << argv[0] << " --demo\n";
-      return 2;
+      return EX_USAGE;
     }
 
     std::string path = argv[2];
@@ -770,25 +772,25 @@ int main(int argc, char** argv) {
                 << "  (Common GEISA message topics for these payloads: "
                 << "geisa/api/waveform/req/<userid>,\n"
                 << "   geisa/api/waveform/rsp/<userid>.)\n";
-      return 0;
+      return EXIT_SUCCESS;
     }
 
     if (mode == "--write-rsp-sample") {
       WriteRspSampleAndFrame(path, argv[0]);
-      return 0;
+      return EXIT_SUCCESS;
     }
 
     if (mode == "--read-rsp") {
       // Response path demonstrates control-plane parse + frame decode path.
       ReadRspAndProcessFrame(path);
-      return 0;
+      return EXIT_SUCCESS;
     }
 
     std::cerr << "Unknown mode: " << mode << "\n";
-    return 2;
+    return EX_USAGE;
 
   } catch (const std::exception& e) {
     std::cerr << "Error: " << e.what() << "\n";
-    return 1;
+    return EXIT_FAILURE;
   }
 }

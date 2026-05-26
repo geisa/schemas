@@ -163,7 +163,7 @@ message GeisaPlatformDiscovery_Sensor {
 /*
  * Logical network classes aligned to app-facing manifest/networking terms.
  *
- * For 0.9, each network descriptor SHALL represent exactly one logical class.
+ * Each network descriptor represents one logical network class.
  */
 enum GeisaPlatformDiscovery_NetworkClass {
   NETWORK_CLASS_UNSPECIFIED = 0;
@@ -195,7 +195,6 @@ enum GeisaPlatformDiscovery_NetworkOwner {
 enum GeisaPlatformDiscovery_NetworkTechnology {
   NETWORK_TECHNOLOGY_UNSPECIFIED = 0;
   NETWORK_TECHNOLOGY_RF_MESH = 10;
-  NETWORK_TECHNOLOGY_WISUN = 20;
   NETWORK_TECHNOLOGY_CELLULAR = 30;
   NETWORK_TECHNOLOGY_ETHERNET = 40;
   NETWORK_TECHNOLOGY_FIBER = 50;

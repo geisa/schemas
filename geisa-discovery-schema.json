@@ -54,7 +54,6 @@
       "enum": [
         "unspecified",
         "rf-mesh",
-        "wisun",
         "cellular",
         "ethernet",
         "fiber",

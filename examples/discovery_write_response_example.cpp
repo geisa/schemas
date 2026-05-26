@@ -17,8 +17,10 @@
 #include <fstream>
 #include <iostream>
 #include <cstdlib>
+#include <sysexits.h>
 #include <string>
 #include <sys/wait.h>
+#include <unistd.h>
 
 #include "geisa-status.pb.h"
 #include "discovery.pb.h"
@@ -45,14 +47,34 @@ static bool write_file(const char *path,
     return true;
 }
 
-static void print_post_write_guidance(const std::string &output_path)
+static std::string resolve_reader_path(const std::string &argv0)
+{
+    const std::string fallback = "/tmp/discovery_read_example";
+    const std::size_t slash = argv0.find_last_of('/');
+    if (slash == std::string::npos)
+    {
+        return fallback;
+    }
+
+    const std::string sibling =
+        argv0.substr(0, slash + 1) + "discovery_read_example";
+    if (::access(sibling.c_str(), X_OK) == 0)
+    {
+        return sibling;
+    }
+
+    return fallback;
+}
+
+static void print_post_write_guidance(const std::string &output_path,
+                                      const std::string &reader_path)
 {
     std::cout << "Wrote discovery response to: " << output_path << '\n';
     std::cout
         << "The output file contains raw bytes of a serialized "
         << "GeisaPlatformDiscovery_Rsp protobuf payload\n";
     std::cout << "Output path: " << output_path << '\n';
-    std::cout << "Decode with: /tmp/discovery_read_example "
+    std::cout << "Decode with: " << reader_path << " "
               << output_path << '\n';
     std::cout
         << "Integration note (secondary): In an operational GEISA "
@@ -61,14 +83,15 @@ static void print_post_write_guidance(const std::string &output_path)
         << " protobuf and/or convert to JSON for processing if/as desired.\n";
 }
 
-static int run_reader_subprocess(const std::string &output_path)
+static int run_reader_subprocess(const std::string &reader_path,
+                                 const std::string &output_path)
 {
-    const std::string command = "/tmp/discovery_read_example " + output_path;
+    const std::string command = reader_path + " " + output_path;
     const int rc = std::system(command.c_str());
     if (rc == -1)
     {
         std::cerr << "Failed to launch reader subprocess\n";
-        return 1;
+        return EXIT_FAILURE;
     }
 
     if (WIFEXITED(rc))
@@ -80,11 +103,11 @@ static int run_reader_subprocess(const std::string &output_path)
     {
         std::cerr << "Reader subprocess terminated by signal: "
                   << WTERMSIG(rc) << '\n';
-        return 1;
+        return EXIT_FAILURE;
     }
 
     std::cerr << "Reader subprocess failed\n";
-    return 1;
+    return EXIT_FAILURE;
 }
 
 int main(int argc, char *argv[])
@@ -101,7 +124,7 @@ int main(int argc, char *argv[])
         std::cerr << "usage: " << argv[0]
                   << " discovery-response.bin | --write-rsp-sample "
                   << "discovery-response.bin | --demo\n";
-        return 2;
+        return EX_USAGE;
     }
 
     const std::string output_path =
@@ -165,12 +188,12 @@ int main(int argc, char *argv[])
     network_operator->set_interface_id("wan-operator-rfmesh-1");
     network_operator->set_network_class(NETWORK_CLASS_OPERATOR);
     network_operator->set_owner(NETWORK_OWNER_OPERATOR);
-    network_operator->set_technology(NETWORK_TECHNOLOGY_WISUN);
+    network_operator->set_technology(NETWORK_TECHNOLOGY_RF_MESH);
     network_operator->set_supports_ipv4(true);
     network_operator->set_supports_ipv6(true);
     network_operator->set_name("Utility FAN");
     network_operator->set_description(
-        "Utility-operated RF mesh/Wi-SUN field area network.");
+        "Utility-operated RF mesh field area network.");
 
     GeisaPlatformDiscovery_Network_Instance *network_internet =
         response.mutable_network()->add_interfaces();
@@ -218,23 +241,28 @@ int main(int argc, char *argv[])
 
     if (!write_file(output_path.c_str(), response))
     {
-        return 1;
+        return EXIT_FAILURE;
     }
 
     if (demo_mode)
     {
+        const std::string reader_path = resolve_reader_path(argv[0]);
         // Demo mode immediately decodes via reader so the output is visible
         std::cout << "Running GEISA discovery demo...\n";
+        print_post_write_guidance(output_path, reader_path);
     }
-
-    print_post_write_guidance(output_path);
+    else
+    {
+        print_post_write_guidance(output_path, "/tmp/discovery_read_example");
+    }
 
     // In demo mode, the sample binary payload is immediately decoded by the
     // companion reader so the end-to-end write/decode flow is visible in one
     // run
     if (demo_mode)
     {
-        const int reader_rc = run_reader_subprocess(output_path);
+        const int reader_rc = run_reader_subprocess(resolve_reader_path(argv[0]),
+                                                    output_path);
         if (reader_rc != 0)
         {
             google::protobuf::ShutdownProtobufLibrary();
@@ -243,5 +271,5 @@ int main(int argc, char *argv[])
     }
 
     google::protobuf::ShutdownProtobufLibrary();
-    return 0;
+    return EXIT_SUCCESS;
 }

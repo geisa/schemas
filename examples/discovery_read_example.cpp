@@ -18,6 +18,8 @@
 //-----------------------------------------------------------------------------
 
 #include <fstream>
+#include <cstdlib>
+#include <sysexits.h>
 #include <iostream>
 #include <string>
 
@@ -58,6 +60,11 @@ static void print_json_escaped(const std::string &value)
     std::cout << '"';
 }
 
+static void print_json_key(const char *key)
+{
+    std::cout << '"' << key << "\":";
+}
+
 // Reads a binary protobuf payload from disk into memory for decoding
 static bool read_file(const char *path, std::string *contents)
 {
@@ -75,36 +82,42 @@ static bool read_file(const char *path, std::string *contents)
 
 static void print_module(const GeisaPlatformDiscovery_Module &module)
 {
-    std::cout << "{\"type\":";
+    std::cout << "{";
+    print_json_key("type");
     print_json_escaped(GeisaPlatformDiscovery_DeviceType_Name(module.type()));
 
     if (!module.manufacturer().empty())
     {
-        std::cout << ",\"manufacturer\":";
+        std::cout << ",";
+        print_json_key("manufacturer");
         print_json_escaped(module.manufacturer());
     }
 
     if (!module.model().empty())
     {
-        std::cout << ",\"model\":";
+        std::cout << ",";
+        print_json_key("model");
         print_json_escaped(module.model());
     }
 
     if (!module.serial_number().empty())
     {
-        std::cout << ",\"serial-number\":";
+        std::cout << ",";
+        print_json_key("serial-number");
         print_json_escaped(module.serial_number());
     }
 
     if (!module.hw_revision().empty())
     {
-        std::cout << ",\"hw-revision\":";
+        std::cout << ",";
+        print_json_key("hw-revision");
         print_json_escaped(module.hw_revision());
     }
 
     if (!module.fw_revision().empty())
     {
-        std::cout << ",\"fw-revision\":";
+        std::cout << ",";
+        print_json_key("fw-revision");
         print_json_escaped(module.fw_revision());
     }
 
@@ -114,22 +127,26 @@ static void print_module(const GeisaPlatformDiscovery_Module &module)
 static void print_waveform_stream(
     const GeisaPlatformDiscovery_Waveform_Instance &stream)
 {
-    std::cout << "{\"stream-id\":";
+    std::cout << "{";
+    print_json_key("stream-id");
     print_json_escaped(stream.stream_id());
 
     if (!stream.name().empty())
     {
-        std::cout << ",\"name\":";
+        std::cout << ",";
+        print_json_key("name");
         print_json_escaped(stream.name());
     }
 
     if (!stream.description().empty())
     {
-        std::cout << ",\"description\":";
+        std::cout << ",";
+        print_json_key("description");
         print_json_escaped(stream.description());
     }
 
-    std::cout << ",\"datatype\":";
+    std::cout << ",";
+    print_json_key("datatype");
     print_json_escaped(GeisaWaveform_Datatype_Name(stream.datatype()));
 
     std::cout << ",\"voltage-multiplier\":"
@@ -409,7 +426,7 @@ int main(int argc, char *argv[])
         std::cerr << "usage: " << argv[0]
                   << " discovery-response.bin | --read-rsp "
                   << "discovery-response.bin\n";
-        return 2;
+        return EX_USAGE;
     }
 
     const char *input_path = positional ? argv[1] : argv[2];
@@ -418,7 +435,7 @@ int main(int argc, char *argv[])
     // Reads a binary protobuf discovery payload captured from a response path
     if (!read_file(input_path, &payload))
     {
-        return 1;
+        return EXIT_FAILURE;
     }
 
     GeisaPlatformDiscovery_Rsp response;
@@ -428,11 +445,11 @@ int main(int argc, char *argv[])
     {
         std::cerr << "Failed to decode GeisaPlatformDiscovery_Rsp "
                      "payload\n";
-        return 1;
+        return EXIT_FAILURE;
     }
 
     print_discovery_response(response);
 
     google::protobuf::ShutdownProtobufLibrary();
-    return 0;
+    return EXIT_SUCCESS;
 }
