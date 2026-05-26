@@ -32,6 +32,8 @@
 //-----------------------------------------------------------------------------
 
 #include <cstdint>
+#include <cstdlib>
+#include <sysexits.h>
 #include <fstream>
 #include <iostream>
 #include <string>
@@ -71,6 +73,11 @@ static void print_json_escaped(const std::string &value)
     std::cout << '"';
 }
 
+static void print_json_key(const char *key)
+{
+    std::cout << '"' << key << "\":";
+}
+
 static void print_sensor_value(const GeisaSensorValue &value)
 {
     // GeisaSensorValue is a protobuf oneof; exactly one value branch is set.
@@ -101,12 +108,17 @@ static void print_sensor_value(const GeisaSensorValue &value)
 static void print_sensor_reading(const GeisaSensorReading &reading)
 {
     // A reading can carry multiple scalar values at one timestamp
-    std::cout << "{\"sensor-id\":";
+    std::cout << "{";
+    print_json_key("sensor-id");
     print_json_escaped(reading.sensor_id());
 
-    std::cout << ",\"timestamp-ms\":" << reading.timestamp_ms();
+    std::cout << ",";
+    print_json_key("timestamp-ms");
+    std::cout << reading.timestamp_ms();
 
-    std::cout << ",\"values\":[";
+    std::cout << ",";
+    print_json_key("values");
+    std::cout << "[";
     for (int i = 0; i < reading.values_size(); ++i)
     {
         if (i > 0)
@@ -119,19 +131,22 @@ static void print_sensor_reading(const GeisaSensorReading &reading)
 
     if (reading.has_unit())
     {
-        std::cout << ",\"unit\":";
+        std::cout << ",";
+        print_json_key("unit");
         print_json_escaped(reading.unit());
     }
 
     if (reading.has_quality())
     {
-        std::cout << ",\"quality\":";
+        std::cout << ",";
+        print_json_key("quality");
         print_json_escaped(reading.quality());
     }
 
     if (reading.has_status())
     {
-        std::cout << ",\"status\":";
+        std::cout << ",";
+        print_json_key("status");
         print_json_escaped(reading.status());
     }
 
@@ -143,8 +158,9 @@ static void print_sensor_readings_response(const GeisaSensorReadings_Rsp &rsp)
 {
     std::cout << "{\"geisa-sensor-readings-rsp\":{";
 
-    std::cout << "\"status\":{";
-    std::cout << "\"code\":";
+    print_json_key("status");
+    std::cout << "{";
+    print_json_key("code");
     print_json_escaped(GeisaStatusCode_Name(rsp.status().code()));
 
     if (!rsp.status().message().empty())
@@ -194,14 +210,14 @@ int main(int argc, char *argv[])
     if (argc != 2)
     {
         std::cerr << "usage: " << argv[0] << " sensor-response.bin\n";
-        return 2;
+        return EX_USAGE;
     }
 
     std::string payload;
     // Read raw serialized protobuf bytes captured from a GEISA response path
     if (!read_file(argv[1], &payload))
     {
-        return 1;
+        return EXIT_FAILURE;
     }
 
     GeisaSensorReadings_Rsp response;
@@ -209,11 +225,11 @@ int main(int argc, char *argv[])
     if (!response.ParseFromString(payload))
     {
         std::cerr << "failed to decode GeisaSensorReadings_Rsp payload\n";
-        return 1;
+        return EXIT_FAILURE;
     }
 
     print_sensor_readings_response(response);
 
     google::protobuf::ShutdownProtobufLibrary();
-    return 0;
+    return EXIT_SUCCESS;
 }

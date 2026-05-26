@@ -8,11 +8,13 @@
 // Example GEISA platform discovery request encoder.
 //
 // This example writes a binary GeisaPlatformDiscovery_Req protobuf payload.
-// The request message is intentionally empty in v0.9.
+// GeisaPlatformDiscovery_Req currently has no payload fields.
 //
 //-----------------------------------------------------------------------------
 
 #include <fstream>
+#include <cstdlib>
+#include <sysexits.h>
 #include <iostream>
 #include <string>
 
@@ -47,21 +49,21 @@ int main(int argc, char *argv[])
     {
         std::cerr << "usage: " << argv[0]
                   << " discovery-request.bin | --demo\n";
-        return 2;
+        return EX_USAGE;
     }
 
     const std::string output_path =
         demo_mode ? std::string("/tmp/discovery-request.bin")
                   : std::string(argv[1]);
 
-    // GeisaPlatformDiscovery_Req is intentionally empty in v0.9.
+    // GeisaPlatformDiscovery_Req currently has no payload fields.
     // The requesting application instance is identified by the MQTT topic
-    // <userid> in the API/topic.
+    // <userid> segment. Future versions may add request parameters if needed.
     GeisaPlatformDiscovery_Req request;
 
     if (!write_file(output_path.c_str(), request))
     {
-        return 1;
+        return EXIT_FAILURE;
     }
 
     if (demo_mode)
@@ -76,5 +78,5 @@ int main(int argc, char *argv[])
     std::cout << "Message topic: geisa/api/platform/discovery/req/<userid>\n";
 
     google::protobuf::ShutdownProtobufLibrary();
-    return 0;
+    return EXIT_SUCCESS;
 }

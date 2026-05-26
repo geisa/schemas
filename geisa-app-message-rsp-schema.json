@@ -1,7 +1,7 @@
 {
   "$schema": "https://json-schema.org/draft/2020-12/schema",
   "title": "GEISA Application Message Response v0.9.0",
-  "description": "Canonical structure for GEISA application messaging per-request disposition payloads aligned to app-message.proto. The payload is serialized protobuf bytes carried as base64 in JSON examples.",
+  "description": "Canonical structure for GEISA application messaging per-request response messages aligned to app-message.proto.",
   "type": "object",
   "required": [
     "geisa-app-message-rsp"
@@ -15,8 +15,7 @@
         "priority",
         "description-type",
         "timestamp-ms",
-        "ttl-ms",
-        "content-type"
+        "ttl-ms"
       ],
       "properties": {
         "request-id": {
@@ -25,13 +24,11 @@
           "minLength": 1
         },
         "status": {
-          "description": "Upstream only: Platform disposition for the corresponding request-id (for example accepted, queued, rejected, permission-denied, quota-exceeded, unavailable, expired, or other).",
+          "description": "Upstream only: Platform disposition for the corresponding request-id (for example accepted, rejected, permission-denied, quota-exceeded, unavailable, expired, or other). quota-exceeded means the platform rejected the request because accepting it would exceed an applicable quota or policy limit (for example message-count, byte/volume, or network policy limits). Applications should consult Platform/App Status for detailed usage, remaining quota, and reset timing.",
           "type": "string",
           "enum": [
             "GEISA_APP_MESSAGE_STATUS_UNSPECIFIED",
             "GEISA_APP_MESSAGE_STATUS_ACCEPTED",
-            "GEISA_APP_MESSAGE_STATUS_QUEUED",
-            "GEISA_APP_MESSAGE_STATUS_DELIVERED",
             "GEISA_APP_MESSAGE_STATUS_REJECTED",
             "GEISA_APP_MESSAGE_STATUS_PERMISSION_DENIED",
             "GEISA_APP_MESSAGE_STATUS_QUOTA_EXCEEDED",
@@ -52,7 +49,8 @@
             "GEISA_APP_MESSAGE_PRIORITY_UNSPECIFIED",
             "GEISA_APP_MESSAGE_PRIORITY_IMMEDIATE",
             "GEISA_APP_MESSAGE_PRIORITY_BEST_EFFORT",
-            "GEISA_APP_MESSAGE_PRIORITY_LATEST"
+            "GEISA_APP_MESSAGE_PRIORITY_LATEST",
+            "GEISA_APP_MESSAGE_PRIORITY_URGENT"
           ]
         },
         "description-type": {
@@ -70,7 +68,7 @@
           "minimum": 0
         },
         "ttl-ms": {
-          "description": "Time-to-live in milliseconds for the message payload.",
+          "description": "Time-to-live in milliseconds for the response message.",
           "type": "integer",
           "minimum": 0
         }

@@ -22,7 +22,12 @@ MQTT topics:
 
 Scope notes:
 
-- Quota counters and usage reporting are out-of-band via Platform/App Status.
+- `GEISA_APP_MESSAGE_STATUS_QUOTA_EXCEEDED` means the platform rejected the
+  request because accepting it would exceed an applicable quota or policy
+  limit (for example message-count, byte/volume, or network policy limits).
+- Quota counters/usage/remaining/reset reporting remains out-of-band via
+  Platform/App Status (`conn_msg`, `conn_oper`, `conn_inet`, `conn_local`,
+  and `GeisaConnAppInfo` surfaces).
 - Deployment Manifest and Platform Discovery cover static policy/allowance
   context.
 - Direct IP socket policy is out of scope for this message example.
@@ -30,7 +35,7 @@ Scope notes:
 Available response JSON examples:
 
 - accepted
-- queued
+- unavailable
 - quota-exceeded
 
 Reader/output note:
@@ -39,6 +44,17 @@ Reader/output note:
 - JSON examples represent payload bytes as base64 when a payload is present.
 
 ## Build
+
+From the repository root, the recommended build path is:
+
+    make clean
+    make examples
+
+This generates protobuf sources and compiles the C++ examples into
+`build/examples/`.
+
+The manual commands below are retained for developers who want to compile a
+single example directly or inspect the exact compiler inputs.
 
 Generate C++ protobuf sources from the repository root:
 
@@ -73,6 +89,13 @@ If protobuf headers/libs are already on default paths, you can omit the
 pkg-config pieces and use `-lprotobuf` directly.
 
 ## Quick start (recommended)
+
+Using the Makefile-built binaries:
+
+    build/examples/app_message_write_response_example --demo
+
+If you used the manual compile commands below, use the `/tmp/...` paths shown
+in those commands.
 
 Run end-to-end demo mode (writes request/response and immediately decodes both):
 

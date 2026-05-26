@@ -23,6 +23,9 @@ enum GeisaAppMessagePriority {
   GEISA_APP_MESSAGE_PRIORITY_IMMEDIATE = 1;
   GEISA_APP_MESSAGE_PRIORITY_BEST_EFFORT = 2;
   GEISA_APP_MESSAGE_PRIORITY_LATEST = 3;
+  // URGENT requests highest handling priority for exceptional time-sensitive
+  // messages, but does not bypass authorization, quota, or operator policy.
+  GEISA_APP_MESSAGE_PRIORITY_URGENT = 4;
 }
 
 // Application-facing message description aligned with ADM object 3600.
@@ -39,13 +42,12 @@ enum GeisaAppMessageDescriptionType {
 enum GeisaAppMessageStatus {
   GEISA_APP_MESSAGE_STATUS_UNSPECIFIED = 0;
   GEISA_APP_MESSAGE_STATUS_ACCEPTED = 1;
-  GEISA_APP_MESSAGE_STATUS_QUEUED = 2;
-  // Optional in 0.9: MAY indicate platform-local delivery progress,
-  // and does NOT imply final upstream EMS/business-system consumption/ACKed
-  // receipt etc.
-  GEISA_APP_MESSAGE_STATUS_DELIVERED = 3;
   GEISA_APP_MESSAGE_STATUS_REJECTED = 4;
   GEISA_APP_MESSAGE_STATUS_PERMISSION_DENIED = 5;
+  // Request rejected because accepting it would exceed an applicable app
+  // messaging quota or policy limit, e.g. message count or bandwidth /
+  // network policy limits. Detailed usage/remaining/reset info is
+  // reported out-of-band via Platform/App Status.
   GEISA_APP_MESSAGE_STATUS_QUOTA_EXCEEDED = 6;
   GEISA_APP_MESSAGE_STATUS_UNAVAILABLE = 7;
   GEISA_APP_MESSAGE_STATUS_EXPIRED = 8;

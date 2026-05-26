@@ -14,6 +14,8 @@
 //-----------------------------------------------------------------------------
 
 #include <fstream>
+#include <cstdlib>
+#include <sysexits.h>
 #include <iomanip>
 #include <iostream>
 #include <sstream>
@@ -53,6 +55,11 @@ static void print_json_escaped(const std::string &value)
     std::cout << '"';
 }
 
+static void print_json_key(const char *key)
+{
+    std::cout << '"' << key << "\":";
+}
+
 static bool read_file(const char *path, std::string *contents)
 {
     std::ifstream input(path, std::ios::binary);
@@ -88,11 +95,13 @@ static void print_common_fields(const std::string &request_id,
                                 const std::string &payload)
 {
     // Common fields shared by both request and response examples.
-    std::cout << "\"request-id\":";
+    print_json_key("request-id");
     print_json_escaped(request_id);
-    std::cout << ",\"priority\":";
+    std::cout << ",";
+    print_json_key("priority");
     print_json_escaped(priority);
-    std::cout << ",\"description-type\":";
+    std::cout << ",";
+    print_json_key("description-type");
     print_json_escaped(description_type);
     std::cout << ",\"timestamp-ms\":" << timestamp_ms;
     std::cout << ",\"ttl-ms\":" << ttl_ms;
@@ -110,9 +119,9 @@ static void print_common_fields(const std::string &request_id,
     }
 }
 
+// Prints a compact JSON-like view of the request payload
 static void print_req(const GeisaAppMessage_Req &req)
 {
-    // Prints a compact JSON-like view of the request payload
     std::cout << "{\"geisa-app-message-req\":{";
     print_common_fields(req.request_id(),
                         GeisaAppMessagePriority_Name(req.priority()),
@@ -124,18 +133,18 @@ static void print_req(const GeisaAppMessage_Req &req)
     std::cout << "}}\n";
 }
 
+// Print a compact JSON-like view of the response message.
+// This response is per-request disposition, not quota/usage reporting
 static void print_rsp(const GeisaAppMessage_Rsp &rsp)
 {
-    // Print a compact JSON-like view of the response payload.
-    // This response is per-request disposition, not quota/usage reporting.
     std::cout << "{\"geisa-app-message-rsp\":{";
     print_common_fields(rsp.request_id(),
                         GeisaAppMessagePriority_Name(rsp.priority()),
                         GeisaAppMessageDescriptionType_Name(rsp.description_type()),
                         rsp.timestamp_ms(),
                         rsp.ttl_ms(),
-                        rsp.content_type(),
-                        rsp.payload());
+                        "",
+                        "");
 
     std::cout << ",\"status\":";
     print_json_escaped(GeisaAppMessageStatus_Name(rsp.status()));
@@ -164,7 +173,7 @@ int main(int argc, char *argv[])
         std::cerr << "usage: " << argv[0]
                   << " --req app-message-req.bin"
                   << " | --rsp app-message-rsp.bin\n";
-        return 2;
+        return EX_USAGE;
     }
 
     std::string bytes;
@@ -172,7 +181,7 @@ int main(int argc, char *argv[])
     // Read the serialized protobuf bytes from disk before decoding.
     if (!read_file(path, &bytes))
     {
-        return 1;
+        return EXIT_FAILURE;
     }
 
     if (req_mode)
@@ -182,12 +191,12 @@ int main(int argc, char *argv[])
         {
             std::cerr << "failed to decode GeisaAppMessage_Req\n";
             google::protobuf::ShutdownProtobufLibrary();
-            return 1;
+            return EXIT_FAILURE;
         }
 
         print_req(req);
         google::protobuf::ShutdownProtobufLibrary();
-        return 0;
+        return EXIT_SUCCESS;
     }
 
     if (rsp_mode)
@@ -197,14 +206,14 @@ int main(int argc, char *argv[])
         {
             std::cerr << "failed to decode GeisaAppMessage_Rsp\n";
             google::protobuf::ShutdownProtobufLibrary();
-            return 1;
+            return EXIT_FAILURE;
         }
 
         print_rsp(rsp);
         google::protobuf::ShutdownProtobufLibrary();
-        return 0;
+        return EXIT_SUCCESS;
     }
 
     google::protobuf::ShutdownProtobufLibrary();
-    return 2;
+    return EX_USAGE;
 }

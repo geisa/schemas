@@ -32,7 +32,8 @@
             "GEISA_APP_MESSAGE_PRIORITY_UNSPECIFIED",
             "GEISA_APP_MESSAGE_PRIORITY_IMMEDIATE",
             "GEISA_APP_MESSAGE_PRIORITY_BEST_EFFORT",
-            "GEISA_APP_MESSAGE_PRIORITY_LATEST"
+            "GEISA_APP_MESSAGE_PRIORITY_LATEST",
+            "GEISA_APP_MESSAGE_PRIORITY_URGENT"
           ]
         },
         "description-type": {
