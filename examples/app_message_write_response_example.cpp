@@ -2,7 +2,7 @@
 // Copyright 2025-2026, Contributors to the Grid Edge Interoperability &
 // Security Alliance (GEISA), a Series of LF Projects, LLC
 //
-// Licensed under the Community Specification License 1.0. See LICENSE.
+// Licensed under the Apache License, Version 2.0. See LICENSE.
 //-----------------------------------------------------------------------------
 //
 // Example GEISA application message req/rsp encoder.

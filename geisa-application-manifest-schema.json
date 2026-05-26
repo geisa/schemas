@@ -1,5 +1,6 @@
 {
     "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$comment": "Copyright 2025-2026, Contributors to the Grid Edge Interoperability & Security Alliance (GEISA), a Series of LF Projects, LLC. Licensed under the Apache License, Version 2.0. See LICENSE.",
     "title": "GEISA Application Manifest vX.Y.Z",
     "description": "Canonical manifest structure for a GEISA application. Vendors may supply this as a vendor application manifest, and operators may use the same structure for a deployment manifest.",
         "$defs": {
