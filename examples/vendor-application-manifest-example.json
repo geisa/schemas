@@ -1,4 +1,5 @@
 {
+    "$comment": "Copyright 2025-2026, Contributors to the Grid Edge Interoperability & Security Alliance (GEISA), a Series of LF Projects, LLC. Licensed under the Apache License, Version 2.0. See LICENSE.",
     "geisa-application-manifest": {
         "$comment": "Example vendor application manifest. Defines vendor-supplied application identity, compatibility requirements, defaults, requested permissions, and minimum resources prior to operator review or deployment-time override.",
         "manifest": {

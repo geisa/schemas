@@ -1,5 +1,5 @@
 {
-  "$comment": "App data request example for the GEISA app-message MQTT request topic.",
+  "$comment": "Copyright 2025-2026, Contributors to the Grid Edge Interoperability & Security Alliance (GEISA), a Series of LF Projects, LLC. Licensed under the Apache License, Version 2.0. See LICENSE. App data request example for the GEISA app-message MQTT request topic.",
   "geisa-app-message-req": {
     "request-id": "req-0001",
     "priority": "GEISA_APP_MESSAGE_PRIORITY_IMMEDIATE",
