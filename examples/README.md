@@ -7,130 +7,64 @@ Licensed under the Community Specification License 1.0. See LICENSE.
 
 # GEISA Schema Examples
 
-This directory contains small source code examples and JSON examples for GEISA
-schema/protobuf messages.
+This directory contains learning/reference artifacts for GEISA schema and
+protobuf payloads.
 
-These examples are intended as learning references: each writer emits a
-binary protobuf payload, and each reader decodes that payload into a concise
-JSON-like diagnostic view. Most include a --demo mode which will output
-both the writer and the receiving reader outputs.
+The C++ writer examples emit binary protobuf payloads. C++ reader examples
+decode those payloads and print JSON-like diagnostic output. Many examples
+include a
+`--demo` mode for an end-to-end local walkthrough.
 
-## Sensor reading C++ example
+## Building the C++ examples
 
-`sensor_read_example.cpp` demonstrates decoding a binary
-`GeisaSensorReadings_Rsp` protobuf payload and printing a JSON-like
-representation.
-
-Build from the repository root:
+From the repository root:
 
     make clean
     make examples
 
-This generates protobuf sources and compiles the C++ examples into
-`build/examples/`.
+Compiled example binaries are written to:
 
-For manual or single-example builds, use the commands below.
+    build/examples/
 
-Manual build from the repository root:
+## Directory organization
 
-    make clean
-    make cpp
-    c++ -std=c++17 -O2 \
-      -I build/cpp \
-      $(pkg-config --cflags protobuf) \
-      examples/sensor_read_example.cpp \
-      build/cpp/sensor.pb.cc \
-      build/cpp/geisa-status.pb.cc \
-      $(pkg-config --libs protobuf) \
-      -pthread \
-      -o /tmp/sensor_read_example
+- `*.cpp`: C++ protobuf writer/reader examples
+- `*.json`: JSON examples aligned to schemas
+- `helpers/example_utils.h`: shared example-only helper utilities
+  (not part of the GEISA APIs or specification)
+- `README-*.md`: topic-specific guides
 
-If protobuf headers/libs are already on default paths, this also works:
+## Topic guides
 
-    g++ -std=c++17 \
-      -I build/cpp \
-      examples/sensor_read_example.cpp \
-      build/cpp/sensor.pb.cc \
-      build/cpp/geisa-status.pb.cc \
-      -lprotobuf -pthread \
-      -o /tmp/sensor_read_example
+- Platform Discovery: `README-discovery.md`
+- Networking / app-message: `README-networking.md`
+- Sensors: `README-sensors.md`
+- Waveform: `README-waveform.md`
+- Application manifests: `README-manifests.md`
 
-Run:
+## Why are the examples in C++?
 
-    build/examples/sensor_read_example sensor-response.bin
+The example programs are currently written in C++ because they are intended to
+cover the active schema set consistently, and some GEISA protobuf files use
+proto3 `optional` fields.
 
-If you used the manual compile commands below, use:
+The current protobuf toolchain supports proto3 optional field presence,
+but the language generator plugins must also support that feature. The C
+toolchain currently in use by this repo relies on protobuf-c /
+`protoc-gen-c`, which does not currently support the proto3 `optional` fields
+used by some schemas. As a result, examples that depend on those schemas
+cannot be built through the current C generation path. Open issue on
+protobuf-c: [Add support for "optional" field for proto3 files][protobuf-c-476].
 
-    /tmp/sensor_read_example sensor-response.bin
+A future set of examples may transition to use nanopb, which supports proto3
+`optional` fields and is more embedded-focused. Meanwhile, the current
+examples use C++ so that the repository has one working example path across
+all current schemas, including the schemas that use proto3 optional fields.
 
-Note: `sensor.proto` uses proto3 optional fields for presence semantics. The
-protobuf-c generator used by `make c` does not currently support proto3
-`optional` for this file. Use the C++ generation path for this example.
+Note that these examples are not part of the GEISA API specification, and do
+not imply that GEISA applications must be written in C++. GEISA APIs are
+defined at the protocol level using MQTT topics and protobuf payloads.
+Applications may use the MQTT/protobuf implementation that best fits their
+execution environment, language, and platform constraints.
 
-## Platform Discovery C++ examples
-
-`discovery_write_request_example.cpp` writes a binary
-`GeisaPlatformDiscovery_Req` protobuf payload.
-
-`discovery_write_response_example.cpp` writes a sample binary
-`GeisaPlatformDiscovery_Rsp` protobuf payload and can run an end-to-end demo
-that immediately decodes it.
-
-`discovery_read_example.cpp` decodes a binary `GeisaPlatformDiscovery_Rsp`
-protobuf payload and prints a JSON-like representation.
-
-See `README-discovery.md` for build and run instructions.
-
-## Networking / app-message C++ examples
-
-`app_message_write_response_example.cpp` writes one
-`GeisaAppMessage_Req` payload and one `GeisaAppMessage_Rsp` payload.
-In `--demo` mode it immediately decodes both files through the companion
-reader.
-
-`app_message_read_example.cpp` decodes either `GeisaAppMessage_Req` or
-`GeisaAppMessage_Rsp` and prints a JSON-like representation.
-
-See `README-networking.md` for build and run instructions.
-
-## Waveform subscribe + frame decode C++ example
-
-`waveform_subscribe_and_read.cpp` demonstrates GEISA waveform subscribe
-response decoding and waveform frame parsing.
-
-Build from the repository root:
-
-    make clean
-    make examples
-
-This generates protobuf sources and compiles the C++ examples into
-`build/examples/`.
-
-For manual or single-example builds, use the commands below.
-
-Manual build from the repository root:
-
-    make clean
-    make cpp
-
-Compile (portable):
-
-    c++ -std=c++17 -O2 \
-      -I build/cpp \
-      $(pkg-config --cflags protobuf) \
-      examples/waveform_subscribe_and_read.cpp \
-      build/cpp/waveform.pb.cc \
-      build/cpp/geisa-status.pb.cc \
-      $(pkg-config --libs protobuf) \
-      -pthread \
-      -o /tmp/waveform_subscribe_and_read
-
-Run:
-
-    build/examples/waveform_subscribe_and_read --demo
-
-If you used the manual compile commands below, use:
-
-    /tmp/waveform_subscribe_and_read --demo
-
-See README-waveform.md for full details.
+[protobuf-c-476]: https://github.com/protobuf-c/protobuf-c/issues/476

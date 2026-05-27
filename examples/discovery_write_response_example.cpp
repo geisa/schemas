@@ -14,57 +14,14 @@
 // and writes it to a binary file for decoding with the companion reader.
 //-----------------------------------------------------------------------------
 
-#include <fstream>
 #include <iostream>
 #include <cstdlib>
 #include <sysexits.h>
 #include <string>
-#include <sys/wait.h>
-#include <unistd.h>
 
 #include "geisa-status.pb.h"
 #include "discovery.pb.h"
-
-// Writes serialized protobuf bytes to disk for the discovery response sample
-// and demo outputs
-static bool write_file(const char *path,
-                       const GeisaPlatformDiscovery_Rsp &response)
-{
-    // Serializes the typed discovery response to raw protobuf bytes
-    std::ofstream output(path, std::ios::binary);
-    if (!output)
-    {
-        std::cerr << "failed to open output file: " << path << '\n';
-        return false;
-    }
-
-    if (!response.SerializeToOstream(&output))
-    {
-        std::cerr << "Failed to serialize GeisaPlatformDiscovery_Rsp\n";
-        return false;
-    }
-
-    return true;
-}
-
-static std::string resolve_reader_path(const std::string &argv0)
-{
-    const std::string fallback = "/tmp/discovery_read_example";
-    const std::size_t slash = argv0.find_last_of('/');
-    if (slash == std::string::npos)
-    {
-        return fallback;
-    }
-
-    const std::string sibling =
-        argv0.substr(0, slash + 1) + "discovery_read_example";
-    if (::access(sibling.c_str(), X_OK) == 0)
-    {
-        return sibling;
-    }
-
-    return fallback;
-}
+#include "helpers/example_utils.h"
 
 static void print_post_write_guidance(const std::string &output_path,
                                       const std::string &reader_path)
@@ -83,33 +40,6 @@ static void print_post_write_guidance(const std::string &output_path,
         << " protobuf and/or convert to JSON for processing if/as desired.\n";
 }
 
-static int run_reader_subprocess(const std::string &reader_path,
-                                 const std::string &output_path)
-{
-    const std::string command = reader_path + " " + output_path;
-    const int rc = std::system(command.c_str());
-    if (rc == -1)
-    {
-        std::cerr << "Failed to launch reader subprocess\n";
-        return EXIT_FAILURE;
-    }
-
-    if (WIFEXITED(rc))
-    {
-        return WEXITSTATUS(rc);
-    }
-
-    if (WIFSIGNALED(rc))
-    {
-        std::cerr << "Reader subprocess terminated by signal: "
-                  << WTERMSIG(rc) << '\n';
-        return EXIT_FAILURE;
-    }
-
-    std::cerr << "Reader subprocess failed\n";
-    return EXIT_FAILURE;
-}
-
 int main(int argc, char *argv[])
 {
     GOOGLE_PROTOBUF_VERIFY_VERSION;
@@ -121,10 +51,10 @@ int main(int argc, char *argv[])
 
     if (!positional && !explicit_write && !demo_mode)
     {
-        std::cerr << "usage: " << argv[0]
-                  << " discovery-response.bin | --write-rsp-sample "
-                  << "discovery-response.bin | --demo\n";
-        return EX_USAGE;
+        return print_example_usage_and_return({
+            std::string("usage: ") + argv[0]
+                + " discovery-response.bin | --write-rsp-sample "
+                + "discovery-response.bin | --demo"});
     }
 
     const std::string output_path =
@@ -239,16 +169,19 @@ int main(int argc, char *argv[])
     stream->set_nominal_frequency_hz(60);
     stream->set_expected_frame_period_ms(200);
 
-    if (!write_file(output_path.c_str(), response))
+    if (!serialize_protobuf_to_file(output_path.c_str(),
+                                    response,
+                                    "GeisaPlatformDiscovery_Rsp"))
     {
         return EXIT_FAILURE;
     }
 
     if (demo_mode)
     {
-        const std::string reader_path = resolve_reader_path(argv[0]);
+        const std::string reader_path = resolve_demo_reader_path(
+            argv[0], "discovery_read_example", "/tmp/discovery_read_example");
         // Demo mode immediately decodes via reader so the output is visible
-        std::cout << "Running GEISA discovery demo...\n";
+        print_example_info_lines({"Running GEISA discovery demo..."});
         print_post_write_guidance(output_path, reader_path);
     }
     else
@@ -261,8 +194,10 @@ int main(int argc, char *argv[])
     // run
     if (demo_mode)
     {
-        const int reader_rc = run_reader_subprocess(resolve_reader_path(argv[0]),
-                                                    output_path);
+        const std::string reader_path = resolve_demo_reader_path(
+            argv[0], "discovery_read_example", "/tmp/discovery_read_example");
+        const int reader_rc =
+            run_demo_subprocess(reader_path + " " + output_path);
         if (reader_rc != 0)
         {
             google::protobuf::ShutdownProtobufLibrary();

@@ -34,49 +34,12 @@
 #include <cstdint>
 #include <cstdlib>
 #include <sysexits.h>
-#include <fstream>
 #include <iostream>
 #include <string>
 
 #include "geisa-status.pb.h"
 #include "sensor.pb.h"
-
-static void print_json_escaped(const std::string &value)
-{
-    std::cout << '"';
-
-    for (const char ch : value)
-    {
-        switch (ch)
-        {
-        case '\\':
-            std::cout << "\\\\";
-            break;
-        case '"':
-            std::cout << "\\\"";
-            break;
-        case '\n':
-            std::cout << "\\n";
-            break;
-        case '\r':
-            std::cout << "\\r";
-            break;
-        case '\t':
-            std::cout << "\\t";
-            break;
-        default:
-            std::cout << ch;
-            break;
-        }
-    }
-
-    std::cout << '"';
-}
-
-static void print_json_key(const char *key)
-{
-    std::cout << '"' << key << "\":";
-}
+#include "helpers/example_utils.h"
 
 static void print_sensor_value(const GeisaSensorValue &value)
 {
@@ -159,23 +122,7 @@ static void print_sensor_readings_response(const GeisaSensorReadings_Rsp &rsp)
     std::cout << "{\"geisa-sensor-readings-rsp\":{";
 
     print_json_key("status");
-    std::cout << "{";
-    print_json_key("code");
-    print_json_escaped(GeisaStatusCode_Name(rsp.status().code()));
-
-    if (!rsp.status().message().empty())
-    {
-        std::cout << ",\"message\":";
-        print_json_escaped(rsp.status().message());
-    }
-
-    if (!rsp.status().details().empty())
-    {
-        std::cout << ",\"details\":";
-        print_json_escaped(rsp.status().details());
-    }
-
-    std::cout << '}';
+    print_geisa_status_json(rsp.status());
 
     std::cout << ",\"readings\":[";
     for (int i = 0; i < rsp.readings_size(); ++i)
@@ -189,33 +136,19 @@ static void print_sensor_readings_response(const GeisaSensorReadings_Rsp &rsp)
     std::cout << "]}}\n";
 }
 
-static bool read_file(const char *path, std::string *contents)
-{
-    std::ifstream input(path, std::ios::binary);
-    if (!input)
-    {
-        std::cerr << "failed to open input file: " << path << '\n';
-        return false;
-    }
-
-    contents->assign(std::istreambuf_iterator<char>(input),
-                     std::istreambuf_iterator<char>());
-    return true;
-}
-
 int main(int argc, char *argv[])
 {
     GOOGLE_PROTOBUF_VERIFY_VERSION;
 
     if (argc != 2)
     {
-        std::cerr << "usage: " << argv[0] << " sensor-response.bin\n";
-        return EX_USAGE;
+        return print_example_usage_and_return(
+            {std::string("usage: ") + argv[0] + " sensor-response.bin"});
     }
 
     std::string payload;
     // Read raw serialized protobuf bytes captured from a GEISA response path
-    if (!read_file(argv[1], &payload))
+    if (!read_binary_file(argv[1], &payload))
     {
         return EXIT_FAILURE;
     }

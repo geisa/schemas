@@ -52,6 +52,8 @@ Request writer:
       $(pkg-config --cflags protobuf) \
       examples/discovery_write_request_example.cpp \
       build/cpp/discovery.pb.cc \
+      build/cpp/sensor.pb.cc \
+      build/cpp/geisa-status.pb.cc \
       $(pkg-config --libs protobuf) \
       -pthread \
       -o /tmp/discovery_write_request_example
@@ -92,30 +94,12 @@ Using the Makefile-built binaries:
     build/examples/discovery_write_request_example --demo
     build/examples/discovery_write_response_example --demo
 
-If you used the manual compile commands below, use the `/tmp/...` paths shown
-in those commands.
-
-Write a sample binary discovery request:
-
-    /tmp/discovery_write_request_example --demo
-
-GeisaPlatformDiscovery_Req currently has no payload fields. The requesting
-application instance is identified by the `<userid>` segment in the MQTT topic
-(`geisa/api/platform/discovery/req/<userid>`), and the platform responds on
-`geisa/api/platform/discovery/rsp/<userid>` with the current Platform Discovery
-snapshot. Future versions may add request parameters if needed.
-
-To run an end-to-end demo (writes a binary discovery response and immediately
-decodes it):
-
-    /tmp/discovery_write_response_example --demo
-
 ## Manual write + read loop
 
 To write a sample binary discovery response:
 
-    /tmp/discovery_write_response_example /tmp/discovery-response.bin
+    build/examples/discovery_write_response_example /tmp/discovery-response.bin
 
 To decode the response:
 
-    /tmp/discovery_read_example /tmp/discovery-response.bin
+    build/examples/discovery_read_example /tmp/discovery-response.bin
