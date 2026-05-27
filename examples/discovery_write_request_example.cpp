@@ -12,31 +12,13 @@
 //
 //-----------------------------------------------------------------------------
 
-#include <fstream>
 #include <cstdlib>
 #include <sysexits.h>
 #include <iostream>
 #include <string>
 
 #include "discovery.pb.h"
-
-static bool write_file(const char *path, const GeisaPlatformDiscovery_Req &request)
-{
-    std::ofstream output(path, std::ios::binary);
-    if (!output)
-    {
-        std::cerr << "failed to open output file: " << path << '\n';
-        return false;
-    }
-
-    if (!request.SerializeToOstream(&output))
-    {
-        std::cerr << "failed to serialize GeisaPlatformDiscovery_Req\n";
-        return false;
-    }
-
-    return true;
-}
+#include "helpers/example_utils.h"
 
 int main(int argc, char *argv[])
 {
@@ -47,9 +29,9 @@ int main(int argc, char *argv[])
 
     if (!demo_mode && !positional)
     {
-        std::cerr << "usage: " << argv[0]
-                  << " discovery-request.bin | --demo\n";
-        return EX_USAGE;
+        return print_example_usage_and_return({
+            std::string("usage: ") + argv[0]
+                + " discovery-request.bin | --demo"});
     }
 
     const std::string output_path =
@@ -61,14 +43,16 @@ int main(int argc, char *argv[])
     // <userid> segment. Future versions may add request parameters if needed.
     GeisaPlatformDiscovery_Req request;
 
-    if (!write_file(output_path.c_str(), request))
+    if (!serialize_protobuf_to_file(output_path.c_str(),
+                                    request,
+                                    "GeisaPlatformDiscovery_Req"))
     {
         return EXIT_FAILURE;
     }
 
     if (demo_mode)
     {
-        std::cout << "Running discovery request demo...\n";
+        print_example_info_lines({"Running discovery request demo..."});
     }
 
     std::cout << "Wrote discovery request to: " << output_path << '\n';

@@ -42,6 +42,10 @@ Reader/output note:
 
 - The C++ reader prints payload bytes as hex for terminal readability.
 - JSON examples represent payload bytes as base64 when a payload is present.
+- Shared reader formatting helpers live in
+  `examples/helpers/example_utils.h` so the app-message examples can stay
+  focused on message semantics. This helper is example support code, not a
+  GEISA SDK.
 
 ## Build
 
@@ -94,23 +98,16 @@ Using the Makefile-built binaries:
 
     build/examples/app_message_write_response_example --demo
 
-If you used the manual compile commands below, use the `/tmp/...` paths shown
-in those commands.
-
-Run end-to-end demo mode (writes request/response and immediately decodes both):
-
-    /tmp/app_message_write_response_example --demo
-
 ## Manual write + read loop
 
 Write request + response samples:
 
-    /tmp/app_message_write_response_example /tmp/app-message-req.bin /tmp/app-message-rsp.bin
+    build/examples/app_message_write_response_example /tmp/app-message-req.bin /tmp/app-message-rsp.bin
 
 Decode and print request:
 
-    /tmp/app_message_read_example --req /tmp/app-message-req.bin
+    build/examples/app_message_read_example --req /tmp/app-message-req.bin
 
 Decode and print response:
 
-    /tmp/app_message_read_example --rsp /tmp/app-message-rsp.bin
+    build/examples/app_message_read_example --rsp /tmp/app-message-rsp.bin

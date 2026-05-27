@@ -19,6 +19,8 @@ At a high level, this repository contains:
 - `geisa-*-schema.json` files for JSON Schema definitions.
 - `examples/*.json` files with example payloads.
 - `examples/*.cpp` files with small C++ protobuf encode/decode examples.
+- `examples/helpers/example_utils.h` for shared example-only C++ helper code
+  (not a GEISA SDK).
 - `examples/README*.md` files with example-specific build and run notes.
 
 ## Building protobuf outputs
@@ -64,6 +66,7 @@ Example-specific build and run instructions are in the `examples/` directory:
 - `examples/README.md`
 - `examples/README-discovery.md`
 - `examples/README-waveform.md`
+- `examples/README-sensors.md`
 
 You can build the C++ example binaries directly from the repository root:
 

@@ -14,7 +14,6 @@
 //
 //-----------------------------------------------------------------------------
 
-#include <fstream>
 #include <cstdlib>
 #include <sysexits.h>
 #include <iostream>
@@ -22,60 +21,7 @@
 
 #include "geisa-status.pb.h"
 #include "discovery.pb.h"
-
-// Escapes strings so the JSON-like output stays readable and valid for
-// control characters, quotes, and backslashes..
-static void print_json_escaped(const std::string &value)
-{
-    std::cout << '"';
-
-    for (const char ch : value)
-    {
-        switch (ch)
-        {
-        case '\\':
-            std::cout << "\\\\";
-            break;
-        case '"':
-            std::cout << "\\\"";
-            break;
-        case '\n':
-            std::cout << "\\n";
-            break;
-        case '\r':
-            std::cout << "\\r";
-            break;
-        case '\t':
-            std::cout << "\\t";
-            break;
-        default:
-            std::cout << ch;
-            break;
-        }
-    }
-
-    std::cout << '"';
-}
-
-static void print_json_key(const char *key)
-{
-    std::cout << '"' << key << "\":";
-}
-
-// Reads a binary protobuf payload from disk into memory for decoding
-static bool read_file(const char *path, std::string *contents)
-{
-    std::ifstream input(path, std::ios::binary);
-    if (!input)
-    {
-        std::cerr << "failed to open input file: " << path << '\n';
-        return false;
-    }
-
-    contents->assign(std::istreambuf_iterator<char>(input),
-                     std::istreambuf_iterator<char>());
-    return true;
-}
+#include "helpers/example_utils.h"
 
 static void print_module(const GeisaPlatformDiscovery_Module &module)
 {
@@ -286,23 +232,8 @@ static void print_discovery_response(const GeisaPlatformDiscovery_Rsp &rsp)
     // on startup
     std::cout << "{\"geisa-platform-discovery-rsp\":{";
 
-    std::cout << "\"status\":{";
-    std::cout << "\"code\":";
-    print_json_escaped(GeisaStatusCode_Name(rsp.status().code()));
-
-    if (!rsp.status().message().empty())
-    {
-        std::cout << ",\"message\":";
-        print_json_escaped(rsp.status().message());
-    }
-
-    if (!rsp.status().details().empty())
-    {
-        std::cout << ",\"details\":";
-        print_json_escaped(rsp.status().details());
-    }
-
-    std::cout << '}';
+    std::cout << "\"status\":";
+    print_geisa_status_json(rsp.status());
 
     std::cout << ",\"geisa\":{";
     std::cout << "\"ver-major\":" << rsp.geisa().ver_major();
@@ -327,17 +258,14 @@ static void print_discovery_response(const GeisaPlatformDiscovery_Rsp &rsp)
     bool first_operator_field = true;
     if (!rsp.operator_().operator_name().empty())
     {
+        print_json_comma_if_needed(&first_operator_field);
         std::cout << "\"operator-name\":";
         print_json_escaped(rsp.operator_().operator_name());
-        first_operator_field = false;
     }
 
     if (!rsp.operator_().operator_identifier().empty())
     {
-        if (!first_operator_field)
-        {
-            std::cout << ',';
-        }
+        print_json_comma_if_needed(&first_operator_field);
         std::cout << "\"operator-identifier\":";
         print_json_escaped(rsp.operator_().operator_identifier());
     }
@@ -347,15 +275,11 @@ static void print_discovery_response(const GeisaPlatformDiscovery_Rsp &rsp)
     bool first_metrology_field = true;
     if (!rsp.metrology().meter_form().empty())
     {
+        print_json_comma_if_needed(&first_metrology_field);
         std::cout << "\"meter-form\":";
         print_json_escaped(rsp.metrology().meter_form());
-        first_metrology_field = false;
     }
-
-    if (!first_metrology_field)
-    {
-        std::cout << ',';
-    }
+    print_json_comma_if_needed(&first_metrology_field);
     std::cout << "\"phase-count\":" << rsp.metrology().phase_count();
     std::cout << ",\"neutral-connected\":"
               << (rsp.metrology().neutral_connected() ? "true" : "false");
@@ -420,17 +344,16 @@ int main(int argc, char *argv[])
         (argc == 3 && std::string(argv[1]) == "--read-rsp");
     if (!positional && !explicit_flag)
     {
-        std::cerr << "usage: " << argv[0]
-                  << " discovery-response.bin | --read-rsp "
-                  << "discovery-response.bin\n";
-        return EX_USAGE;
+        return print_example_usage_and_return({
+            std::string("usage: ") + argv[0]
+                + " discovery-response.bin | --read-rsp discovery-response.bin"});
     }
 
     const char *input_path = positional ? argv[1] : argv[2];
 
     std::string payload;
     // Reads a binary protobuf discovery payload captured from a response path
-    if (!read_file(input_path, &payload))
+    if (!read_binary_file(input_path, &payload))
     {
         return EXIT_FAILURE;
     }

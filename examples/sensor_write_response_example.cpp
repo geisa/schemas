@@ -14,82 +14,14 @@
 // The generated binary payload can be decoded with sensor_read_example.cpp
 //-----------------------------------------------------------------------------
 
-#include <fstream>
 #include <iostream>
 #include <cstdlib>
 #include <sysexits.h>
 #include <string>
-#include <sys/wait.h>
-#include <unistd.h>
 
 #include "geisa-status.pb.h"
 #include "sensor.pb.h"
-
-static bool write_file(const char *path,
-                       const GeisaSensorReadings_Rsp &response)
-{
-    // Persist a typed response as raw protobuf bytes for demo/fixture use
-    std::ofstream output(path, std::ios::binary);
-    if (!output)
-    {
-        std::cerr << "failed to open output file: " << path << '\n';
-        return false;
-    }
-
-    if (!response.SerializeToOstream(&output))
-    {
-        std::cerr << "failed to serialize GeisaSensorReadings_Rsp\n";
-        return false;
-    }
-
-    return true;
-}
-
-static std::string resolve_reader_path(const std::string &argv0)
-{
-    const std::string fallback = "/tmp/sensor_read_example";
-    const std::size_t slash = argv0.find_last_of('/');
-    if (slash == std::string::npos)
-    {
-        return fallback;
-    }
-
-    const std::string sibling =
-        argv0.substr(0, slash + 1) + "sensor_read_example";
-    if (::access(sibling.c_str(), X_OK) == 0)
-    {
-        return sibling;
-    }
-
-    return fallback;
-}
-
-static int run_reader_subprocess(const std::string &reader_path,
-                                 const std::string &output_path)
-{
-    const std::string command = reader_path + " " + output_path;
-    const int rc = std::system(command.c_str());
-    if (rc == -1)
-    {
-        std::cerr << "Failed to launch reader subprocess\n";
-        return EXIT_FAILURE;
-    }
-
-    if (WIFEXITED(rc))
-    {
-        return WEXITSTATUS(rc);
-    }
-
-    if (WIFSIGNALED(rc))
-    {
-        std::cerr << "Reader subprocess terminated by signal "
-                  << WTERMSIG(rc) << '\n';
-        return EXIT_FAILURE;
-    }
-
-    std::cerr << "Reader subprocess failed\n";
-    return EXIT_FAILURE;
-}
+#include "helpers/example_utils.h"
 
 int main(int argc, char *argv[])
 {
@@ -100,9 +32,8 @@ int main(int argc, char *argv[])
 
     if (!demo_mode && !positional)
     {
-        std::cerr << "usage: " << argv[0]
-                  << " sensor-response.bin | --demo\n";
-        return EX_USAGE;
+        return print_example_usage_and_return({
+            std::string("usage: ") + argv[0] + " sensor-response.bin | --demo"});
     }
 
     const std::string output_path =
@@ -140,21 +71,26 @@ int main(int argc, char *argv[])
     GeisaSensorValue *ambient_value = ambient_reading->add_values();
     ambient_value->set_double_value(33.0);
 
-    if (!write_file(output_path.c_str(), response))
+    if (!serialize_protobuf_to_file(output_path.c_str(),
+                                    response,
+                                    "GeisaSensorReadings_Rsp"))
     {
         return EXIT_FAILURE;
     }
 
     if (demo_mode)
     {
-        const std::string reader_path = resolve_reader_path(argv[0]);
+        const std::string reader_path = resolve_demo_reader_path(
+            argv[0], "sensor_read_example", "/tmp/sensor_read_example");
         // Demo mode immediately runs the companion reader for end-to-end flow
-        std::cout << "Running sensor demo...\n";
-        std::cout << "Wrote sensor response to /tmp/sensor-response.bin\n";
-        std::cout << "Decode with: " << reader_path
-                  << " /tmp/sensor-response.bin\n";
+        print_example_info_lines({
+            "Running sensor demo...",
+            "Wrote sensor response to /tmp/sensor-response.bin",
+            std::string("Decode with: ") + reader_path
+                + " /tmp/sensor-response.bin"});
 
-        const int reader_rc = run_reader_subprocess(reader_path, output_path);
+        const int reader_rc =
+            run_demo_subprocess(reader_path + " " + output_path);
         if (reader_rc != 0)
         {
             google::protobuf::ShutdownProtobufLibrary();

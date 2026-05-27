@@ -72,13 +72,6 @@ Using the Makefile-built binary:
 
     build/examples/waveform_subscribe_and_read --demo
 
-If you used the manual compile commands below, use the `/tmp/...` paths shown
-in those commands.
-
-Run the local demo:
-
-    /tmp/waveform_subscribe_and_read --demo
-
 This will create:
 
 - `/tmp/waveform-rsp.bin`
@@ -103,7 +96,7 @@ This will create:
 
 Write a subscribe request payload (protobuf bytes):
 
-    /tmp/waveform_subscribe_and_read --write-req /tmp/waveform-req.bin
+    build/examples/waveform_subscribe_and_read --write-req /tmp/waveform-req.bin
 
 The file contains raw bytes of a serialized `GeisaWaveform_Req`. In an actual
 integration, these bytes are sent to the platform using your existing GEISA
@@ -114,7 +107,7 @@ transport and the platform returns a serialized `GeisaWaveform_Rsp` payload.
 If you have captured a real platform response payload to a file (e.g.
   `/tmp/waveform-rsp.bin`):
 
-    /tmp/waveform_subscribe_and_read --read-rsp /tmp/waveform-rsp.bin
+    build/examples/waveform_subscribe_and_read --read-rsp /tmp/waveform-rsp.bin
 
 If `subscribed=true`, the response includes `socket_path`, which is either:
 

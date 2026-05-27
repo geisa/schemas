@@ -10,10 +10,8 @@
 // This example decodes either GeisaAppMessage_Req or GeisaAppMessage_Rsp from
 // a binary protobuf file and prints a JSON-like representation. Payload bytes
 // are rendered as hex so the output stays readable in a terminal.
-//
 //-----------------------------------------------------------------------------
 
-#include <fstream>
 #include <cstdlib>
 #include <sysexits.h>
 #include <iomanip>
@@ -22,61 +20,11 @@
 #include <string>
 
 #include "app-message.pb.h"
+#include "helpers/example_utils.h"
 
-static void print_json_escaped(const std::string &value)
-{
-    std::cout << '"';
-
-    for (const char ch : value)
-    {
-        switch (ch)
-        {
-        case '\\':
-            std::cout << "\\\\";
-            break;
-        case '"':
-            std::cout << "\\\"";
-            break;
-        case '\n':
-            std::cout << "\\n";
-            break;
-        case '\r':
-            std::cout << "\\r";
-            break;
-        case '\t':
-            std::cout << "\\t";
-            break;
-        default:
-            std::cout << ch;
-            break;
-        }
-    }
-
-    std::cout << '"';
-}
-
-static void print_json_key(const char *key)
-{
-    std::cout << '"' << key << "\":";
-}
-
-static bool read_file(const char *path, std::string *contents)
-{
-    std::ifstream input(path, std::ios::binary);
-    if (!input)
-    {
-        std::cerr << "failed to open input file: " << path << '\n';
-        return false;
-    }
-
-    contents->assign(std::istreambuf_iterator<char>(input),
-                     std::istreambuf_iterator<char>());
-    return true;
-}
-
+// Renders the payload bytes in hex for a simple JSON-like preview
 static std::string bytes_to_hex(const std::string &bytes)
 {
-    // Render the opaque payload bytes in hex for a simple JSON-like preview.
     std::ostringstream out;
     out << std::hex << std::setfill('0');
     for (unsigned char b : bytes)
@@ -86,6 +34,7 @@ static std::string bytes_to_hex(const std::string &bytes)
     return out.str();
 }
 
+// Common fields shared by both request and response examples.
 static void print_common_fields(const std::string &request_id,
                                 const std::string &priority,
                                 const std::string &description_type,
@@ -94,13 +43,14 @@ static void print_common_fields(const std::string &request_id,
                                 const std::string &content_type,
                                 const std::string &payload)
 {
-    // Common fields shared by both request and response examples.
+    bool first_field = true;
+    print_json_comma_if_needed(&first_field);
     print_json_key("request-id");
     print_json_escaped(request_id);
-    std::cout << ",";
+    print_json_comma_if_needed(&first_field);
     print_json_key("priority");
     print_json_escaped(priority);
-    std::cout << ",";
+    print_json_comma_if_needed(&first_field);
     print_json_key("description-type");
     print_json_escaped(description_type);
     std::cout << ",\"timestamp-ms\":" << timestamp_ms;
@@ -170,16 +120,15 @@ int main(int argc, char *argv[])
 
     if (!req_mode && !rsp_mode)
     {
-        std::cerr << "usage: " << argv[0]
-                  << " --req app-message-req.bin"
-                  << " | --rsp app-message-rsp.bin\n";
-        return EX_USAGE;
+        return print_example_usage_and_return({
+            std::string("usage: ") + argv[0]
+                + " --req app-message-req.bin | --rsp app-message-rsp.bin"});
     }
 
     std::string bytes;
     const char *path = argv[2];
     // Read the serialized protobuf bytes from disk before decoding.
-    if (!read_file(path, &bytes))
+    if (!read_binary_file(path, &bytes))
     {
         return EXIT_FAILURE;
     }
