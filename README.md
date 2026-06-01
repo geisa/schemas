@@ -23,6 +23,30 @@ At a high level, this repository contains:
   (not a GEISA SDK).
 - `examples/README*.md` files with example-specific build and run notes.
 
+## Prerequisites
+
+The repository build targets assume these tools are available on `PATH`:
+
+- `make`
+- `protoc` (Protocol Buffers compiler)
+
+The C++ example build target also requires:
+
+- a C++17 compiler, such as `c++`, `g++`, or `clang++`
+- `pkg-config`
+- protobuf development headers and libraries discoverable through
+  `pkg-config protobuf`
+
+The optional C generation target requires protobuf-c support, including
+`protoc-gen-c`, available on `PATH`.
+
+Linting uses Node.js and `npm`. Install the repository Node dependencies before
+running lint commands:
+
+    npm ci
+
+Generated outputs are written under `build/`.
+
 ## Building protobuf outputs
 
 The Makefile generates protobuf outputs into `build/`.
@@ -64,6 +88,7 @@ those fields on all platforms.
 Example-specific build and run instructions are in the `examples/` directory:
 
 - `examples/README.md`
+- `examples/README-actuators.md`
 - `examples/README-discovery.md`
 - `examples/README-waveform.md`
 - `examples/README-sensors.md`
@@ -79,25 +104,23 @@ This compiles the examples into `build/examples/`.
 A typical C++ example workflow is:
 
     make clean
-    make cpp
+    make examples
 
-Then compile the desired example using the command shown in the relevant
-example README.
+Then run the relevant binary from `build/examples/`. The topic-specific README
+files include additional notes and, where useful, manual single-example
+compile commands for developers who want to inspect the exact compiler inputs.
 
 ## Lint and validation
 
-Lint is currently enabled for markup/MD and JSON only at this time.
-To run lint, follow the below instructions.
+Linting is optional for consumers who only need to generate protobuf outputs,
+but contributors should run it before opening pull requests.
 
-Install Node dependencies:
-
-    npm ci
-
-To run all repository lint checks:
+After installing Node.js/`npm` and running `npm ci`, run all repository lint
+checks with:
 
     npm run lint
 
-To run markdown (.md files) lint only:
+To run markdown lint only:
 
     npm run lint:md
 
