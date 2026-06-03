@@ -10,10 +10,9 @@ Licensed under the Apache License, Version 2.0. See LICENSE.
 This directory contains learning/reference artifacts for GEISA schema and
 protobuf payloads.
 
-The C++ writer examples emit binary protobuf payloads. C++ reader examples
+The C++ writer examples emit binary protobuf payloads. The reader examples
 decode those payloads and print JSON-like diagnostic output. Many examples
-include a
-`--demo` mode for an end-to-end local walkthrough.
+include a `--demo` mode to enable a quick end-to-end local walkthrough.
 
 ## Building the C++ examples
 
@@ -38,6 +37,7 @@ Compiled example binaries are written to:
 
 - Platform Discovery: `README-discovery.md`
 - Networking / app-message: `README-networking.md`
+- Actuators: `README-actuators.md`
 - Sensors: `README-sensors.md`
 - Waveform: `README-waveform.md`
 - Application manifests: `README-manifests.md`

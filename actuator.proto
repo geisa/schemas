@@ -10,51 +10,54 @@ syntax = "proto3";
 
 import "geisa-status.proto";
 
-//Enum of types of actuators.  Future actuators may include loadtap changers, cap banks etc.
-//Current design combines type and position/priority in a single setting.
+// Types of actuators addressable through the GEISA actuator API.
+// Platforms may expose only a subset of these actuator targets.
 enum GeisaTypeActuator {
-	Service_Switch = 0;  //Assumed to be one and only one.  
-	DER_Switch = 10;  //Assumed to be one and only one.
-	LC_Relay_0 = 20; //May be multiple.  Platforms should always start at zero 
-	LC_Relay_1 = 21; //and increment 
-	LC_Relay_2 = 22;
-	LC_Relay_3 = 23;
+  GEISA_TYPE_ACTUATOR_UNSPECIFIED = 0;
+  GEISA_TYPE_ACTUATOR_SERVICE_SWITCH = 10;
+  GEISA_TYPE_ACTUATOR_DER_SWITCH = 20;
+  GEISA_TYPE_ACTUATOR_LC_RELAY_0 = 30;
+  GEISA_TYPE_ACTUATOR_LC_RELAY_1 = 31;
+  GEISA_TYPE_ACTUATOR_LC_RELAY_2 = 32;
+  GEISA_TYPE_ACTUATOR_LC_RELAY_3 = 33;
 }
 
-//This is the outer most message for changing one or more actuator settings.
-//the sender submits GeisaActuatorStatus object(s) with the new target settings.
-//In the event that they send multiple GeisaActuatorStatus objects with the same target Actuator, 
-//last setting wins.  Note:  a platform may or may not apply the intervening settings. 
-//This behavior is indeterminate.  GEISA applications are encouraged NOT to submit
-//the same target twice in a single GeisaActuatorSet request	
+// Explicit on/off state for discrete actuator targets.
+enum GeisaTypeOnOff {
+  GEISA_TYPE_ON_OFF_UNSPECIFIED = 0;
+  GEISA_TYPE_ON_OFF_ON = 1;
+  GEISA_TYPE_ON_OFF_OFF = 2;
+}
+
+// Current or target actuator settings.
+message GeisaActuatorStatus {
+  GeisaTypeActuator actuator = 1;  // Which actuator is being referenced?
+  GeisaTypeOnOff on = 2;
+  bool position_present = 3;  // True if position is included.
+  int32 position = 4;  // Position or analog setting when supported.
+}
+
+// Request to change one or more actuator settings.
+// Actuator control is permission-gated by deployment manifest and platform
+// policy. Applications should not assume all platforms allow all actuator
+// actions.
 message GeisaActuatorSet_Req {
-	repeated GeisaActuatorStatus newSettings = 1; //What is/are the actuator(s) being set to?
+  repeated GeisaActuatorStatus new_settings = 1;
 }
 
 message GeisaActuatorSet_Rsp {
-	GeisaStatus status = 1;
+  GeisaStatus status = 1;
 }
 
-//This is the outer most message for requesting the current Actuator Status
+// Request the current state for one actuator.
 message GeisaActuatorGet_Req {
-	GeisaTypeActuator actuator = 1; //Which actuator is being requested?
+  GeisaTypeActuator actuator = 1;
 }
 
+// Response with status and the current actuator state.
+// Request/response payload examples illustrate message structure only and do
+// not define safety workflow or authorization behavior.
 message GeisaActuatorGet_Rsp {
-	GeisaStatus status = 1;
-	GeisaActuatorStatus act_status = 2;
+  GeisaStatus status = 1;
+  GeisaActuatorStatus actuator_status = 2;
 }
-
-enum GeisaTypeOnOff {
-	Undefined = 0;
-	On = 1;
-	Off = 2;
-}
-
-message GeisaActuatorStatus {
-	GeisaTypeActuator actuator = 1; //Which actuator is being referenced?
-	GeisaTypeOnOff  on = 2; 
-	bool positionpresent = 3; // True if position included
-	int32 position = 4; // Position or analog setting. Platform specific
-}
-

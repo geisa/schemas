@@ -87,6 +87,16 @@ python: $(PYTHON_STAMP)
 examples: cpp
 	@mkdir -p $(EXAMPLESDIR)
 	c++ -std=c++17 -O2 -I$(CPPDIR) $$(pkg-config --cflags protobuf) \
+	  examples/actuator_read_example.cpp \
+	  $(CPPDIR)/actuator.pb.cc $(CPPDIR)/geisa-status.pb.cc \
+	  $$(pkg-config --libs protobuf) -pthread \
+	  -o $(EXAMPLESDIR)/actuator_read_example
+	c++ -std=c++17 -O2 -I$(CPPDIR) $$(pkg-config --cflags protobuf) \
+	  examples/actuator_write_response_example.cpp \
+	  $(CPPDIR)/actuator.pb.cc $(CPPDIR)/geisa-status.pb.cc \
+	  $$(pkg-config --libs protobuf) -pthread \
+	  -o $(EXAMPLESDIR)/actuator_write_response_example
+	c++ -std=c++17 -O2 -I$(CPPDIR) $$(pkg-config --cflags protobuf) \
 	  examples/app_message_read_example.cpp \
 	  $(CPPDIR)/app-message.pb.cc \
 	  $$(pkg-config --libs protobuf) -pthread \
@@ -169,7 +179,7 @@ $(PYTHON_STAMP): $(PROTOS)
 	@touch $@
 
 ###############################################################################
-# Convenience target to generate everything
+# Convenience target to generate everything (except examples)
 ###############################################################################
 langs: c cpp java python
 
