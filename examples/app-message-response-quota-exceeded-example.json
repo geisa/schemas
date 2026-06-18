@@ -4,9 +4,6 @@
     "request-id": "req-0002",
     "status": "GEISA_APP_MESSAGE_STATUS_QUOTA_EXCEEDED",
     "status-text": "rejected: app-message quota/policy limit exceeded",
-    "priority": "GEISA_APP_MESSAGE_PRIORITY_BEST_EFFORT",
-    "description-type": "GEISA_APP_MESSAGE_DESCRIPTION_TYPE_APP_DATA",
-    "timestamp-ms": 1762862400200,
-    "ttl-ms": 600000
+    "timestamp-ms": 1762862400200
   }
 }

@@ -43,9 +43,9 @@ int main(int argc, char *argv[])
     // Write a representative app-data request payload.
     req.set_request_id("req-0001");
     req.set_priority(GEISA_APP_MESSAGE_PRIORITY_IMMEDIATE);
-    req.set_description_type(GEISA_APP_MESSAGE_DESCRIPTION_TYPE_APP_DATA);
+    req.set_message_type(GEISA_APP_MESSAGE_TYPE_APP_DATA);
     req.set_timestamp_ms(1762862400000ULL);
-    req.set_ttl_ms(300000ULL);
+    req.set_ttl_seconds(300ULL);
     req.set_content_type("application/json");
     req.set_payload("{\"event\":\"meter-snapshot\",\"kwh\":1234567}");
 
@@ -62,10 +62,7 @@ int main(int argc, char *argv[])
     rsp.set_request_id("req-0001");
     rsp.set_status(GEISA_APP_MESSAGE_STATUS_ACCEPTED);
     rsp.set_status_text("accepted for processing");
-    rsp.set_priority(GEISA_APP_MESSAGE_PRIORITY_IMMEDIATE);
-    rsp.set_description_type(GEISA_APP_MESSAGE_DESCRIPTION_TYPE_APP_DATA);
     rsp.set_timestamp_ms(1762862400100ULL);
-    rsp.set_ttl_ms(300000ULL);
 
     if (!serialize_protobuf_to_file(rsp_path.c_str(),
                                     rsp,

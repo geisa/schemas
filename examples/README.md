@@ -8,10 +8,10 @@ Licensed under the Apache License, Version 2.0. See LICENSE.
 # GEISA Schema Examples
 
 This directory contains learning/reference artifacts for GEISA schema and
-protobuf payloads.
+protobuf envelope examples.
 
-The C++ writer examples emit binary protobuf payloads. The reader examples
-decode those payloads and print JSON-like diagnostic output. Many examples
+The C++ writer examples emit binary protobuf envelopes. The reader examples
+decode those envelopes and print JSON-like diagnostic output. Many examples
 include a `--demo` mode to enable a quick end-to-end local walkthrough.
 
 ## Building the C++ examples
@@ -63,7 +63,8 @@ all current schemas, including the schemas that use proto3 optional fields.
 
 Note that these examples are not part of the GEISA API specification, and do
 not imply that GEISA applications must be written in C++. GEISA APIs are
-defined at the protocol level using MQTT topics and protobuf payloads.
+defined at the protocol level using MQTT topics and protobuf envelopes, with
+some payloads carrying opaque application bytes selected by `content-type`.
 Applications may use the MQTT/protobuf implementation that best fits their
 execution environment, language, and platform constraints.
 

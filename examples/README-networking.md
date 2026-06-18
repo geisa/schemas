@@ -7,9 +7,11 @@ Licensed under the Apache License, Version 2.0. See LICENSE.
 
 # Networking app-message examples (C++)
 
-These examples demonstrate how to write and decode binary protobuf payloads
-for GEISA app-message request submission and per-request disposition.
-They are the GEISA message API flow, not direct IP socket policy.
+These examples demonstrate how to write and decode the GEISA app-message
+protobuf envelopes for request submission and per-request disposition. The
+message payload bytes are opaque and interpreted via `content-type`, not as
+protobuf by default. They are the GEISA message API flow, not direct IP
+socket policy.
 
 - `GeisaAppMessage_Req`
 - `GeisaAppMessage_Rsp`
