@@ -16,24 +16,31 @@ syntax = "proto3";
 // Internal EMS/EMA/LwM2M implementation details are intentionally not
 // represented in these payload structures.
 
-// Application-facing message priority is aligned with ADM object 3600
-// This is for GEISA app messaging, not direct app access to LwM2M/ADM
+// Application-facing message priority is aligned with ADM object 3600.
+// Lower numeric values are higher priority.
+// This is for GEISA app messaging, not direct app access to LwM2M/ADM.
 enum GeisaAppMessagePriority {
   GEISA_APP_MESSAGE_PRIORITY_UNSPECIFIED = 0;
-  GEISA_APP_MESSAGE_PRIORITY_IMMEDIATE = 1;
-  GEISA_APP_MESSAGE_PRIORITY_BEST_EFFORT = 2;
-  GEISA_APP_MESSAGE_PRIORITY_LATEST = 3;
   // URGENT requests highest handling priority for exceptional time-sensitive
   // messages, but does not bypass authorization, quota, or operator policy.
-  GEISA_APP_MESSAGE_PRIORITY_URGENT = 4;
+  GEISA_APP_MESSAGE_PRIORITY_URGENT = 1;
+  GEISA_APP_MESSAGE_PRIORITY_IMMEDIATE = 2;
+  GEISA_APP_MESSAGE_PRIORITY_BEST_EFFORT = 3;
+  GEISA_APP_MESSAGE_PRIORITY_LATEST = 4;
 }
 
-// Application-facing message description aligned with ADM object 3600.
+// Application-facing message type aligned with ADM object 3600.
 // This is for GEISA app messaging, not direct app access to LwM2M/ADM.
-enum GeisaAppMessageDescriptionType {
-  GEISA_APP_MESSAGE_DESCRIPTION_TYPE_UNSPECIFIED = 0;
-  GEISA_APP_MESSAGE_DESCRIPTION_TYPE_APP_CONFIGURATION = 10;
-  GEISA_APP_MESSAGE_DESCRIPTION_TYPE_APP_DATA = 20;
+enum GeisaAppMessageType {
+  GEISA_APP_MESSAGE_TYPE_UNSPECIFIED = 0;
+  GEISA_APP_MESSAGE_TYPE_APP_CONFIGURATION = 1;
+  GEISA_APP_MESSAGE_TYPE_COMMAND = 2;
+  GEISA_APP_MESSAGE_TYPE_COMMAND_RESULT = 3;
+  GEISA_APP_MESSAGE_TYPE_STATUS = 4;
+  GEISA_APP_MESSAGE_TYPE_EVENT = 5;
+  GEISA_APP_MESSAGE_TYPE_ALARM = 6;
+  GEISA_APP_MESSAGE_TYPE_APP_DATA = 7;
+  GEISA_APP_MESSAGE_TYPE_TELEMETRY = 8;
 }
 
 // Per-request platform disposition for app messaging for upstream messages only
@@ -42,16 +49,16 @@ enum GeisaAppMessageDescriptionType {
 enum GeisaAppMessageStatus {
   GEISA_APP_MESSAGE_STATUS_UNSPECIFIED = 0;
   GEISA_APP_MESSAGE_STATUS_ACCEPTED = 1;
-  GEISA_APP_MESSAGE_STATUS_REJECTED = 4;
-  GEISA_APP_MESSAGE_STATUS_PERMISSION_DENIED = 5;
+  GEISA_APP_MESSAGE_STATUS_REJECTED = 2;
+  GEISA_APP_MESSAGE_STATUS_PERMISSION_DENIED = 3;
   // Request rejected because accepting it would exceed an applicable app
   // messaging quota or policy limit, e.g. message count or bandwidth /
   // network policy limits. Detailed usage/remaining/reset info is
   // reported out-of-band via Platform/App Status.
-  GEISA_APP_MESSAGE_STATUS_QUOTA_EXCEEDED = 6;
-  GEISA_APP_MESSAGE_STATUS_UNAVAILABLE = 7;
-  GEISA_APP_MESSAGE_STATUS_EXPIRED = 8;
-  GEISA_APP_MESSAGE_STATUS_OTHER = 9;
+  GEISA_APP_MESSAGE_STATUS_QUOTA_EXCEEDED = 4;
+  GEISA_APP_MESSAGE_STATUS_UNAVAILABLE = 5;
+  GEISA_APP_MESSAGE_STATUS_EXPIRED = 6;
+  GEISA_APP_MESSAGE_STATUS_OTHER = 7;
 }
 
 // This is the outermost message for GEISA application message requests.
@@ -63,9 +70,11 @@ enum GeisaAppMessageStatus {
 // For upstream messages, published by an application
 // For downstream messages, published by the platform
 //
-// The payload is opaque application data or app configuration. The platform
-// handles underlying ADM/LwM2M transport behavior behind the scenes; this
-// message is the app-facing GEISA MQTT request.
+// The payload is opaque application bytes. The platform handles underlying
+// ADM/LwM2M transport behavior behind the scenes; this message is the
+// app-facing GEISA MQTT request.
+// Application and application-instance identity come from authenticated
+// GEISA topic/session binding and are not duplicated in this payload.
 
 message GeisaAppMessage_Req {
   // Correlation identifier set by the sender.
@@ -73,14 +82,16 @@ message GeisaAppMessage_Req {
   // Message priority aligned with ADM object 3600 concepts.
   GeisaAppMessagePriority priority = 2;
   // Message type aligned with ADM object 3600 concepts.
-  GeisaAppMessageDescriptionType description_type = 3;
+  GeisaAppMessageType message_type = 3;
   // UTC epoch time in milliseconds when the message was created.
   uint64 timestamp_ms = 4;
-  // Lifetime of the request, in milliseconds.
-  uint64 ttl_ms = 5;
+  // Lifetime of the request, in seconds. 0 means no explicit message-specific
+  // TTL; platform or EMS default policy may apply.
+  uint64 ttl_seconds = 5;
   // MIME type for the opaque payload bytes.
   string content_type = 6;
-  // Serialized application data or configuration payload bytes.
+  // Application payload bytes. The content_type tells receivers how to
+  // interpret the bytes.
   bytes payload = 7;
 }
 
@@ -94,8 +105,8 @@ message GeisaAppMessage_Req {
 // For downstream messages, published by an application
 //
 // This message carries per-request disposition for a corresponding
-// GeisaAppMessage_Req identified by request_id. It is NOT for delivery
-// of message payload.
+// GeisaAppMessage_Req identified by request_id. It is NOT for delivery of
+// message payload.
 //
 // Quota counters and usage reporting are out-of-band via Platform/App Status
 // Internal EMS/EMA/LwM2M implementation details are not represented here..
@@ -107,12 +118,7 @@ message GeisaAppMessage_Rsp {
   GeisaAppMessageStatus status = 2;
   // Upstream only: Optional human-readable diagnostic or status text.
   string status_text = 3;
-  // Echoed priority, when the platform preserves it in the response path.
-  GeisaAppMessagePriority priority = 4;
-  // Echoed description type, when the platform preserves it in the response path.
-  GeisaAppMessageDescriptionType description_type = 5;
   // UTC epoch time in milliseconds when the response was created.
-  uint64 timestamp_ms = 6;
-  // Lifetime of the response, in milliseconds.
-  uint64 ttl_ms = 7;
+  uint64 timestamp_ms = 4;
+  reserved 5, 6, 7;
 }

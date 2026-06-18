@@ -4,9 +4,6 @@
     "request-id": "req-0001",
     "status": "GEISA_APP_MESSAGE_STATUS_ACCEPTED",
     "status-text": "accepted for delivery",
-    "priority": "GEISA_APP_MESSAGE_PRIORITY_IMMEDIATE",
-    "description-type": "GEISA_APP_MESSAGE_DESCRIPTION_TYPE_APP_DATA",
-    "timestamp-ms": 1762862400100,
-    "ttl-ms": 300000
+    "timestamp-ms": 1762862400100
   }
 }

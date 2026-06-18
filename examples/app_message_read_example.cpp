@@ -34,14 +34,14 @@ static std::string bytes_to_hex(const std::string &bytes)
     return out.str();
 }
 
-// Common fields shared by both request and response examples.
-static void print_common_fields(const std::string &request_id,
-                                const std::string &priority,
-                                const std::string &description_type,
-                                const uint64_t timestamp_ms,
-                                const uint64_t ttl_ms,
-                                const std::string &content_type,
-                                const std::string &payload)
+// Common request fields shared by the decoder output.
+static void print_request_fields(const std::string &request_id,
+                                 const std::string &priority,
+                                 const std::string &message_type,
+                                 const uint64_t timestamp_ms,
+                                 const uint64_t ttl_seconds,
+                                 const std::string &content_type,
+                                 const std::string &payload)
 {
     bool first_field = true;
     print_json_comma_if_needed(&first_field);
@@ -51,10 +51,10 @@ static void print_common_fields(const std::string &request_id,
     print_json_key("priority");
     print_json_escaped(priority);
     print_json_comma_if_needed(&first_field);
-    print_json_key("description-type");
-    print_json_escaped(description_type);
+    print_json_key("message-type");
+    print_json_escaped(message_type);
     std::cout << ",\"timestamp-ms\":" << timestamp_ms;
-    std::cout << ",\"ttl-ms\":" << ttl_ms;
+    std::cout << ",\"ttl-seconds\":" << ttl_seconds;
 
     if (!content_type.empty())
     {
@@ -73,11 +73,11 @@ static void print_common_fields(const std::string &request_id,
 static void print_req(const GeisaAppMessage_Req &req)
 {
     std::cout << "{\"geisa-app-message-req\":{";
-    print_common_fields(req.request_id(),
+    print_request_fields(req.request_id(),
                         GeisaAppMessagePriority_Name(req.priority()),
-                        GeisaAppMessageDescriptionType_Name(req.description_type()),
+                        GeisaAppMessageType_Name(req.message_type()),
                         req.timestamp_ms(),
-                        req.ttl_ms(),
+                        req.ttl_seconds(),
                         req.content_type(),
                         req.payload());
     std::cout << "}}\n";
@@ -88,16 +88,15 @@ static void print_req(const GeisaAppMessage_Req &req)
 static void print_rsp(const GeisaAppMessage_Rsp &rsp)
 {
     std::cout << "{\"geisa-app-message-rsp\":{";
-    print_common_fields(rsp.request_id(),
-                        GeisaAppMessagePriority_Name(rsp.priority()),
-                        GeisaAppMessageDescriptionType_Name(rsp.description_type()),
-                        rsp.timestamp_ms(),
-                        rsp.ttl_ms(),
-                        "",
-                        "");
+    bool first_field = true;
+    print_json_comma_if_needed(&first_field);
+    print_json_key("request-id");
+    print_json_escaped(rsp.request_id());
+    print_json_comma_if_needed(&first_field);
+    print_json_key("status");
 
-    std::cout << ",\"status\":";
     print_json_escaped(GeisaAppMessageStatus_Name(rsp.status()));
+    std::cout << ",\"timestamp-ms\":" << rsp.timestamp_ms();
 
     if (!rsp.status_text().empty())
     {
@@ -112,7 +111,7 @@ int main(int argc, char *argv[])
 {
     GOOGLE_PROTOBUF_VERIFY_VERSION;
 
-    // Require explicit request/response mode. Protobuf payloads are not
+    // Require explicit request/response mode. Protobuf envelopes are not
     // self-describing, and req/rsp wire compatibility can produce misleading
     // output if auto-detected.
     const bool req_mode = (argc == 3 && std::string(argv[1]) == "--req");
