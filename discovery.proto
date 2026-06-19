@@ -310,7 +310,7 @@ message GeisaPlatformDiscovery_Waveform_Instance {
   bool zero_crossing_aligned = 401;
 
   // sampling rate in hertz
-  int32 sample_rate = 402;
+  uint32 sample_rate = 402;
 
   // number of samples per AC cycle, when applicable
   uint32 samples_per_cycle = 403;
