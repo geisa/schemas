@@ -285,21 +285,21 @@ message GeisaPlatformDiscovery_Waveform_Instance {
   // respectively.
   //
   // for float32 and float64, these SHOULD be omitted or set to 1.0.
-  double voltage_multiplier = 201;
-  double current_multiplier = 202;
+  double voltage_scale = 201;
+  double current_scale = 202;
 
   // number of voltage channels per sample
-  uint32 num_voltage_ch = 300;
+  uint32 voltage_channel_count = 300;
 
   // number of current channels per sample
-  uint32 num_current_ch = 301;
+  uint32 current_channel_count = 301;
 
   // number of additional non-voltage, non-current channels, if present
-  uint32 num_other_ch = 302;
+  uint32 other_channel_count = 302;
 
   // total number of channels per sample
   //
-  // this SHALL equal num_voltage_ch + num_current_ch (+ num_other_ch if used)
+  // this SHALL equal voltage_channel_count + current_channel_count (+ other_channel_count if used)
   uint32 total_channel_count = 303;
 
   // if true, frames contain an integer number of AC cycles
@@ -310,7 +310,7 @@ message GeisaPlatformDiscovery_Waveform_Instance {
   bool zero_crossing_aligned = 401;
 
   // sampling rate in hertz
-  uint32 sample_rate = 402;
+  uint32 sample_rate_hz = 402;
 
   // number of samples per AC cycle, when applicable
   uint32 samples_per_cycle = 403;

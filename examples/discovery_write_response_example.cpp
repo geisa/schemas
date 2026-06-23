@@ -153,15 +153,15 @@ int main(int argc, char *argv[])
     stream->set_description(
         "Baseline interoperable waveform stream for GEISA applications");
     stream->set_datatype(DATA_INT16);
-    stream->set_voltage_multiplier(1.0);
-    stream->set_current_multiplier(1.0);
-    stream->set_num_voltage_ch(1);
-    stream->set_num_current_ch(2);
-    stream->set_num_other_ch(0);
+    stream->set_voltage_scale(1.0);
+    stream->set_current_scale(1.0);
+    stream->set_voltage_channel_count(1);
+    stream->set_current_channel_count(2);
+    stream->set_other_channel_count(0);
     stream->set_total_channel_count(3);
     stream->set_cycle_aligned(true);
     stream->set_zero_crossing_aligned(true);
-    stream->set_sample_rate(7680);
+    stream->set_sample_rate_hz(7680);
     stream->set_samples_per_cycle(128);
     stream->set_nominal_frequency_hz(60);
     stream->set_expected_frame_period_ms(200);

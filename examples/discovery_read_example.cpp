@@ -92,20 +92,20 @@ static void print_waveform_stream(
     print_json_key("datatype");
     print_json_escaped(GeisaWaveform_Datatype_Name(stream.datatype()));
 
-    std::cout << ",\"voltage-multiplier\":"
-              << stream.voltage_multiplier();
-    std::cout << ",\"current-multiplier\":"
-              << stream.current_multiplier();
-    std::cout << ",\"num-voltage-ch\":" << stream.num_voltage_ch();
-    std::cout << ",\"num-current-ch\":" << stream.num_current_ch();
-    std::cout << ",\"num-other-ch\":" << stream.num_other_ch();
+    std::cout << ",\"voltage-scale\":"
+              << stream.voltage_scale();
+    std::cout << ",\"current-scale\":"
+              << stream.current_scale();
+    std::cout << ",\"voltage-channel-count\":" << stream.voltage_channel_count();
+    std::cout << ",\"current-channel-count\":" << stream.current_channel_count();
+    std::cout << ",\"other-channel-count\":" << stream.other_channel_count();
     std::cout << ",\"total-channel-count\":"
-              << stream.total_channel_count();
+              << stream.other_channel_count();
     std::cout << ",\"cycle-aligned\":"
               << (stream.cycle_aligned() ? "true" : "false");
     std::cout << ",\"zero-crossing-aligned\":"
               << (stream.zero_crossing_aligned() ? "true" : "false");
-    std::cout << ",\"sample-rate\":" << stream.sample_rate();
+    std::cout << ",\"sample-rate-hz\":" << stream.sample_rate_hz();
     std::cout << ",\"samples-per-cycle\":"
               << stream.samples_per_cycle();
     std::cout << ",\"nominal-frequency-hz\":" << stream.nominal_frequency_hz();
