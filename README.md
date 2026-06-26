@@ -23,6 +23,28 @@ At a high level, this repository contains:
   (not a GEISA SDK).
 - `examples/README*.md` files with example-specific build and run notes.
 
+This schemas repository SHALL be used in conjunction with the GEISA
+specification to enable creation of GEISA conformant implementations.  The
+content within has been provided with the intent for the user to fully
+understand the structure of, conformance with, and the intent of GIESA
+messages and payloads.
+
+Most API message payloads are defined in the GEISA specification as well as here
+in proto files, documented in JSON schemas, implemented with example code, and
+further documented with example payload contents.
+
+While efforts have been made to make sure that items provided in multiple
+places, formats, or examples are consistent and free of ambiguity, an
+implementer should be able to resolve conflicts or discrepancies found within
+this content.
+
+For items with proto files, the proto files are authoritative, while JSON
+schemas, examples, and lists in the GIESA specification for the same item are
+not.
+
+For items without proto files, the JSON schema files are authoritative, while
+examples and lists in the GIESA specification for the same item are not.
+
 ## Prerequisites
 
 The repository build targets assume these tools are available on `PATH`:
