@@ -239,14 +239,20 @@ message GeisaPlatformDiscovery_Network {
 }
 
 /*
- * Waveform sample encodings
+ * Waveform sample encodings used in waveform frames.
  *
+ * Integer sample types carry raw integer values. Integer voltage and current
+ * samples are converted to volts and amperes using voltage_scale and
+ * current_scale, respectively. Floating-point sample types carry values in the
+ * corresponding engineering units directly and SHOULD omit scale fields or set
+ * them to 1.0.
  */
-enum GeisaWaveform_Datatype {
-  DATA_INT16 = 0;
-  DATA_INT32 = 1;
-  DATA_FLOAT32 = 2;
-  DATA_FLOAT64 = 3;
+enum GeisaWaveform_SampleType {
+  WAVEFORM_SAMPLE_TYPE_UNSPECIFIED = 0;
+  WAVEFORM_SAMPLE_TYPE_INT16 = 1;
+  WAVEFORM_SAMPLE_TYPE_INT32 = 2;
+  WAVEFORM_SAMPLE_TYPE_FLOAT32 = 3;
+  WAVEFORM_SAMPLE_TYPE_FLOAT64 = 4;
 }
 
 
@@ -277,10 +283,10 @@ message GeisaPlatformDiscovery_Waveform_Instance {
   // applications SHALL NOT rely on this field for interoperability behavior.
   string description = 3;
 
-  // waveform sample encoding
-  GeisaWaveform_Datatype datatype = 200;
+  // waveform sample encoding used by frames for this stream
+  GeisaWaveform_SampleType sample_type = 200;
 
-  // when datatype is int16 or int32, these multipliers can be applied by the
+  // When sample_type is INT16 or INT32, these multipliers can be applied by the
   // application to convert from unitless values into volts or amps
   // respectively.
   //

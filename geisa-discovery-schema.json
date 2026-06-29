@@ -16,9 +16,9 @@
         "custom"
       ]
     },
-    "waveformDatatype": {
+    "waveformSampleType": {
       "type": "string",
-      "description": "Waveform sample encoding",
+      "description": "Waveform sample encoding used in waveform frames.",
       "enum": [
         "int16",
         "int32",
@@ -294,7 +294,7 @@
       "type": "object",
       "required": [
         "stream-id",
-        "datatype",
+        "sample-type",
         "num-voltage-ch",
         "num-current-ch",
         "num-other-ch",
@@ -322,8 +322,8 @@
           "type": "string",
           "minLength": 1
         },
-        "datatype": {
-          "$ref": "#/$defs/waveformDatatype"
+        "sample-type": {
+          "$ref": "#/$defs/waveformSampleType"
         },
         "voltage-multiplier": {
           "description": "Multiplier for integer voltage samples. For float32 and float64, this SHOULD be omitted or set to 1.0.",
