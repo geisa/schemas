@@ -89,8 +89,8 @@ static void print_waveform_stream(
     }
 
     std::cout << ",";
-    print_json_key("datatype");
-    print_json_escaped(GeisaWaveform_Datatype_Name(stream.datatype()));
+    print_json_key("sample-type");
+    print_json_escaped(GeisaWaveform_SampleType_Name(stream.sample_type()));
 
     std::cout << ",\"voltage-scale\":"
               << stream.voltage_scale();
@@ -100,7 +100,7 @@ static void print_waveform_stream(
     std::cout << ",\"current-channel-count\":" << stream.current_channel_count();
     std::cout << ",\"other-channel-count\":" << stream.other_channel_count();
     std::cout << ",\"total-channel-count\":"
-              << stream.other_channel_count();
+              << stream.total_channel_count();
     std::cout << ",\"cycle-aligned\":"
               << (stream.cycle_aligned() ? "true" : "false");
     std::cout << ",\"zero-crossing-aligned\":"

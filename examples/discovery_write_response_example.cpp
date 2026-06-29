@@ -152,7 +152,7 @@ int main(int argc, char *argv[])
     stream->set_name("Baseline Waveform Stream");
     stream->set_description(
         "Baseline interoperable waveform stream for GEISA applications");
-    stream->set_datatype(DATA_INT16);
+    stream->set_sample_type(WAVEFORM_SAMPLE_TYPE_INT16);
     stream->set_voltage_scale(1.0);
     stream->set_current_scale(1.0);
     stream->set_voltage_channel_count(1);
