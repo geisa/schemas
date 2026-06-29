@@ -11,7 +11,7 @@
       "description": "Internal board or electronics temperature sensor.",
       "manufacturer": "Example Sensor Vendor",
       "model": "TMP1075",
-      "unit": "C",
+      "unit": "Cel",
       "supports-read": true,
       "supports-publish": true,
       "min-report-period-ms": 1000,

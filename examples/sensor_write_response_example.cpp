@@ -50,7 +50,7 @@ int main(int argc, char *argv[])
     GeisaSensorReading *board_reading = response.add_readings();
     board_reading->set_sensor_id("board_temp1");
     board_reading->set_timestamp_ms(1735689600000ULL);
-    board_reading->set_unit("C");
+    board_reading->set_unit("Cel");
     board_reading->set_quality("GOOD");
     board_reading->set_status("OK");
 
@@ -64,7 +64,7 @@ int main(int argc, char *argv[])
     GeisaSensorReading *ambient_reading = response.add_readings();
     ambient_reading->set_sensor_id("ambient_temp1");
     ambient_reading->set_timestamp_ms(1735689600000ULL);
-    ambient_reading->set_unit("C");
+    ambient_reading->set_unit("Cel");
     ambient_reading->set_quality("GOOD");
     ambient_reading->set_status("OK");
 

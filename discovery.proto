@@ -9,6 +9,7 @@ syntax = "proto3";
 
 import "geisa-status.proto";
 import "sensor.proto";
+import "waveform.proto";
 
 /*
  * GEISA Platform Discovery messages.
@@ -247,14 +248,6 @@ message GeisaPlatformDiscovery_Network {
  * corresponding engineering units directly and SHOULD omit scale fields or set
  * them to 1.0.
  */
-enum GeisaWaveform_SampleType {
-  WAVEFORM_SAMPLE_TYPE_UNSPECIFIED = 0;
-  WAVEFORM_SAMPLE_TYPE_INT16 = 1;
-  WAVEFORM_SAMPLE_TYPE_INT32 = 2;
-  WAVEFORM_SAMPLE_TYPE_FLOAT32 = 3;
-  WAVEFORM_SAMPLE_TYPE_FLOAT64 = 4;
-}
-
 
 /*
  * Descriptor for discoverable waveform streams

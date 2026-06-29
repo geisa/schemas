@@ -141,7 +141,7 @@
           "$ref": "#/$defs/geolocation"
         },
         "unit": {
-          "description": "Engineering unit used for reported values. For multi-value readings, applies only when all values share the same unit.",
+          "description": "Engineering unit used for reported values. For multi-value readings, applies only when all values share the same unit. Where an applicable IANA SenML unit symbol exists, use the SenML unit symbol.",
           "type": "string",
           "minLength": 1
         },
@@ -207,7 +207,7 @@
           }
         },
         "unit": {
-          "description": "Optional unit override for this reading. For multi-value readings, use only when all values share the same unit.",
+          "description": "Optional unit override for this reading. For multi-value readings, use only when all values share the same unit. Where an applicable IANA SenML unit symbol exists, use the SenML unit symbol.",
           "type": "string",
           "minLength": 1
         },

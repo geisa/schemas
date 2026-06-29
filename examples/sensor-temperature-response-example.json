@@ -15,7 +15,7 @@
             "double-value": 47.38
           }
         ],
-        "unit": "C",
+        "unit": "Cel",
         "quality": "GOOD",
         "status": "OK"
       },
@@ -27,7 +27,7 @@
             "double-value": 33.0
           }
         ],
-        "unit": "C",
+        "unit": "Cel",
         "quality": "GOOD",
         "status": "OK"
       }

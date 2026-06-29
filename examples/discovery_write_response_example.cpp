@@ -104,7 +104,7 @@ int main(int argc, char *argv[])
         "Internal board or electronics temperature sensor.");
     sensor->set_manufacturer("Example Sensor Vendor");
     sensor->set_model("TMP1075");
-    sensor->set_unit("C");
+    sensor->set_unit("Cel");
     sensor->set_supports_read(true);
     sensor->set_supports_publish(true);
     sensor->set_min_report_period_ms(1000);
