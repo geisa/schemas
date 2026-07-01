@@ -108,17 +108,17 @@ examples: cpp
 	  -o $(EXAMPLESDIR)/app_message_write_response_example
 	c++ -std=c++17 -O2 -I$(CPPDIR) $$(pkg-config --cflags protobuf) \
 	  examples/discovery_read_example.cpp \
-	  $(CPPDIR)/discovery.pb.cc $(CPPDIR)/sensor.pb.cc $(CPPDIR)/geisa-status.pb.cc \
+	  $(CPPDIR)/discovery.pb.cc $(CPPDIR)/sensor.pb.cc $(CPPDIR)/waveform.pb.cc $(CPPDIR)/geisa-status.pb.cc \
 	  $$(pkg-config --libs protobuf) -pthread \
 	  -o $(EXAMPLESDIR)/discovery_read_example
 	c++ -std=c++17 -O2 -I$(CPPDIR) $$(pkg-config --cflags protobuf) \
 	  examples/discovery_write_request_example.cpp \
-	  $(CPPDIR)/discovery.pb.cc $(CPPDIR)/sensor.pb.cc $(CPPDIR)/geisa-status.pb.cc \
+	  $(CPPDIR)/discovery.pb.cc $(CPPDIR)/sensor.pb.cc $(CPPDIR)/waveform.pb.cc $(CPPDIR)/geisa-status.pb.cc \
 	  $$(pkg-config --libs protobuf) -pthread \
 	  -o $(EXAMPLESDIR)/discovery_write_request_example
 	c++ -std=c++17 -O2 -I$(CPPDIR) $$(pkg-config --cflags protobuf) \
 	  examples/discovery_write_response_example.cpp \
-	  $(CPPDIR)/discovery.pb.cc $(CPPDIR)/sensor.pb.cc $(CPPDIR)/geisa-status.pb.cc \
+	  $(CPPDIR)/discovery.pb.cc $(CPPDIR)/sensor.pb.cc $(CPPDIR)/waveform.pb.cc $(CPPDIR)/geisa-status.pb.cc \
 	  $$(pkg-config --libs protobuf) -pthread \
 	  -o $(EXAMPLESDIR)/discovery_write_response_example
 	c++ -std=c++17 -O2 -I$(CPPDIR) $$(pkg-config --cflags protobuf) \
