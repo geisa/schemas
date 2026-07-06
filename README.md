@@ -227,7 +227,7 @@ root:
 
 This is the supported generator path for this branch. The `PYTHON=...` setting
 keeps generation anchored to the repository `venv` instead of whichever Python
-interpreter happens to be first on `PATH`.  Once the venv has been set up along 
+interpreter happens to be first on `PATH`.  Once the venv has been set up along
 with the nanopb directory, subsequent make examples or examples-c will build
 without issue.
 
