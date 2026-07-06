@@ -4,11 +4,17 @@
 //
 // Licensed under the Apache License, Version 2.0. See LICENSE.
 //-----------------------------------------------------------------------------
+// Validates that checked JSON files in this repo parse successfully.
+// This is syntax-only validation; schema semantics live in
+// validate-example-schemas.mjs so parse failures and contract failures remain
+// easy to distinguish in lint output.
 
 import { readdir, readFile } from "node:fs/promises";
 import path from "node:path";
 
 const ROOT = process.cwd();
+// Skip generated, dependency, and scratch trees so lint stays focused on
+// checked repository content.
 const EXCLUDED_DIRS = new Set([
   ".git",
   ".codex",
@@ -25,6 +31,7 @@ async function* walk(dir) {
     const fullPath = path.join(dir, entry.name);
 
     if (entry.isDirectory()) {
+      // Recursive walk keeps the script repo-wide without hard-coding paths.
       if (!EXCLUDED_DIRS.has(entry.name)) {
         yield* walk(fullPath);
       }
@@ -54,6 +61,7 @@ for await (const filePath of walk(ROOT)) {
   }
 }
 
+// Exit non-zero if any file failed so npm run lint stops at this phase.
 if (hasError) {
   process.exit(1);
 }
