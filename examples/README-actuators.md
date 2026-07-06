@@ -35,12 +35,39 @@ Example binaries are written to:
 
     build/examples/
 
+The embedded C actuator examples are the preferred path in this branch. The
+C++ examples remain available as reference examples and may be removed in a
+later cleanup.
+
 ## Example JSON files
 
 - `actuator-get-request-service-switch-example.json`
 - `actuator-get-response-service-switch-closed-example.json`
 - `actuator-set-request-load-control-relay-example.json`
 - `actuator-set-response-accepted-example.json`
+
+## Embedded C examples
+
+- `build/examples/actuator_read_example_c`
+- `build/examples/actuator_write_response_example_c`
+
+The embedded C reader uses the same explicit decode modes:
+
+    build/examples/actuator_read_example_c --get-req <file>
+    build/examples/actuator_read_example_c --get-rsp <file>
+    build/examples/actuator_read_example_c --set-req <file>
+    build/examples/actuator_read_example_c --set-rsp <file>
+
+`actuator_write_response_example_c --demo` is the primary end-to-end
+walkthrough: it writes the standard `/tmp` payloads and then decodes them.
+
+`actuator_read_example_c --demo` is decode-only and expects those standard
+`/tmp` payloads to already exist.
+
+The embedded C writer emits the standard `/tmp` payloads with no arguments and
+runs the end-to-end walkthrough with:
+
+    build/examples/actuator_write_response_example_c --demo
 
 ## C++ examples
 
@@ -57,20 +84,3 @@ Example binaries are written to:
 Run the C++ demo writer flow:
 
     build/examples/actuator_write_response_example --demo
-
-## Embedded C examples
-
-- `build/examples/actuator_read_example_c`
-- `build/examples/actuator_write_response_example_c`
-
-The embedded C reader uses the same explicit decode modes:
-
-    build/examples/actuator_read_example_c --get-req <file>
-    build/examples/actuator_read_example_c --get-rsp <file>
-    build/examples/actuator_read_example_c --set-req <file>
-    build/examples/actuator_read_example_c --set-rsp <file>
-
-The embedded C writer emits the standard `/tmp` payloads with no arguments and
-runs the end-to-end walkthrough with:
-
-    build/examples/actuator_write_response_example_c --demo

@@ -5,7 +5,11 @@
 // Licensed under the Apache License, Version 2.0. See LICENSE.
 //-----------------------------------------------------------------------------
 //
-// Example GEISA Platform Discovery request writer for the embedded C path.
+// Example GEISA Platform Discovery embedded C request writer.
+//
+// This example writes a GeisaPlatformDiscovery_Req payload. `--demo` writes
+// the standard `/tmp` request payload and immediately decodes it through the
+// companion reader.
 //-----------------------------------------------------------------------------
 
 #include <stdio.h>

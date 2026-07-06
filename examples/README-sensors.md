@@ -39,15 +39,25 @@ Compiled binaries are written to:
 
     build/examples/
 
+The embedded C sensor examples are the preferred path in this branch. The C++
+examples remain available as reference examples and may be removed in a later
+cleanup.
+
 ## Quick start
 
 Run the embedded C writer walkthrough:
 
     build/examples/sensor_write_response_example_c --demo
 
+This is the primary end-to-end walkthrough: it writes the standard `/tmp`
+sensor payload and then decodes it immediately.
+
 Run the embedded C reader walkthrough for the standard `/tmp` payload:
 
     build/examples/sensor_read_example_c --demo
+
+The reader `--demo` path is decode-only and expects that standard `/tmp`
+payload to already exist.
 
 ## Manual write + read loop
 

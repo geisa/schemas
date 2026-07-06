@@ -5,7 +5,14 @@
 // Licensed under the Apache License, Version 2.0. See LICENSE.
 //-----------------------------------------------------------------------------
 //
-// Example GEISA actuator protobuf decoder for the embedded C path.
+// Example GEISA actuator embedded C decoder.
+//
+// This example decodes GeisaActuatorGet_Req, GeisaActuatorGet_Rsp,
+// GeisaActuatorSet_Req, or GeisaActuatorSet_Rsp from a binary protobuf file
+// and prints a JSON-like representation for logging or diagnostics.
+//
+// `--demo` reads the standard `/tmp` payload set written by
+// actuator_write_response_example_c.
 //-----------------------------------------------------------------------------
 
 #include <stdio.h>

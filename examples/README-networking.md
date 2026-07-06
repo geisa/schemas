@@ -48,6 +48,31 @@ Example binaries are written to:
 
     build/examples/
 
+The embedded C app-message examples are the preferred path in this branch. The
+C++ examples remain available as reference examples and may be removed in a
+later cleanup.
+
+## Embedded C examples
+
+- `build/examples/app_message_read_example_c`
+- `build/examples/app_message_write_response_example_c`
+
+Quick start:
+
+    build/examples/app_message_write_response_example_c --demo
+
+This is the primary end-to-end walkthrough: it writes the standard `/tmp`
+request and response payloads and then decodes both immediately.
+
+`build/examples/app_message_read_example_c --demo` is decode-only and expects
+those standard `/tmp` payloads to already exist.
+
+Manual write + read loop:
+
+    build/examples/app_message_write_response_example_c
+    build/examples/app_message_read_example_c --req /tmp/app-message-req.bin
+    build/examples/app_message_read_example_c --rsp /tmp/app-message-rsp.bin
+
 ## C++ examples
 
 - `build/examples/app_message_read_example`
@@ -63,18 +88,3 @@ Manual write + read loop:
       /tmp/app-message-req.bin /tmp/app-message-rsp.bin
     build/examples/app_message_read_example --req /tmp/app-message-req.bin
     build/examples/app_message_read_example --rsp /tmp/app-message-rsp.bin
-
-## Embedded C examples
-
-- `build/examples/app_message_read_example_c`
-- `build/examples/app_message_write_response_example_c`
-
-Quick start:
-
-    build/examples/app_message_write_response_example_c --demo
-
-Manual write + read loop:
-
-    build/examples/app_message_write_response_example_c
-    build/examples/app_message_read_example_c --req /tmp/app-message-req.bin
-    build/examples/app_message_read_example_c --rsp /tmp/app-message-rsp.bin

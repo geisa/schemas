@@ -5,7 +5,13 @@
 // Licensed under the Apache License, Version 2.0. See LICENSE.
 //-----------------------------------------------------------------------------
 //
-// Example GEISA sensor protobuf decoder for the embedded C path.
+// Example GEISA sensor embedded C decoder.
+//
+// This example decodes a GeisaSensorReadings_Rsp protobuf payload and prints a
+// JSON-like representation for logging, diagnostics, or downstream tooling.
+//
+// `--demo` reads the standard `/tmp` payload written by
+// sensor_write_response_example_c.
 //-----------------------------------------------------------------------------
 
 #include <stdio.h>

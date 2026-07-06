@@ -5,7 +5,11 @@
 // Licensed under the Apache License, Version 2.0. See LICENSE.
 //-----------------------------------------------------------------------------
 //
-// Example GEISA Platform Discovery response writer for the embedded C path.
+// Example GEISA Platform Discovery embedded C response writer.
+//
+// This example creates a sample GeisaPlatformDiscovery_Rsp payload and writes
+// it to a binary file for decoding with the companion reader. `--demo` is the
+// main walkthrough entry point.
 //-----------------------------------------------------------------------------
 
 #include <stdio.h>

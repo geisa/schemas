@@ -5,7 +5,11 @@
 // Licensed under the Apache License, Version 2.0. See LICENSE.
 //-----------------------------------------------------------------------------
 //
-// Example GEISA sensor protobuf writer for the embedded C path.
+// Example GEISA sensor embedded C writer.
+//
+// This example creates a GeisaSensorReadings_Rsp payload containing multiple
+// readings. `--demo` is the main walkthrough entry point and immediately
+// decodes the standard `/tmp` payload through the companion reader.
 //-----------------------------------------------------------------------------
 
 #include <stdio.h>

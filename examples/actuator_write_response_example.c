@@ -5,7 +5,12 @@
 // Licensed under the Apache License, Version 2.0. See LICENSE.
 //-----------------------------------------------------------------------------
 //
-// Example GEISA actuator protobuf writer for the embedded C path.
+// Example GEISA actuator embedded C writer.
+//
+// This example writes representative GeisaActuatorGet_Req,
+// GeisaActuatorGet_Rsp, GeisaActuatorSet_Req, and GeisaActuatorSet_Rsp
+// payloads. `--demo` is the main walkthrough entry point and immediately
+// decodes the standard `/tmp` payload set through the companion reader.
 //-----------------------------------------------------------------------------
 
 #include <stdio.h>

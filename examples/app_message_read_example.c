@@ -5,7 +5,13 @@
 // Licensed under the Apache License, Version 2.0. See LICENSE.
 //-----------------------------------------------------------------------------
 //
-// Example GEISA app-message protobuf decoder for the embedded C path.
+// Example GEISA app-message embedded C decoder.
+//
+// This example decodes GeisaAppMessage_Req or GeisaAppMessage_Rsp from a
+// binary protobuf file and prints a JSON-like representation. Opaque payload
+// bytes are rendered as hex so the output stays readable in a terminal.
+//
+// `--demo` reads the standard `/tmp` request and response payloads.
 //-----------------------------------------------------------------------------
 
 #include <stdio.h>

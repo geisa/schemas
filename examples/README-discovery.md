@@ -32,19 +32,32 @@ Compiled binaries are written to:
 
     build/examples/
 
+The embedded C Platform Discovery examples are the preferred path in this
+branch. The C++ examples remain available as reference examples and may be
+removed in a later cleanup.
+
 ## Quick start
 
 Run the embedded C request walkthrough:
 
     build/examples/discovery_write_request_example_c --demo
 
+This writes the standard `/tmp` discovery request payload and then decodes it
+immediately.
+
 Run the embedded C response walkthrough:
 
     build/examples/discovery_write_response_example_c --demo
 
+This writes the standard `/tmp` discovery response payload and then decodes it
+immediately.
+
 Decode both standard `/tmp` payloads:
 
     build/examples/discovery_read_example_c --demo
+
+The reader `--demo` path is decode-only and expects those standard `/tmp`
+payloads to already exist.
 
 ## Manual write + read loop
 

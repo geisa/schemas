@@ -73,6 +73,8 @@ CPP_HDRS = $(patsubst %.proto,$(CPPDIR)/%.pb.h,$(PROTOS))
 ###############################################################################
 # Java outputs
 ###############################################################################
+# protoc may generate multiple .java files depending on package/options,
+# so for Java we use a stamp file to let make know the command completed.
 JAVA_STAMP = $(JAVADIR)/.java_generated
 
 ###############################################################################
@@ -110,6 +112,16 @@ NANOPB_APP_MESSAGE_STAMP = $(NANOPBDIR)/.app-message.nanopb.stamp
 NANOPB_APP_MESSAGE_EXAMPLES = \
 	$(EXAMPLESDIR)/app_message_write_response_example_c \
 	$(EXAMPLESDIR)/app_message_read_example_c
+
+NANOPB_CONN_STATUS_PROTO = conn-status.proto
+NANOPB_CONN_STATUS_OPTIONS = $(NANOPB_OPTIONS_DIR)/conn-status.options
+NANOPB_CONN_STATUS_GEN = \
+	$(NANOPBDIR)/conn-status.pb.c \
+	$(NANOPBDIR)/conn-status.pb.h
+NANOPB_CONN_STATUS_STAMP = $(NANOPBDIR)/.conn-status.nanopb.stamp
+NANOPB_CONN_STATUS_EXAMPLES = \
+	$(EXAMPLESDIR)/conn_status_write_example_c \
+	$(EXAMPLESDIR)/conn_status_read_example_c
 
 NANOPB_SENSOR_PROTO = sensor.proto
 NANOPB_SENSOR_OPTIONS = $(NANOPB_OPTIONS_DIR)/sensor.options
@@ -184,6 +196,9 @@ all: $(BINPBS) examples
 ###############################################################################
 # Named language targets
 ###############################################################################
+# Legacy protobuf-c generation is kept as a best-effort path for standalone use.
+# It is not the supported embedded C example path for protos that use proto3
+# optional support.
 c: $(C_SRCS) $(C_HDRS)
 
 cpp: $(CPP_SRCS) $(CPP_HDRS)
@@ -198,6 +213,8 @@ setup-dev:
 actuator-c: $(NANOPB_STATUS_STAMP) $(NANOPB_ACTUATOR_STAMP)
 
 app-message-c: $(NANOPB_APP_MESSAGE_STAMP)
+
+conn-status-c: $(NANOPB_CONN_STATUS_STAMP)
 
 sensor-c: $(NANOPB_STATUS_STAMP) $(NANOPB_SENSOR_STAMP)
 
@@ -274,11 +291,13 @@ examples-actuator: $(NANOPB_ACTUATOR_EXAMPLES)
 
 examples-app-message: $(NANOPB_APP_MESSAGE_EXAMPLES)
 
+examples-conn-status: $(NANOPB_CONN_STATUS_EXAMPLES)
+
 examples-sensor: $(NANOPB_SENSOR_EXAMPLES)
 
 examples-discovery: $(NANOPB_DISCOVERY_EXAMPLES)
 
-examples-c: examples-actuator examples-app-message examples-sensor examples-discovery
+examples-c: examples-actuator examples-app-message examples-conn-status examples-sensor examples-discovery
 	@echo "Built embedded C examples in $(EXAMPLESDIR)"
 
 ###############################################################################
@@ -294,6 +313,10 @@ $(NANOPB_ACTUATOR_STAMP): $(NANOPB_ACTUATOR_PROTO) $(NANOPB_ACTUATOR_OPTIONS) $(
 
 $(NANOPB_APP_MESSAGE_STAMP): $(NANOPB_APP_MESSAGE_PROTO) $(NANOPB_APP_MESSAGE_OPTIONS)
 	$(call NANOPB_GENERATE,$(NANOPB_APP_MESSAGE_PROTO),$(NANOPB_APP_MESSAGE_GEN))
+	@touch $@
+
+$(NANOPB_CONN_STATUS_STAMP): $(NANOPB_CONN_STATUS_PROTO) $(NANOPB_CONN_STATUS_OPTIONS)
+	$(call NANOPB_GENERATE,$(NANOPB_CONN_STATUS_PROTO),$(NANOPB_CONN_STATUS_GEN))
 	@touch $@
 
 $(NANOPB_SENSOR_STAMP): $(NANOPB_SENSOR_PROTO) $(NANOPB_SENSOR_OPTIONS) $(NANOPB_STATUS_STAMP)
@@ -369,6 +392,38 @@ $(EXAMPLESDIR)/app_message_read_example_c: examples/app_message_read_example.c e
 	  -I$(NANOPB_RUNTIME_DIR_EFFECTIVE) \
 	  examples/app_message_read_example.c \
 	  $(NANOPBDIR)/app-message.pb.c \
+	  $(NANOPB_RUNTIME_DIR_EFFECTIVE)/pb_common.c \
+	  $(NANOPB_RUNTIME_DIR_EFFECTIVE)/pb_encode.c \
+	  $(NANOPB_RUNTIME_DIR_EFFECTIVE)/pb_decode.c \
+	  -o $@
+
+$(EXAMPLESDIR)/conn_status_write_example_c: examples/conn_status_write_example.c examples/helpers/conn_status_example_utils.h examples/helpers/nanopb_example_utils.h $(NANOPB_CONN_STATUS_STAMP)
+	@mkdir -p $(EXAMPLESDIR)
+	@if [ -z "$(NANOPB_RUNTIME_DIR_EFFECTIVE)" ] || [ ! -f "$(NANOPB_RUNTIME_DIR_EFFECTIVE)/pb_encode.c" ] || [ ! -f "$(NANOPB_RUNTIME_DIR_EFFECTIVE)/pb_decode.c" ] || [ ! -f "$(NANOPB_RUNTIME_DIR_EFFECTIVE)/pb_common.c" ]; then \
+	  echo "NANOPB_DIR or NANOPB_RUNTIME_DIR must point to a nanopb source tree containing pb_common.c, pb_encode.c, and pb_decode.c."; \
+	  exit 1; \
+	fi
+	cc -std=c11 -O2 \
+	  -I$(NANOPBDIR) \
+	  -I$(NANOPB_RUNTIME_DIR_EFFECTIVE) \
+	  examples/conn_status_write_example.c \
+	  $(NANOPBDIR)/conn-status.pb.c \
+	  $(NANOPB_RUNTIME_DIR_EFFECTIVE)/pb_common.c \
+	  $(NANOPB_RUNTIME_DIR_EFFECTIVE)/pb_encode.c \
+	  $(NANOPB_RUNTIME_DIR_EFFECTIVE)/pb_decode.c \
+	  -o $@
+
+$(EXAMPLESDIR)/conn_status_read_example_c: examples/conn_status_read_example.c examples/helpers/conn_status_example_utils.h examples/helpers/nanopb_example_utils.h $(NANOPB_CONN_STATUS_STAMP)
+	@mkdir -p $(EXAMPLESDIR)
+	@if [ -z "$(NANOPB_RUNTIME_DIR_EFFECTIVE)" ] || [ ! -f "$(NANOPB_RUNTIME_DIR_EFFECTIVE)/pb_encode.c" ] || [ ! -f "$(NANOPB_RUNTIME_DIR_EFFECTIVE)/pb_decode.c" ] || [ ! -f "$(NANOPB_RUNTIME_DIR_EFFECTIVE)/pb_common.c" ]; then \
+	  echo "NANOPB_DIR or NANOPB_RUNTIME_DIR must point to a nanopb source tree containing pb_common.c, pb_encode.c, and pb_decode.c."; \
+	  exit 1; \
+	fi
+	cc -std=c11 -O2 \
+	  -I$(NANOPBDIR) \
+	  -I$(NANOPB_RUNTIME_DIR_EFFECTIVE) \
+	  examples/conn_status_read_example.c \
+	  $(NANOPBDIR)/conn-status.pb.c \
 	  $(NANOPB_RUNTIME_DIR_EFFECTIVE)/pb_common.c \
 	  $(NANOPB_RUNTIME_DIR_EFFECTIVE)/pb_encode.c \
 	  $(NANOPB_RUNTIME_DIR_EFFECTIVE)/pb_decode.c \
@@ -505,7 +560,7 @@ $(PYTHON_STAMP): $(PROTOS)
 ###############################################################################
 # Convenience target to generate everything (except examples)
 ###############################################################################
-langs: c cpp java python
+langs: cpp java python
 
 ###############################################################################
 # Clean

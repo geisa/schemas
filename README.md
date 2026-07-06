@@ -15,15 +15,15 @@ For full documentation and context, refer to the
 
 At a high level, this repository contains:
 
-- `*.proto` files for protobuf message definitions.
-- `geisa-*-schema.json` files for JSON Schema definitions.
+- `*.proto` files for protobuf message definitions
+- `geisa-*-schema.json` files for JSON Schema definitions
 - `profiles/*.json` files for additive conformance and capability profile
-  overlays.
-- `examples/*.json` files with example payloads.
+  overlays
+- `examples/*.json` example payloads
+- `examples/*.c` embedded C protobuf examples using nanopb.
 - `examples/*.cpp` files with C++ protobuf encode/decode examples.
-- `examples/*.c` files with embedded C protobuf examples using nanopb.
 - `examples/helpers/*.h` files with shared example-only helper code.
-- `examples/README*.md` files with example-specific build and run notes.
+- `examples/README*.md` example-specific build and run notes.
 
 This schemas repository SHALL be used in conjunction with the GEISA
 specification to enable creation of GEISA conformant implementations. The
@@ -42,13 +42,11 @@ For items with proto files, the proto files are authoritative, while JSON
 schemas, examples, and lists in the GEISA specification for the same item are
 not.
 
-For items without proto files, the JSON schema files are authoritative, while
-examples and lists in the GEISA specification for the same item are not.
-
 Profile schemas under `profiles/` are additive overlays on top of the base JSON
 schemas. They are intended for conformance validation and implementation
-guidance for a claimed device or capability profile without implying that all
-GEISA devices must implement all APIs or expose all measurements.
+guidance for a specific device/device class or capability profile without
+implying that all GEISA-conformant devices must implement all APIs or expose
+all measurements.
 
 ## Prerequisites
 
@@ -64,8 +62,9 @@ The C++ example build target also requires:
 - protobuf development headers and libraries discoverable through
   `pkg-config protobuf`
 
-The optional C generation target requires protobuf-c support, including
-`protoc-gen-c`, available on `PATH`.
+The legacy C generation target (`make c`) requires protobuf-c support,
+including `protoc-gen-c` on `PATH`. It is a best-effort generator path and is
+not the supported embedded C path for protos that use proto3 optional fields.
 
 The embedded C example path requires:
 
@@ -140,6 +139,10 @@ Generate app-message embedded C bindings only:
 
     make app-message-c
 
+Generate conn-status embedded C bindings only:
+
+    make conn-status-c
+
 Generate sensor embedded C bindings only:
 
     make sensor-c
@@ -152,15 +155,15 @@ Build the default example set:
 
     make examples
 
-Build the C++ example set explicitly:
-
-    make examples-cpp
-
 Build the embedded C example set explicitly:
 
     make examples-c NANOPB_DIR=/path/to/nanopb
 
-Generate all language outputs:
+Build the C++ example set explicitly:
+
+    make examples-cpp
+
+Generate all supported language outputs:
 
     make langs
 
@@ -172,9 +175,13 @@ When `/tmp/nanopb` already exists as a valid nanopb checkout, `make examples`
 builds both the C++ and embedded C example sets. Otherwise it builds the C++
 examples and prints the exact primary setup command for the embedded C path.
 
+The `make langs` target intentionally omits legacy protobuf-c generation so it
+does not fail on repo protos that use proto3 optional. Legacy protobuf-c code
+generation remains available separately through `make c`.
+
 For embedded C, waveform remains on the C++ example path for GEISA 0.9. The
-embedded C examples currently cover actuator, app-message, sensor, and
-Platform Discovery payloads.
+embedded C examples currently cover actuator, app-message, conn-status,
+sensor, and Platform Discovery payloads.
 
 ## Examples
 
@@ -182,6 +189,7 @@ Example-specific build and run instructions are in the `examples/` directory:
 
 - `examples/README.md`
 - `examples/README-actuators.md`
+- `examples/README-conn-status.md`
 - `examples/README-discovery.md`
 - `examples/README-networking.md`
 - `examples/README-waveform.md`
@@ -219,7 +227,9 @@ root:
 
 This is the supported generator path for this branch. The `PYTHON=...` setting
 keeps generation anchored to the repository `venv` instead of whichever Python
-interpreter happens to be first on `PATH`.
+interpreter happens to be first on `PATH`.  Once the venv has been set up along 
+with the nanopb directory, subsequent make examples or examples-c will build
+without issue.
 
 `make setup-dev` runs the same bootstrap script if you prefer a Makefile
 entrypoint.
@@ -231,6 +241,16 @@ path as a shorter alternate path.
 Then run the relevant binary from `build/examples/`. The topic-specific README
 files include additional notes and, where useful, example command lines for the
 available C++ and embedded C paths.
+
+Where embedded C examples exist, they are the preferred example path for this
+branch because the nanopb-based build is the path being kept aligned with
+proto3 optional support and current embedded review needs. The C++ examples
+remain available as reference examples and may be removed in a later cleanup.
+
+For the embedded C examples, writer `--demo` modes are the primary end-to-end
+walkthrough entry points: they generate the standard `/tmp` payloads and then
+read them back through the companion decoder. Reader `--demo` modes are
+decode-only and expect those standard `/tmp` payloads to already exist.
 
 ## Lint and validation
 

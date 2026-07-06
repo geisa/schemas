@@ -12,8 +12,11 @@ envelope examples.
 
 The C++ writer examples emit binary protobuf envelopes. The reader examples
 decode those envelopes and print JSON-like diagnostic output. The embedded C
-examples use nanopb for the same protobuf message contracts. Many examples
-include a `--demo` mode for a quick local walkthrough.
+examples use nanopb for the same protobuf message contracts. For the embedded C
+path, writer `--demo` modes are the primary end-to-end walkthrough entry
+points: they generate the standard `/tmp` payloads and then decode them
+immediately. Reader `--demo` modes are decode-only and expect those standard
+`/tmp` payloads to already exist.
 
 ## Building examples
 
@@ -54,6 +57,7 @@ path.
 ## Topic guides
 
 - Platform Discovery: `README-discovery.md`
+- Connection status: `README-conn-status.md`
 - Networking / app-message: `README-networking.md`
 - Actuators: `README-actuators.md`
 - Sensors: `README-sensors.md`
@@ -68,8 +72,17 @@ Embedded C examples are available for:
 
 - actuators
 - app-message / networking
+- conn-status
 - sensors
 - Platform Discovery
+
+Where embedded C examples exist, they are the preferred example path for this
+branch because the nanopb-based build is the path being kept aligned with
+proto3 optional support and current embedded review needs. The C++ examples
+remain available as reference examples and may be removed in a later cleanup.
+
+The legacy `make c` protobuf-c generation path remains available for standalone
+code generation, but it is not the primary C example path in this branch.
 
 Waveform remains on the C++ example path for GEISA 0.9. The Platform Discovery
 embedded C example includes waveform metadata in the discovery response; it

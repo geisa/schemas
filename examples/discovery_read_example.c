@@ -5,7 +5,14 @@
 // Licensed under the Apache License, Version 2.0. See LICENSE.
 //-----------------------------------------------------------------------------
 //
-// Example GEISA Platform Discovery protobuf decoder for the embedded C path.
+// Example GEISA Platform Discovery embedded C decoder.
+//
+// This example decodes GeisaPlatformDiscovery_Req or
+// GeisaPlatformDiscovery_Rsp from a binary protobuf file and prints a
+// JSON-like representation for logging, diagnostics, or handoff into other
+// tooling.
+//
+// `--demo` reads the standard `/tmp` request and response payloads.
 //-----------------------------------------------------------------------------
 
 #include <stdio.h>

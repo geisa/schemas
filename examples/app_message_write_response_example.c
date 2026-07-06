@@ -5,7 +5,12 @@
 // Licensed under the Apache License, Version 2.0. See LICENSE.
 //-----------------------------------------------------------------------------
 //
-// Example GEISA app-message protobuf writer for the embedded C path.
+// Example GEISA app-message embedded C writer.
+//
+// This example writes one GeisaAppMessage_Req payload and one
+// GeisaAppMessage_Rsp payload. 
+// `--demo` is the main walkthrough entry point and immediately decodes both 
+// through the companion reader.
 //-----------------------------------------------------------------------------
 
 #include <stdio.h>
