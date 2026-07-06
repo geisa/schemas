@@ -24,8 +24,14 @@ CPPDIR    = $(BUILDDIR)/cpp
 JAVADIR   = $(BUILDDIR)/java
 PYTHONDIR   = $(BUILDDIR)/python
 EXAMPLESDIR = $(BUILDDIR)/examples
-
+NANOPBDIR = $(BUILDDIR)/nanopb
 PROTOC ?= protoc
+PYTHON ?= python3
+NANOPB_GENERATOR ?= protoc-gen-nanopb
+NANOPB_DIR ?=
+NANOPB_RUNTIME_DIR ?= $(NANOPB_DIR)
+NANOPB_OPTIONS_DIR ?= nanopb_options
+NANOPB_RUNTIME_DIR_EFFECTIVE = $(strip $(NANOPB_RUNTIME_DIR))
 
 # Check protoc version for proto3 optional support
 PROTOC_VERSION := $(shell $(PROTOC) --version | awk '{print $$2}')
@@ -69,6 +75,17 @@ JAVA_STAMP = $(JAVADIR)/.java_generated
 PYTHON_STAMP = $(PYTHONDIR)/.python_generated
 
 ###############################################################################
+# Embedded C outputs (metered_quantities)
+###############################################################################
+NANOPB_METERED_PROTO = metered_quantities.proto
+NANOPB_METERED_OPTIONS = $(NANOPB_OPTIONS_DIR)/metered_quantities.options
+NANOPB_METERED_SRCS = $(NANOPBDIR)/metered_quantities.pb.c
+NANOPB_METERED_HDRS = $(NANOPBDIR)/metered_quantities.pb.h
+NANOPB_METERED_EXAMPLES = \
+	$(EXAMPLESDIR)/metered_quantities_write_example \
+	$(EXAMPLESDIR)/metered_quantities_read_example
+
+###############################################################################
 # Default target: keep original behavior
 ###############################################################################
 all: $(BINPBS) examples
@@ -84,7 +101,12 @@ java: $(JAVA_STAMP)
 
 python: $(PYTHON_STAMP)
 
-examples: cpp
+metered-c: $(NANOPB_METERED_SRCS) $(NANOPB_METERED_HDRS)
+
+examples: examples-cpp
+	@echo "Embedded C examples are available separately via: make examples-c NANOPB_DIR=/path/to/nanopb"
+
+examples-cpp: cpp
 	@mkdir -p $(EXAMPLESDIR)
 	c++ -std=c++17 -O2 -I$(CPPDIR) $$(pkg-config --cflags protobuf) \
 	  examples/actuator_read_example.cpp \
@@ -137,7 +159,58 @@ examples: cpp
 	  $$(pkg-config --libs protobuf) -pthread \
 	  -o $(EXAMPLESDIR)/waveform_subscribe_and_read
 
-examples-cpp: examples
+examples-metered: $(NANOPB_METERED_EXAMPLES)
+
+examples-c: examples-metered
+
+###############################################################################
+# Nanopb generation and examples
+###############################################################################
+$(NANOPB_METERED_SRCS) $(NANOPB_METERED_HDRS): $(NANOPB_METERED_PROTO) $(NANOPB_METERED_OPTIONS)
+	@mkdir -p $(NANOPBDIR)
+	@plugin="$(NANOPB_GENERATOR)"; \
+	if [ -x "$$plugin" ]; then \
+	  :; \
+	elif command -v "$$plugin" >/dev/null 2>&1; then \
+	  plugin="$$(command -v "$$plugin")"; \
+	else \
+	  echo "Missing nanopb generator: $(NANOPB_GENERATOR)"; \
+	  echo "Set NANOPB_GENERATOR to protoc-gen-nanopb or an explicit generator path, then rerun make metered-c."; \
+	  exit 1; \
+	fi; \
+	$(PROTOC) $(PROTOC_FLAGS) -I. --plugin=protoc-gen-nanopb="$$plugin" --nanopb_out=$(NANOPBDIR) --nanopb_opt=-I$(NANOPB_OPTIONS_DIR) $(NANOPB_METERED_PROTO)
+
+$(EXAMPLESDIR)/metered_quantities_write_example: examples/metered_quantities_write_example.c $(NANOPB_METERED_SRCS) $(NANOPB_METERED_HDRS)
+	@mkdir -p $(EXAMPLESDIR)
+	@if [ -z "$(NANOPB_RUNTIME_DIR_EFFECTIVE)" ] || [ ! -f "$(NANOPB_RUNTIME_DIR_EFFECTIVE)/pb_encode.c" ] || [ ! -f "$(NANOPB_RUNTIME_DIR_EFFECTIVE)/pb_decode.c" ] || [ ! -f "$(NANOPB_RUNTIME_DIR_EFFECTIVE)/pb_common.c" ]; then \
+	  echo "NANOPB_DIR or NANOPB_RUNTIME_DIR must point to a nanopb source tree containing pb_common.c, pb_encode.c, and pb_decode.c."; \
+	  exit 1; \
+	fi
+	cc -std=c11 -O2 \
+	  -I$(NANOPBDIR) \
+	  -I$(NANOPB_RUNTIME_DIR_EFFECTIVE) \
+	  examples/metered_quantities_write_example.c \
+	  $(NANOPBDIR)/metered_quantities.pb.c \
+	  $(NANOPB_RUNTIME_DIR_EFFECTIVE)/pb_common.c \
+	  $(NANOPB_RUNTIME_DIR_EFFECTIVE)/pb_encode.c \
+	  $(NANOPB_RUNTIME_DIR_EFFECTIVE)/pb_decode.c \
+	  -o $@
+
+$(EXAMPLESDIR)/metered_quantities_read_example: examples/metered_quantities_read_example.c $(NANOPB_METERED_SRCS) $(NANOPB_METERED_HDRS)
+	@mkdir -p $(EXAMPLESDIR)
+	@if [ -z "$(NANOPB_RUNTIME_DIR_EFFECTIVE)" ] || [ ! -f "$(NANOPB_RUNTIME_DIR_EFFECTIVE)/pb_encode.c" ] || [ ! -f "$(NANOPB_RUNTIME_DIR_EFFECTIVE)/pb_decode.c" ] || [ ! -f "$(NANOPB_RUNTIME_DIR_EFFECTIVE)/pb_common.c" ]; then \
+	  echo "NANOPB_DIR or NANOPB_RUNTIME_DIR must point to a nanopb source tree containing pb_common.c, pb_encode.c, and pb_decode.c."; \
+	  exit 1; \
+	fi
+	cc -std=c11 -O2 \
+	  -I$(NANOPBDIR) \
+	  -I$(NANOPB_RUNTIME_DIR_EFFECTIVE) \
+	  examples/metered_quantities_read_example.c \
+	  $(NANOPBDIR)/metered_quantities.pb.c \
+	  $(NANOPB_RUNTIME_DIR_EFFECTIVE)/pb_common.c \
+	  $(NANOPB_RUNTIME_DIR_EFFECTIVE)/pb_encode.c \
+	  $(NANOPB_RUNTIME_DIR_EFFECTIVE)/pb_decode.c \
+	  -o $@
 
 ###############################################################################
 # .binpb generation
@@ -189,4 +262,4 @@ langs: c cpp java python
 clean:
 	rm -rf $(BUILDDIR)
 
-.PHONY: all c cpp java python examples examples-cpp langs clean
+.PHONY: all c cpp java python metered-c examples examples-cpp examples-c examples-metered langs clean

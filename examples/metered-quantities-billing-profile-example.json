@@ -1,0 +1,18 @@
+{
+  "geisa-billing-quantities": {
+    "message-version": 1,
+    "summation-total": {
+      "message-version": 1,
+      "timestamp-us": 1736035200123456,
+      "active-energy-micro-wh-del": 1250042000
+    },
+    "demand-total": {
+      "message-version": 1,
+      "timestamp-us": 1736035200123456,
+      "active-power-micro-w-del": {
+        "max-demand-time-us": 1736031600000000,
+        "quantity": 452100000
+      }
+    }
+  }
+}

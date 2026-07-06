@@ -5,8 +5,8 @@
   "description": "Lint and validation baseline for GEISA schemas repo",
   "scripts": {
     "lint": "npm run lint:md && npm run lint:json",
-    "lint:md": "markdownlint \"*.md\" \"docs/**/*.md\" \"examples/**/*.md\"",
-    "lint:md:fix": "markdownlint --fix \"*.md\" \"docs/**/*.md\" \"examples/**/*.md\"",
+    "lint:md": "markdownlint \"*.md\" \"docs/**/*.md\" \"examples/**/*.md\" \"profiles/**/*.md\"",
+    "lint:md:fix": "markdownlint --fix \"*.md\" \"docs/**/*.md\" \"examples/**/*.md\" \"profiles/**/*.md\"",
     "lint:json": "node scripts/validate-json.mjs"
   },
   "devDependencies": {
