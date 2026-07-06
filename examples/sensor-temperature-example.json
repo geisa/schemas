@@ -5,7 +5,7 @@
        "sensor": {
       "$comment": "Descriptor metadata for a readable and publishable lower-rate temperature sensor.",
       "sensor-id": "board_temp1",
-      "sensor-type": "temperature",
+      "sensor-type": "GEISA_SENSOR_TYPE_TEMPERATURE",
       "sensor-subtype": "board",
       "name": "Board Temperature Sensor 1",
       "description": "Internal board or electronics temperature sensor.",

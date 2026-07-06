@@ -24,9 +24,9 @@ At a high level, this repository contains:
 - `examples/README*.md` files with example-specific build and run notes.
 
 This schemas repository SHALL be used in conjunction with the GEISA
-specification to enable creation of GEISA conformant implementations.  The
+specification to enable creation of GEISA conformant implementations. The
 content within has been provided with the intent for the user to fully
-understand the structure of, conformance with, and the intent of GIESA
+understand the structure of, conformance with, and the intent of GEISA
 messages and payloads.
 
 Most API message payloads are defined in the GEISA specification as well as here
@@ -39,11 +39,11 @@ implementer should be able to resolve conflicts or discrepancies found within
 this content.
 
 For items with proto files, the proto files are authoritative, while JSON
-schemas, examples, and lists in the GIESA specification for the same item are
+schemas, examples, and lists in the GEISA specification for the same item are
 not.
 
 For items without proto files, the JSON schema files are authoritative, while
-examples and lists in the GIESA specification for the same item are not.
+examples and lists in the GEISA specification for the same item are not.
 
 ## Prerequisites
 
@@ -101,9 +101,10 @@ Clean generated outputs:
 
     make clean
 
-Note: current examples use the C++ generation path. Some messages use proto3
-optional fields, and the protobuf-c generator used by `make c` may not support
-those fields on all platforms.
+Note: Most current examples use the C++ generation path. Some messages use
+proto3 optional fields, and the protobuf-c generator used by `make c` may not
+support those fields on all platforms.  The GEISA schemas repo is currently
+transitioning to use nanopb to support optionality.
 
 ## Examples
 
@@ -150,8 +151,17 @@ To run JSON syntax validation only:
 
     npm run lint:json
 
-The lint baseline checks repository markdown and validates JSON
-files for parseable JSON syntax. It does not perform JSON Schema semantic
-validation, protobuf linting, or C/C++ formatting at this time.
+To run JSON Schema semantic validation for the checked example payloads:
+
+    npm run lint:schema
+
+A clean rebuild that also refreshes generated artifacts is:
+
+    make clean all
+
+The lint baseline checks repository markdown, validates repository JSON files
+for parseable syntax, and validates checked example payloads against their
+matching JSON Schemas. It does not perform protobuf linting or C/C++
+formatting at this time.
 
 [geisa-spec]: https://github.com/geisa/specification
