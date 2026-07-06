@@ -51,6 +51,7 @@ ifeq ($(shell printf "3.12.0\n$(PROTOC_VERSION)\n" | sort -V | head -n1),3.12.0)
     PROTOC_FLAGS += --experimental_allow_proto3_optional
   endif
 endif
+PROTOC_OPTS ?= $(PROTOC_FLAGS)
 
 ###############################################################################
 # Default .binpb outputs
@@ -141,9 +142,9 @@ define NANOPB_GENERATE
 	@mkdir -p $(NANOPBDIR)
 	@if [ -n "$(strip $(NANOPB_GENERATOR_MODULE))" ]; then \
 	  module_status=0; \
-	  $(PYTHON) -m $(NANOPB_GENERATOR_MODULE) -D $(NANOPBDIR) -I $(NANOPB_OPTIONS_DIR) --protoc-opt=-I. $(1) || module_status=$$?; \
+	  $(PYTHON) -m $(NANOPB_GENERATOR_MODULE) -D $(NANOPBDIR) -I $(NANOPB_OPTIONS_DIR) --protoc-opt=-I. $(foreach opt,$(PROTOC_OPTS),--protoc-opt=$(opt)) $(1) || module_status=$$?; \
 	  if { [ $$module_status -ne 0 ] || [ ! -f "$(word 1,$(2))" ]; } && [ -n "$(NANOPB_VENV_SITE_PACKAGES)" ]; then \
-	    PYTHONPATH="$(NANOPB_VENV_SITE_PACKAGES)$${PYTHONPATH:+:$$PYTHONPATH}" $(NANOPB_HOST_PYTHON) -m $(NANOPB_GENERATOR_MODULE) -D $(NANOPBDIR) -I $(NANOPB_OPTIONS_DIR) --protoc-opt=-I. $(1) || exit $$?; \
+	    PYTHONPATH="$(NANOPB_VENV_SITE_PACKAGES)$${PYTHONPATH:+:$$PYTHONPATH}" $(NANOPB_HOST_PYTHON) -m $(NANOPB_GENERATOR_MODULE) -D $(NANOPBDIR) -I $(NANOPB_OPTIONS_DIR) --protoc-opt=-I. $(foreach opt,$(PROTOC_OPTS),--protoc-opt=$(opt)) $(1) || exit $$?; \
 	  elif [ $$module_status -ne 0 ]; then \
 	    exit $$module_status; \
 	  fi; \
@@ -202,12 +203,14 @@ sensor-c: $(NANOPB_STATUS_STAMP) $(NANOPB_SENSOR_STAMP)
 
 discovery-c: $(NANOPB_STATUS_STAMP) $(NANOPB_SENSOR_STAMP) $(NANOPB_WAVEFORM_STAMP) $(NANOPB_DISCOVERY_STAMP)
 
-examples: examples-cpp
+examples:
+	@echo "==> Building C++ examples"
+	@$(MAKE) examples-cpp
 	@if [ -f "$(NANOPB_RUNTIME_DIR_EFFECTIVE)/pb_common.c" ] && [ -f "$(NANOPB_RUNTIME_DIR_EFFECTIVE)/pb_encode.c" ] && [ -f "$(NANOPB_RUNTIME_DIR_EFFECTIVE)/pb_decode.c" ] && [ -n "$(NANOPB_VENV_SITE_PACKAGES)" ]; then \
-	  echo "Building embedded C examples with nanopb runtime at $(NANOPB_RUNTIME_DIR_EFFECTIVE)"; \
+	  echo "==> Building embedded C examples"; \
 	  $(MAKE) examples-c PYTHON="$(PYTHON)" NANOPB_GENERATOR_MODULE=nanopb.generator.nanopb_generator NANOPB_DIR="$(NANOPB_DIR)" NANOPB_RUNTIME_DIR="$(NANOPB_RUNTIME_DIR)"; \
 	else \
-	  echo "Skipping embedded C examples."; \
+	  echo "==> Skipping embedded C examples"; \
 	  echo "Primary setup:"; \
 	  echo "  test -d /tmp/nanopb/.git || git clone https://github.com/nanopb/nanopb /tmp/nanopb"; \
 	  echo "  make clean"; \
