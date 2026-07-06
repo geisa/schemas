@@ -8,8 +8,6 @@ syntax = "proto3";
 
 message GeisaTypeMeasurementMetadata {
 	optional double measurement_period_s = 1;	// Measurement period in seconds for the reported values when applicable
-	optional uint32 measurement_quality_indicator = 2;	// Measurement quality indicator aligned to the OMA smart-sensor quality convention
-	optional uint32 measurement_quality_level = 3;	// Measurement quality level from 0 to 100 when provided by the source
 }
 
 message GeisaTypeMaxDemand {

@@ -60,18 +60,6 @@
           "description": "Measurement period in seconds for the reported values when applicable.",
           "type": "number",
           "minimum": 0
-        },
-        "measurement-quality-indicator": {
-          "description": "Measurement quality indicator aligned to the OMA smart-sensor quality convention.",
-          "type": "integer",
-          "minimum": 0,
-          "maximum": 23
-        },
-        "measurement-quality-level": {
-          "description": "Measurement quality level from 0 to 100 when provided by the source.",
-          "type": "integer",
-          "minimum": 0,
-          "maximum": 100
         }
       },
       "additionalProperties": false

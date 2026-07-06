@@ -91,4 +91,3 @@ Decode the billing payload:
 
     build/examples/metered_quantities_read_example billing \
       /tmp/geisa-metered-billing.bin
-
