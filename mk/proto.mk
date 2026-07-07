@@ -47,5 +47,5 @@ $(PYTHON_STAMP): $(PROTOS)
 	$(PROTOC) $(PROTOC_FLAGS) --python_out=$(PYTHONDIR) $(PROTOS)
 	@touch $@
 
-.PHONY: proto-descriptors cpp java python langs
+.PHONY: proto-descriptors c cpp java python langs
 # c is declared phony above because it is an explicit generator target.

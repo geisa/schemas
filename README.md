@@ -155,11 +155,16 @@ Build the default example set:
 
     make examples
 
+Build the newcomer-friendly default entrypoint:
+
+    make
+
 Build the embedded C example set explicitly:
 
     make examples-c NANOPB_DIR=/path/to/nanopb
 
-Build the C++ example set explicitly:
+Build the currently supported C++ example set explicitly
+(`waveform_subscribe_and_read` only):
 
     make examples-cpp
 
@@ -167,21 +172,33 @@ Generate all supported language outputs:
 
     make langs
 
+Show the top-level build target summary:
+
+    make help
+
 Clean generated outputs:
 
     make clean
 
-When `/tmp/nanopb` already exists as a valid nanopb checkout, `make examples`
-builds both the C++ and embedded C example sets. Otherwise it builds the C++
-examples and prints the exact primary setup command for the embedded C path.
+The top-level `Makefile` is the human entrypoint and includes the implementation
+fragments under `mk/`:
+
+- `mk/proto.mk`
+- `mk/nanopb.mk`
+- `mk/examples.mk`
+
+When `/tmp/nanopb` already exists as a valid nanopb checkout, `make` and
+`make examples` build all currently supported examples. Otherwise they build
+the supported C++ example set and print the exact primary setup command for the
+embedded C path.
 
 The `make langs` target intentionally omits legacy protobuf-c generation so it
 does not fail on repo protos that use proto3 optional. Legacy protobuf-c code
 generation remains available separately through `make c`.
 
-For embedded C, waveform remains on the C++ example path for GEISA 0.9. The
-embedded C examples currently cover actuator, app-message, conn-status,
-sensor, and Platform Discovery payloads.
+For GEISA 0.9, waveform remains on the C++ example path. The embedded C
+examples currently cover actuator, app-message, conn-status, sensor, and
+Platform Discovery payloads.
 
 ## Examples
 
@@ -199,7 +216,12 @@ You can build the default example workflow directly from the repository root:
 
     make examples
 
-To build the C++ examples explicitly:
+For the default newcomer-friendly repo build:
+
+    make
+
+To build the currently supported C++ examples explicitly
+(`waveform_subscribe_and_read` only):
 
     make examples-cpp
 
@@ -209,10 +231,10 @@ To build the embedded C example set explicitly:
 
 This compiles the example binaries into `build/examples/`.
 
-A typical C++ example workflow is:
+A typical supported C++ example workflow is:
 
     make clean
-    make examples
+    make examples-cpp
 
 A typical embedded C workflow is the verified module path from the repository
 root:
@@ -240,12 +262,13 @@ path as a shorter alternate path.
 
 Then run the relevant binary from `build/examples/`. The topic-specific README
 files include additional notes and, where useful, example command lines for the
-available C++ and embedded C paths.
+supported C++ and embedded C paths.
 
 Where embedded C examples exist, they are the preferred example path for this
 branch because the nanopb-based build is the path being kept aligned with
-proto3 optional support and current embedded review needs. The C++ examples
-remain available as reference examples and may be removed in a later cleanup.
+proto3 optional support and current embedded review needs. The remaining C++
+example path is the waveform example, which does not yet have an equivalent
+embedded C example in this branch.
 
 For the embedded C examples, writer `--demo` modes are the primary end-to-end
 walkthrough entry points: they generate the standard `/tmp` payloads and then
