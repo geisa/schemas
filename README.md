@@ -254,7 +254,9 @@ with the nanopb directory, subsequent make examples or examples-c will build
 without issue.
 
 `make setup-dev` runs the same bootstrap script if you prefer a Makefile
-entrypoint.
+entrypoint. Shell activation of the repository `venv` is not required for the
+Makefile targets; the build uses the repository venv Python directly when
+available.
 
 If you already have a working `protoc-gen-nanopb` executable, you can use it
 instead by setting `NANOPB_GENERATOR=protoc-gen-nanopb` or an explicit plugin

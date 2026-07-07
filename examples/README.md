@@ -46,7 +46,9 @@ external nanopb runtime source tree:
     make examples-c
 
 You can also run `make setup-dev` from the repository root to call the same
-bootstrap script.
+bootstrap script. Shell activation of the repository `venv` is not required for
+the Makefile targets; the build uses the repository venv Python directly when
+available.
 
 If you already have a working `protoc-gen-nanopb` executable, you can use it
 instead by setting `NANOPB_GENERATOR=protoc-gen-nanopb` or an explicit plugin
