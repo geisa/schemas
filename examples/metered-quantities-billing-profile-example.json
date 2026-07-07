@@ -4,7 +4,12 @@
     "summation-total": {
       "message-version": 1,
       "timestamp-us": 1736035200123456,
-      "active-energy-micro-wh-del": 1250042000
+      "active-energy-micro-wh-del": 1250042000,
+      "power-factor-sum-true": 0.987,
+      "power-factor-sum-vectorial": 0.985,
+      "metadata": {
+        "measurement-period-s": 900
+      }
     },
     "demand-total": {
       "message-version": 1,
@@ -12,6 +17,9 @@
       "active-power-micro-w-del": {
         "max-demand-time-us": 1736031600000000,
         "quantity": 452100000
+      },
+      "metadata": {
+        "measurement-period-s": 900
       }
     }
   }

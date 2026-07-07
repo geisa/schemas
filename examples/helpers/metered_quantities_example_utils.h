@@ -184,8 +184,8 @@ static inline void fill_demo_instantaneous(
     message->phase_a.apparent_power_micro_va_sum = 990828000;
     message->phase_a.has_active_power_micro_w_del = true;
     message->phase_a.active_power_micro_w_del = 983000000;
-    message->phase_a.has_power_factor = true;
-    message->phase_a.power_factor = 0.9921;
+    message->phase_a.has_power_factor_true = true;
+    message->phase_a.power_factor_true = 0.9921;
     message->phase_a.has_current_angle_deg = true;
     message->phase_a.current_angle_deg = -7.2;
     message->phase_a.has_voltage_angle_deg = true;
@@ -218,8 +218,8 @@ static inline void fill_demo_instantaneous(
     message->system.reactive_power_micro_var_sum = 259200000;
     message->system.has_apparent_power_micro_va_sum_arithmetic = true;
     message->system.apparent_power_micro_va_sum_arithmetic = 2066324000;
-    message->system.has_power_factor_arithmetic = true;
-    message->system.power_factor_arithmetic = 0.9921;
+    message->system.has_power_factor_true = true;
+    message->system.power_factor_true = 0.9921;
 
     message->has_other = true;
     message->other = (GeisaTypeInstantaneousQuantities_Other)GeisaTypeInstantaneousQuantities_Other_init_zero;
@@ -304,6 +304,23 @@ static inline void metered_print_json_string_field(bool *first_field,
     *first_field = false;
 }
 
+static inline void metered_print_metadata_json(
+    bool *first_field, const GeisaTypeMeasurementMetadata *metadata)
+{
+    if (!metadata->has_measurement_period_s)
+    {
+        return;
+    }
+
+    if (!*first_field)
+    {
+        printf(",");
+    }
+    printf("\"metadata\":{\"measurement-period-s\":%.3f}",
+           metadata->measurement_period_s);
+    *first_field = false;
+}
+
 // Prints the instantaneous payload in the same JSON-like form used by the
 // read example. Optional values are rendered only when nanopb presence flags
 // show that the field was encoded..
@@ -359,11 +376,11 @@ static inline void metered_print_instantaneous(
                 &first_field, "apparent-power-micro-va-sum",
                 (long long)instantaneous->phase_a.apparent_power_micro_va_sum);
         }
-        if (instantaneous->phase_a.has_power_factor)
+        if (instantaneous->phase_a.has_power_factor_true)
         {
             metered_print_json_number_field(
-                &first_field, "power-factor",
-                instantaneous->phase_a.power_factor, 4);
+                &first_field, "power-factor-true",
+                instantaneous->phase_a.power_factor_true, 4);
         }
         if (instantaneous->phase_a.has_current_angle_deg)
         {
@@ -432,11 +449,11 @@ static inline void metered_print_instantaneous(
                 &first_field, "apparent-power-micro-va-sum-arithmetic",
                 (long long)instantaneous->system.apparent_power_micro_va_sum_arithmetic);
         }
-        if (instantaneous->system.has_power_factor_arithmetic)
+        if (instantaneous->system.has_power_factor_true)
         {
             metered_print_json_number_field(
-                &first_field, "power-factor-arithmetic",
-                instantaneous->system.power_factor_arithmetic, 4);
+                &first_field, "power-factor-true",
+                instantaneous->system.power_factor_true, 4);
         }
         printf("}");
     }
@@ -491,8 +508,14 @@ static inline void fill_demo_billing(GeisaBillingQuantities *message)
     message->summation_total.reactive_energy_micro_varh_q1_plus_q4 = 162000000000LL;
     message->summation_total.has_apparent_energy_micro_vah_sum_arithmetic = true;
     message->summation_total.apparent_energy_micro_vah_sum_arithmetic = 1013000000000LL;
-    message->summation_total.has_power_factor_sum_arithmetic = true;
-    message->summation_total.power_factor_sum_arithmetic = 0.9870;
+    message->summation_total.has_power_factor_sum_true = true;
+    message->summation_total.power_factor_sum_true = 0.9870;
+    message->summation_total.has_power_factor_sum_vectorial = true;
+    message->summation_total.power_factor_sum_vectorial = 0.9852;
+    message->summation_total.has_metadata = true;
+    message->summation_total.metadata = (GeisaTypeMeasurementMetadata)GeisaTypeMeasurementMetadata_init_zero;
+    message->summation_total.metadata.has_measurement_period_s = true;
+    message->summation_total.metadata.measurement_period_s = 900.0;
 
     message->has_demand_total = true;
     message->demand_total = (GeisaBillingQuantities_Demand_Total)GeisaBillingQuantities_Demand_Total_init_zero;
@@ -510,12 +533,10 @@ static inline void fill_demo_billing(GeisaBillingQuantities *message)
         1736031600000000ULL;
     message->demand_total.active_power_micro_w_sum.has_quantity = true;
     message->demand_total.active_power_micro_w_sum.quantity = 5800000000LL;
-    message->demand_total.has_power_factor_sum_arithmetic = true;
-    message->demand_total.power_factor_sum_arithmetic = (GeisaTypeMaxRatio)GeisaTypeMaxRatio_init_zero;
-    message->demand_total.power_factor_sum_arithmetic.max_demand_time_us =
-        1736031600000000ULL;
-    message->demand_total.power_factor_sum_arithmetic.has_ratio = true;
-    message->demand_total.power_factor_sum_arithmetic.ratio = 0.989;
+    message->demand_total.has_metadata = true;
+    message->demand_total.metadata = (GeisaTypeMeasurementMetadata)GeisaTypeMeasurementMetadata_init_zero;
+    message->demand_total.metadata.has_measurement_period_s = true;
+    message->demand_total.metadata.measurement_period_s = 900.0;
 }
 
 // Prints the billing payload in the same JSON-like form used by the read
@@ -541,11 +562,22 @@ static inline void metered_print_billing(const GeisaBillingQuantities *billing)
                 &first_field, "active-energy-micro-wh-del",
                 (long long)billing->summation_total.active_energy_micro_wh_del);
         }
-        if (billing->summation_total.has_power_factor_sum_arithmetic)
+        if (billing->summation_total.has_power_factor_sum_true)
         {
             metered_print_json_number_field(
-                &first_field, "power-factor-sum-arithmetic",
-                billing->summation_total.power_factor_sum_arithmetic, 4);
+                &first_field, "power-factor-sum-true",
+                billing->summation_total.power_factor_sum_true, 4);
+        }
+        if (billing->summation_total.has_power_factor_sum_vectorial)
+        {
+            metered_print_json_number_field(
+                &first_field, "power-factor-sum-vectorial",
+                billing->summation_total.power_factor_sum_vectorial, 4);
+        }
+        if (billing->summation_total.has_metadata)
+        {
+            metered_print_metadata_json(&first_field,
+                                        &billing->summation_total.metadata);
         }
         printf("}");
     }
@@ -596,12 +628,10 @@ static inline void metered_print_billing(const GeisaBillingQuantities *billing)
             printf("}");
             first_field = false;
         }
-        if (billing->demand_total.has_power_factor_sum_arithmetic &&
-            billing->demand_total.power_factor_sum_arithmetic.has_ratio)
+        if (billing->demand_total.has_metadata)
         {
-            metered_print_json_number_field(
-                &first_field, "power-factor-sum-arithmetic",
-                billing->demand_total.power_factor_sum_arithmetic.ratio, 4);
+            metered_print_metadata_json(&first_field,
+                                        &billing->demand_total.metadata);
         }
         printf("}");
     }

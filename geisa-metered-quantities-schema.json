@@ -32,32 +32,12 @@
       },
       "additionalProperties": false
     },
-    "geisaTypeMaxRatio": {
-      "type": "object",
-      "required": [
-        "max-demand-time-us"
-      ],
-      "properties": {
-        "max-demand-time-us": {
-          "description": "UTC epoch time in microseconds for the recorded maximum ratio.",
-          "type": "integer",
-          "minimum": 0
-        },
-        "ratio": {
-          "description": "Unitless ratio value, typically in the range -1.0 to 1.0.",
-          "type": "number",
-          "minimum": -1,
-          "maximum": 1
-        }
-      },
-      "additionalProperties": false
-    },
     "geisaMeasurementMetadata": {
       "type": "object",
-      "description": "Optional measurement metadata for metered quantities when the source provides observation window or quality context.",
+      "description": "Optional measurement metadata for metered quantities when the source provides observation window or quality context. measurement-period-s is the averaging or integration window for interval-derived values such as billing summations, billing power factor, demand, and THD/TDD summaries; it is not message cadence.",
       "properties": {
         "measurement-period-s": {
-          "description": "Measurement period in seconds for the reported values when applicable.",
+          "description": "Averaging or integration window in seconds for interval-derived values such as billing summations, billing power factor, demand, and THD/TDD summaries; this is not message cadence.",
           "type": "number",
           "minimum": 0
         }
@@ -124,31 +104,42 @@
         "apparent-energy-micro-vah-sum-vectorial": { "type": "integer" },
         "apparent-energy-micro-vah-del-q1-plus-q4-vectorial": { "type": "integer" },
         "apparent-energy-micro-vah-rec-q2-plus-q3-vectorial": { "type": "integer" },
-        "power-factor-del-arithmetic": {
+        "power-factor-del-true": {
+          "description": "True power factor magnitude in the range 0.0 to 1.0 for delivered energy; sign and quadrant semantics are not encoded in the PF sign, and reactive-power sign and/or PF angle provide directional context.",
           "type": "number",
-          "minimum": -1,
+          "minimum": 0,
           "maximum": 1
         },
-        "power-factor-rec-arithmetic": {
+        "power-factor-rec-true": {
+          "description": "True power factor magnitude in the range 0.0 to 1.0 for received energy; sign and quadrant semantics are not encoded in the PF sign, and reactive-power sign and/or PF angle provide directional context.",
           "type": "number",
-          "minimum": -1,
+          "minimum": 0,
           "maximum": 1
         },
-        "power-factor-sum-arithmetic": {
+        "power-factor-sum-true": {
+          "description": "True power factor magnitude in the range 0.0 to 1.0 for summed energy; sign and quadrant semantics are not encoded in the PF sign, and reactive-power sign and/or PF angle provide directional context.",
           "type": "number",
-          "minimum": -1,
+          "minimum": 0,
+          "maximum": 1
+        },
+        "power-factor-sum-vectorial": {
+          "description": "Vectorial power factor magnitude in the range 0.0 to 1.0 for summed energy based on vectorially aggregated apparent power; this is not displacement power factor.",
+          "type": "number",
+          "minimum": 0,
           "maximum": 1
         },
         "reactive-energy-micro-varh-del-fundamental": { "type": "integer" },
         "reactive-energy-micro-varh-rec-fundamental": { "type": "integer" },
         "power-factor-del-vectorial": {
+          "description": "Vectorial power factor magnitude in the range 0.0 to 1.0 for delivered energy based on vectorially aggregated apparent power; this is not displacement power factor.",
           "type": "number",
-          "minimum": -1,
+          "minimum": 0,
           "maximum": 1
         },
         "power-factor-rec-vectorial": {
+          "description": "Vectorial power factor magnitude in the range 0.0 to 1.0 for received energy based on vectorially aggregated apparent power; this is not displacement power factor.",
           "type": "number",
-          "minimum": -1,
+          "minimum": 0,
           "maximum": 1
         },
         "active-energy-micro-wh-sum-fundamental": { "type": "integer" },
@@ -229,11 +220,6 @@
         "apparent-power-micro-va-del-arithmetic": { "$ref": "#/$defs/geisaTypeMaxDemand" },
         "apparent-power-micro-va-rec-arithmetic": { "$ref": "#/$defs/geisaTypeMaxDemand" },
         "apparent-power-micro-va-sum-arithmetic": { "$ref": "#/$defs/geisaTypeMaxDemand" },
-        "power-factor-del-vectorial": { "$ref": "#/$defs/geisaTypeMaxRatio" },
-        "power-factor-rec-vectorial": { "$ref": "#/$defs/geisaTypeMaxRatio" },
-        "power-factor-del-arithmetic": { "$ref": "#/$defs/geisaTypeMaxRatio" },
-        "power-factor-rec-arithmetic": { "$ref": "#/$defs/geisaTypeMaxRatio" },
-        "power-factor-sum-arithmetic": { "$ref": "#/$defs/geisaTypeMaxRatio" },
         "metadata": {
           "$ref": "#/$defs/geisaMeasurementMetadata"
         }
@@ -290,14 +276,16 @@
         "apparent-power-micro-va-sum-vectorial": {
           "type": "integer"
         },
-        "power-factor-arithmetic": {
+        "power-factor-true": {
+          "description": "True power factor magnitude in the range 0.0 to 1.0, system, fundamental + harmonics; sign and quadrant semantics are not encoded in the PF sign, and reactive-power sign and/or PF angle provide directional context.",
           "type": "number",
-          "minimum": -1,
+          "minimum": 0,
           "maximum": 1
         },
         "power-factor-vectorial": {
+          "description": "Vectorial power factor magnitude in the range 0.0 to 1.0, system, fundamental + harmonics, based on vectorially aggregated apparent power; this is not displacement power factor.",
           "type": "number",
-          "minimum": -1,
+          "minimum": 0,
           "maximum": 1
         },
         "reactive-power-micro-var-sum-arithmetic": {
@@ -368,9 +356,10 @@
         "current-angle-deg": {
           "type": "number"
         },
-        "power-factor": {
+        "power-factor-true": {
+          "description": "True power factor magnitude in the range 0.0 to 1.0, per phase, fundamental + harmonics; sign and quadrant semantics are not encoded in the PF sign, and reactive-power sign and/or PF angle provide directional context.",
           "type": "number",
-          "minimum": -1,
+          "minimum": 0,
           "maximum": 1
         },
         "current-micro-a-fundamental": {

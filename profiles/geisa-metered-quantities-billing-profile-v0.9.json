@@ -2,14 +2,14 @@
   "$schema": "https://json-schema.org/draft/2020-12/schema",
   "$comment": "Copyright 2025-2026, Contributors to the Grid Edge Interoperability & Security Alliance (GEISA), a Series of LF Projects, LLC. Licensed under the Apache License, Version 2.0. See LICENSE.",
   "title": "GEISA Metered Quantities Billing Profile v0.9",
-  "description": "GEISA 0.9 billing profile for an AC meter or metrology-capable platform that claims billing support. This profile overlays the base metered quantities schema without replacing it. It requires a billing wrapper with delivered active energy summation and delivered active power demand baseline fields. Reactive, apparent, received, net, tariff-specific, and policy-specific billing fields remain optional in this profile.",
+  "description": "GEISA 0.9 billing profile for an AC meter or metrology-capable platform that claims billing support. This profile overlays the base metered quantities schema without replacing it. It requires a billing wrapper with delivered active energy summation and delivered active power demand baseline fields, and it treats power factor as an interval/window-qualified summation quantity rather than a demand-total quantity. Reactive, apparent, received, net, tariff-specific, and policy-specific billing fields remain optional in this profile.",
   "type": "object",
   "required": [
     "geisa-billing-quantities"
   ],
   "properties": {
     "geisa-billing-quantities": {
-      "description": "Profile overlay for the top-level GEISA billing quantities payload. It requires a billing wrapper with delivered active energy summation and delivered active power demand fields.",
+      "description": "Profile overlay for the top-level GEISA billing quantities payload. It requires a billing wrapper with delivered active energy summation and delivered active power demand fields, and it keeps power factor in the summation-total interval window rather than in demand-total.",
       "allOf": [
         {
           "$ref": "../geisa-metered-quantities-schema.json#/$defs/geisaBillingQuantities"
@@ -22,7 +22,7 @@
           ],
           "properties": {
             "summation-total": {
-              "description": "Required billing summation payload for this profile.",
+              "description": "Required billing summation payload for this profile. The measurement period records the averaging or integration window for interval-derived values, including summation power factor.",
               "allOf": [
                 {
                   "$ref": "../geisa-metered-quantities-schema.json#/$defs/geisaBillingQuantitiesSummationTotal"
@@ -31,13 +31,29 @@
                   "required": [
                     "message-version",
                     "timestamp-us",
-                    "active-energy-micro-wh-del"
-                  ]
+                    "active-energy-micro-wh-del",
+                    "power-factor-sum-true",
+                    "metadata"
+                  ],
+                  "properties": {
+                    "metadata": {
+                      "allOf": [
+                        {
+                          "$ref": "../geisa-metered-quantities-schema.json#/$defs/geisaMeasurementMetadata"
+                        },
+                        {
+                          "required": [
+                            "measurement-period-s"
+                          ]
+                        }
+                      ]
+                    }
+                  }
                 }
               ]
             },
             "demand-total": {
-              "description": "Required billing demand payload for this profile.",
+              "description": "Required billing demand payload for this profile. The measurement period records the averaging or integration window for interval-derived values; it is required here for consistency even though power factor is not modeled under demand-total.",
               "allOf": [
                 {
                   "$ref": "../geisa-metered-quantities-schema.json#/$defs/geisaBillingQuantitiesDemandTotal"
@@ -46,7 +62,8 @@
                   "required": [
                     "message-version",
                     "timestamp-us",
-                    "active-power-micro-w-del"
+                    "active-power-micro-w-del",
+                    "metadata"
                   ],
                   "properties": {
                     "active-power-micro-w-del": {
@@ -58,6 +75,18 @@
                           "required": [
                             "max-demand-time-us",
                             "quantity"
+                          ]
+                        }
+                      ]
+                    },
+                    "metadata": {
+                      "allOf": [
+                        {
+                          "$ref": "../geisa-metered-quantities-schema.json#/$defs/geisaMeasurementMetadata"
+                        },
+                        {
+                          "required": [
+                            "measurement-period-s"
                           ]
                         }
                       ]
