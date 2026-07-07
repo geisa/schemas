@@ -42,6 +42,10 @@ external nanopb runtime source tree:
 You can also run `make setup-dev` from the repository root to call the same
 bootstrap script.
 
+After the repo `venv` exists, direct embedded C targets such as
+`make examples-c` and `make examples-metered` use it automatically unless you
+override the nanopb generator settings explicitly.
+
 If you already have a working `protoc-gen-nanopb` executable, you can use it
 instead by setting `NANOPB_GENERATOR=protoc-gen-nanopb` or an explicit plugin
 path.

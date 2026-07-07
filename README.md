@@ -163,6 +163,10 @@ Build the embedded C example set explicitly:
 
     make examples-c NANOPB_DIR=/path/to/nanopb
 
+After `bash scripts/setup-dev-venv.sh`, the direct embedded C targets also use
+the repo `venv` automatically unless you override the nanopb generator
+settings explicitly.
+
 Build the C++ example set explicitly:
 
     make examples-cpp
@@ -238,6 +242,9 @@ invocations build without extra environment setup.
 
 `make setup-dev` runs the same bootstrap script if you prefer a Makefile
 entrypoint.
+
+Once the repo `venv` exists, direct embedded C targets such as `make metered-c`
+and `make examples-metered` also pick it up automatically.
 
 If you already have a working `protoc-gen-nanopb` executable, you can use it
 instead by setting `NANOPB_GENERATOR=protoc-gen-nanopb` or an explicit plugin

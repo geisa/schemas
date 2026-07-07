@@ -41,6 +41,17 @@ NANOPB_RUNTIME_DIR ?= $(NANOPB_DIR)
 NANOPB_OPTIONS_DIR ?= nanopb_options
 NANOPB_RUNTIME_DIR_EFFECTIVE = $(strip $(NANOPB_RUNTIME_DIR))
 NANOPB_VENV_SITE_PACKAGES := $(firstword $(wildcard $(CURDIR)/venv/lib/python*/site-packages))
+NANOPB_GENERATOR_ORIGIN := $(origin NANOPB_GENERATOR)
+
+define RUN_WITH_NANOPB_GENERATOR_FALLBACK
+	@if [ -n "$(strip $(NANOPB_GENERATOR_MODULE))" ] || [ "$(NANOPB_GENERATOR_ORIGIN)" = "command line" ] || [ "$(NANOPB_GENERATOR_ORIGIN)" = "environment" ] || [ "$(NANOPB_GENERATOR_ORIGIN)" = "environment override" ]; then \
+	  $(MAKE) $(1) PYTHON="$(PYTHON)" NANOPB_GENERATOR_MODULE="$(NANOPB_GENERATOR_MODULE)" NANOPB_GENERATOR="$(NANOPB_GENERATOR)" NANOPB_DIR="$(NANOPB_DIR)" NANOPB_RUNTIME_DIR="$(NANOPB_RUNTIME_DIR)"; \
+	elif [ -n "$(NANOPB_VENV_SITE_PACKAGES)" ]; then \
+	  $(MAKE) $(1) PYTHON="$(PYTHON)" NANOPB_GENERATOR_MODULE=nanopb.generator.nanopb_generator NANOPB_GENERATOR="$(NANOPB_GENERATOR)" NANOPB_DIR="$(NANOPB_DIR)" NANOPB_RUNTIME_DIR="$(NANOPB_RUNTIME_DIR)"; \
+	else \
+	  $(MAKE) $(1) PYTHON="$(PYTHON)" NANOPB_GENERATOR_MODULE="$(NANOPB_GENERATOR_MODULE)" NANOPB_GENERATOR="$(NANOPB_GENERATOR)" NANOPB_DIR="$(NANOPB_DIR)" NANOPB_RUNTIME_DIR="$(NANOPB_RUNTIME_DIR)"; \
+	fi
+endef
 
 # Check protoc version for proto3 optional support
 PROTOC_VERSION := $(shell $(PROTOC) --version | awk '{print $$2}')
@@ -220,17 +231,23 @@ python: $(PYTHON_STAMP)
 setup-dev:
 	bash scripts/setup-dev-venv.sh
 
-actuator-c: $(NANOPB_STATUS_STAMP) $(NANOPB_ACTUATOR_STAMP)
+actuator-c:
+	$(call RUN_WITH_NANOPB_GENERATOR_FALLBACK,actuator-c-inner)
 
-app-message-c: $(NANOPB_APP_MESSAGE_STAMP)
+app-message-c:
+	$(call RUN_WITH_NANOPB_GENERATOR_FALLBACK,app-message-c-inner)
 
-conn-status-c: $(NANOPB_CONN_STATUS_STAMP)
+conn-status-c:
+	$(call RUN_WITH_NANOPB_GENERATOR_FALLBACK,conn-status-c-inner)
 
-metered-c: $(NANOPB_METERED_STAMP)
+metered-c:
+	$(call RUN_WITH_NANOPB_GENERATOR_FALLBACK,metered-c-inner)
 
-sensor-c: $(NANOPB_STATUS_STAMP) $(NANOPB_SENSOR_STAMP)
+sensor-c:
+	$(call RUN_WITH_NANOPB_GENERATOR_FALLBACK,sensor-c-inner)
 
-discovery-c: $(NANOPB_STATUS_STAMP) $(NANOPB_SENSOR_STAMP) $(NANOPB_WAVEFORM_STAMP) $(NANOPB_DISCOVERY_STAMP)
+discovery-c:
+	$(call RUN_WITH_NANOPB_GENERATOR_FALLBACK,discovery-c-inner)
 
 examples:
 	@echo "==> Building C++ examples"
@@ -299,19 +316,52 @@ examples-cpp: cpp
 	  $$(pkg-config --libs protobuf) -pthread \
 	  -o $(EXAMPLESDIR)/waveform_subscribe_and_read
 
-examples-actuator: $(NANOPB_ACTUATOR_EXAMPLES)
+examples-actuator:
+	$(call RUN_WITH_NANOPB_GENERATOR_FALLBACK,examples-actuator-inner)
 
-examples-app-message: $(NANOPB_APP_MESSAGE_EXAMPLES)
+examples-app-message:
+	$(call RUN_WITH_NANOPB_GENERATOR_FALLBACK,examples-app-message-inner)
 
-examples-conn-status: $(NANOPB_CONN_STATUS_EXAMPLES)
+examples-conn-status:
+	$(call RUN_WITH_NANOPB_GENERATOR_FALLBACK,examples-conn-status-inner)
 
-examples-metered: $(NANOPB_METERED_EXAMPLES)
+examples-metered:
+	$(call RUN_WITH_NANOPB_GENERATOR_FALLBACK,examples-metered-inner)
 
-examples-sensor: $(NANOPB_SENSOR_EXAMPLES)
+examples-sensor:
+	$(call RUN_WITH_NANOPB_GENERATOR_FALLBACK,examples-sensor-inner)
 
-examples-discovery: $(NANOPB_DISCOVERY_EXAMPLES)
+examples-discovery:
+	$(call RUN_WITH_NANOPB_GENERATOR_FALLBACK,examples-discovery-inner)
 
-examples-c: examples-actuator examples-app-message examples-conn-status examples-metered examples-sensor examples-discovery
+examples-c:
+	$(call RUN_WITH_NANOPB_GENERATOR_FALLBACK,examples-c-inner)
+
+actuator-c-inner: $(NANOPB_STATUS_STAMP) $(NANOPB_ACTUATOR_STAMP)
+
+app-message-c-inner: $(NANOPB_APP_MESSAGE_STAMP)
+
+conn-status-c-inner: $(NANOPB_CONN_STATUS_STAMP)
+
+metered-c-inner: $(NANOPB_METERED_STAMP)
+
+sensor-c-inner: $(NANOPB_STATUS_STAMP) $(NANOPB_SENSOR_STAMP)
+
+discovery-c-inner: $(NANOPB_STATUS_STAMP) $(NANOPB_SENSOR_STAMP) $(NANOPB_WAVEFORM_STAMP) $(NANOPB_DISCOVERY_STAMP)
+
+examples-actuator-inner: $(NANOPB_ACTUATOR_EXAMPLES)
+
+examples-app-message-inner: $(NANOPB_APP_MESSAGE_EXAMPLES)
+
+examples-conn-status-inner: $(NANOPB_CONN_STATUS_EXAMPLES)
+
+examples-metered-inner: $(NANOPB_METERED_EXAMPLES)
+
+examples-sensor-inner: $(NANOPB_SENSOR_EXAMPLES)
+
+examples-discovery-inner: $(NANOPB_DISCOVERY_EXAMPLES)
+
+examples-c-inner: examples-actuator examples-app-message examples-conn-status examples-metered examples-sensor examples-discovery
 	@echo "Built embedded C examples in $(EXAMPLESDIR)"
 
 ###############################################################################
@@ -621,4 +671,8 @@ clean:
 .PHONY: all c cpp java python setup-dev actuator-c app-message-c conn-status-c \
 	metered-c sensor-c discovery-c examples examples-cpp examples-c \
 	examples-actuator examples-app-message examples-conn-status \
-	examples-metered examples-sensor examples-discovery langs clean
+	examples-metered examples-sensor examples-discovery actuator-c-inner \
+	app-message-c-inner conn-status-c-inner metered-c-inner sensor-c-inner \
+	discovery-c-inner examples-actuator-inner examples-app-message-inner \
+	examples-conn-status-inner examples-metered-inner examples-sensor-inner \
+	examples-discovery-inner examples-c-inner langs clean

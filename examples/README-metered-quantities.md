@@ -33,6 +33,10 @@ From the repository root, prepare the repo `venv` used for nanopb generation:
 
     bash scripts/setup-dev-venv.sh
 
+After that, direct metered targets such as `make metered-c` and
+`make examples-metered` use the repo `venv` automatically unless you override
+the nanopb generator settings explicitly.
+
 Generate metered nanopb bindings only:
 
     PYTHON="$(pwd)/venv/bin/python" \
