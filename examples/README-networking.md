@@ -5,13 +5,12 @@ Security Alliance (GEISA), a Series of LF Projects, LLC
 Licensed under the Apache License, Version 2.0. See LICENSE.
 -->
 
-# Networking app-message examples (C++)
+# Networking app-message examples
 
 These examples demonstrate how to write and decode the GEISA app-message
 protobuf envelopes for request submission and per-request disposition. The
 message payload bytes are opaque and interpreted via `content-type`, not as
-protobuf by default. They are the GEISA message API flow, not direct IP
-socket policy.
+protobuf by default.
 
 - `GeisaAppMessage_Req`
 - `GeisaAppMessage_Rsp`
@@ -26,90 +25,66 @@ Scope notes:
 
 - `GEISA_APP_MESSAGE_STATUS_QUOTA_EXCEEDED` means the platform rejected the
   request because accepting it would exceed an applicable quota or policy
-  limit (for example message-count, byte/volume, or network policy limits).
-- Quota counters/usage/remaining/reset reporting remains out-of-band via
-  Platform/App Status (`conn_msg`, `conn_oper`, `conn_inet`, `conn_local`,
-  and `GeisaConnAppInfo` surfaces).
-- Deployment Manifest and Platform Discovery cover static policy/allowance
+  limit.
+- Quota counters, usage, remaining, and reset reporting remain out-of-band via
+  Platform/App Status surfaces.
+- Deployment Manifest and Platform Discovery cover static policy and allowance
   context.
-- Direct IP socket policy is out of scope for this message example.
-
-Available response JSON examples:
-
-- accepted
-- unavailable
-- quota-exceeded
-
-Reader/output note:
-
-- The C++ reader prints payload bytes as hex for terminal readability.
-- JSON examples represent payload bytes as base64 when a payload is present.
-- Shared reader formatting helpers live in
-  `examples/helpers/example_utils.h` so the app-message examples can stay
-  focused on message semantics. This helper is example support code, not a
-  GEISA SDK.
 
 ## Build
 
-From the repository root, the recommended build path is:
+From the repository root:
 
     make clean
     make examples
 
-This generates protobuf sources and compiles the C++ examples into
-`build/examples/`.
+To build the embedded C app-message examples:
 
-The manual commands below are retained for developers who want to compile a
-single example directly or inspect the exact compiler inputs.
+    make app-message-c NANOPB_GENERATOR=protoc-gen-nanopb
+    make examples-app-message NANOPB_GENERATOR=protoc-gen-nanopb \
+      NANOPB_DIR=/path/to/nanopb
 
-Generate C++ protobuf sources from the repository root:
+Example binaries are written to:
 
-    make clean
-    make cpp
+    build/examples/
 
-Compile the examples (portable):
+The embedded C app-message examples are the preferred path in this branch. The
+C++ examples remain available as reference examples and may be removed in a
+later cleanup.
 
-Writer:
+## Embedded C examples
 
-    c++ -std=c++17 -O2 \
-      -Ibuild/cpp \
-      $(pkg-config --cflags protobuf) \
-      examples/app_message_write_response_example.cpp \
-      build/cpp/app-message.pb.cc \
-      $(pkg-config --libs protobuf) \
-      -pthread \
-      -o /tmp/app_message_write_response_example
+- `build/examples/app_message_read_example_c`
+- `build/examples/app_message_write_response_example_c`
 
-Reader:
+Quick start:
 
-    c++ -std=c++17 -O2 \
-      -Ibuild/cpp \
-      $(pkg-config --cflags protobuf) \
-      examples/app_message_read_example.cpp \
-      build/cpp/app-message.pb.cc \
-      $(pkg-config --libs protobuf) \
-      -pthread \
-      -o /tmp/app_message_read_example
+    build/examples/app_message_write_response_example_c --demo
 
-If protobuf headers/libs are already on default paths, you can omit the
-pkg-config pieces and use `-lprotobuf` directly.
+This is the primary end-to-end walkthrough: it writes the standard `/tmp`
+request and response payloads and then decodes both immediately.
 
-## Quick start (recommended)
+`build/examples/app_message_read_example_c --demo` is decode-only and expects
+those standard `/tmp` payloads to already exist.
 
-Using the Makefile-built binaries:
+Manual write + read loop:
+
+    build/examples/app_message_write_response_example_c
+    build/examples/app_message_read_example_c --req /tmp/app-message-req.bin
+    build/examples/app_message_read_example_c --rsp /tmp/app-message-rsp.bin
+
+## C++ examples
+
+- `build/examples/app_message_read_example`
+- `build/examples/app_message_write_response_example`
+
+Quick start:
 
     build/examples/app_message_write_response_example --demo
 
-## Manual write + read loop
+Manual write + read loop:
 
-Write request + response samples:
-
-    build/examples/app_message_write_response_example /tmp/app-message-req.bin /tmp/app-message-rsp.bin
-
-Decode and print request:
-
+    build/examples/app_message_write_response_example \
+      /tmp/app-message-req.bin /tmp/app-message-rsp.bin
     build/examples/app_message_read_example --req /tmp/app-message-req.bin
-
-Decode and print response:
-
     build/examples/app_message_read_example --rsp /tmp/app-message-rsp.bin

@@ -5,96 +5,73 @@ Security Alliance (GEISA), a Series of LF Projects, LLC
 Licensed under the Apache License, Version 2.0. See LICENSE.
 -->
 
-# Platform Discovery examples (C++)
+# Platform Discovery examples
 
-These examples demonstrate how to write and decode binary protobuf payloads
-for the GEISA Platform Discovery request/response messages:
+These examples demonstrate GEISA Platform Discovery request and response
+protobuf payloads:
 
 - `GeisaPlatformDiscovery_Req`
 - `GeisaPlatformDiscovery_Rsp`
 
-The response reader renders `GeisaPlatformDiscovery_Rsp` in a JSON-like form.
-The sample response includes static network capability descriptors in addition
-to device, metrology, sensor, and waveform metadata.
-
-Note: the C++ reader prints protobuf enum identifiers for diagnostic output.
-JSON schema examples use the corresponding JSON enum strings.
+The embedded C response example includes device, metrology, sensor, network,
+and waveform metadata. Waveform frame delivery remains a separate example path.
 
 ## Build
 
-From the repository root, the recommended build path is:
+From the repository root:
 
     make clean
     make examples
 
-This generates protobuf sources and compiles the C++ examples into
-`build/examples/`.
+Build the embedded C discovery examples with an external nanopb runtime
+checkout:
 
-The manual commands below are retained for developers who want to compile a
-single example directly or inspect the exact compiler inputs.
+    make examples-discovery NANOPB_DIR=/path/to/nanopb
 
-Generate the C++ protobuf sources from the repository root:
+Compiled binaries are written to:
 
-    make clean
-    make cpp
+    build/examples/
 
-Compile the examples:
+The embedded C Platform Discovery examples are the preferred path in this
+branch. The C++ examples remain available as reference examples and may be
+removed in a later cleanup.
 
-Request writer:
+## Quick start
 
-    c++ -std=c++17 -O2 \
-      -I build/cpp \
-      $(pkg-config --cflags protobuf) \
-      examples/discovery_write_request_example.cpp \
-      build/cpp/discovery.pb.cc \
-      build/cpp/sensor.pb.cc \
-      build/cpp/geisa-status.pb.cc \
-      $(pkg-config --libs protobuf) \
-      -pthread \
-      -o /tmp/discovery_write_request_example
+Run the embedded C request walkthrough:
 
-Writer:
+    build/examples/discovery_write_request_example_c --demo
 
-    c++ -std=c++17 -O2 \
-      -I build/cpp \
-      $(pkg-config --cflags protobuf) \
-      examples/discovery_write_response_example.cpp \
-      build/cpp/discovery.pb.cc \
-      build/cpp/sensor.pb.cc \
-      build/cpp/geisa-status.pb.cc \
-      $(pkg-config --libs protobuf) \
-      -pthread \
-      -o /tmp/discovery_write_response_example
+This writes the standard `/tmp` discovery request payload and then decodes it
+immediately.
 
-Reader:
+Run the embedded C response walkthrough:
 
-    c++ -std=c++17 -O2 \
-      -I build/cpp \
-      $(pkg-config --cflags protobuf) \
-      examples/discovery_read_example.cpp \
-      build/cpp/discovery.pb.cc \
-      build/cpp/sensor.pb.cc \
-      build/cpp/geisa-status.pb.cc \
-      $(pkg-config --libs protobuf) \
-      -pthread \
-      -o /tmp/discovery_read_example
+    build/examples/discovery_write_response_example_c --demo
 
-If protobuf headers/libs are already on default paths, you can omit the
-pkg-config pieces and use `-lprotobuf` directly.
+This writes the standard `/tmp` discovery response payload and then decodes it
+immediately.
 
-## Quick start (recommended)
+Decode both standard `/tmp` payloads:
 
-Using the Makefile-built binaries:
+    build/examples/discovery_read_example_c --demo
 
-    build/examples/discovery_write_request_example --demo
-    build/examples/discovery_write_response_example --demo
+The reader `--demo` path is decode-only and expects those standard `/tmp`
+payloads to already exist.
 
 ## Manual write + read loop
 
-To write a sample binary discovery response:
+Write sample binary discovery payloads:
 
-    build/examples/discovery_write_response_example /tmp/discovery-response.bin
+    build/examples/discovery_write_request_example_c /tmp/discovery-request.bin
+    build/examples/discovery_write_response_example_c /tmp/discovery-response.bin
 
-To decode the response:
+Decode those payloads:
 
-    build/examples/discovery_read_example /tmp/discovery-response.bin
+    build/examples/discovery_read_example_c --req /tmp/discovery-request.bin
+    build/examples/discovery_read_example_c --rsp /tmp/discovery-response.bin
+
+The C++ examples remain available through `make examples-cpp`:
+
+    build/examples/discovery_write_request_example --demo
+    build/examples/discovery_write_response_example --demo
