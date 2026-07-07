@@ -29,33 +29,39 @@ payloads and prints both sections directly.
 
 ## Build
 
-From the repository root:
+From the repository root, prepare the repo `venv` used for nanopb generation:
 
+    bash scripts/setup-dev-venv.sh
+
+Generate metered nanopb bindings only:
+
+    PYTHON="$(pwd)/venv/bin/python" \
+    NANOPB_GENERATOR_MODULE=nanopb.generator.nanopb_generator \
     make metered-c
 
 To also compile the embedded C metered examples, point `NANOPB_DIR` or
 `NANOPB_RUNTIME_DIR` at a nanopb source tree containing `pb_common.c`,
 `pb_encode.c`, and `pb_decode.c`:
 
-    make examples-metered NANOPB_DIR=/path/to/nanopb
+    test -d /tmp/nanopb/.git || git clone https://github.com/nanopb/nanopb /tmp/nanopb
+    PYTHON="$(pwd)/venv/bin/python" \
+    NANOPB_GENERATOR_MODULE=nanopb.generator.nanopb_generator \
+    NANOPB_DIR=/tmp/nanopb \
+    make examples-metered
 
 Or use the aggregate embedded C example path:
 
-    make examples-c NANOPB_DIR=/path/to/nanopb
+    PYTHON="$(pwd)/venv/bin/python" \
+    NANOPB_GENERATOR_MODULE=nanopb.generator.nanopb_generator \
+    NANOPB_DIR=/tmp/nanopb \
+    make examples-c
 
-If `protoc-gen-nanopb` is not on `PATH`, set:
+If you already have a working `protoc-gen-nanopb` executable, you can use it
+instead by setting `NANOPB_GENERATOR=...` in place of
+`NANOPB_GENERATOR_MODULE=...`.
 
-    make metered-c NANOPB_GENERATOR=/path/to/protoc-gen-nanopb
-
-The C build uses `protoc-gen-nanopb` and an external nanopb source tree
-supplied through `NANOPB_DIR` or `NANOPB_RUNTIME_DIR`. The pip-installed
-`nanopb` package provides the generator, but not the runtime C source files
-used by these examples.
-
-These metered embedded C examples do not currently require or provide a
-repo-managed Python virtual environment. Any working `protoc-gen-nanopb`
-executable is acceptable, whether installed system-wide or provided by a
-user-managed local environment.
+The embedded C build uses the repo `venv` for generator packaging plus an
+external nanopb source tree for the runtime C sources.
 
 `NANOPB_DIR` or `NANOPB_RUNTIME_DIR` should point at the root of an external
 nanopb source checkout that contains the runtime C sources and headers such as
@@ -65,31 +71,34 @@ sufficient because it does not include those runtime C source files.
 
 A typical quick-start workflow is:
 
-    make metered-c NANOPB_GENERATOR=protoc-gen-nanopb
-    make examples-metered NANOPB_GENERATOR=protoc-gen-nanopb \
-      NANOPB_DIR=/path/to/nanopb-checkout
-    build/examples/metered_quantities_write_example --demo
+    bash scripts/setup-dev-venv.sh
+    test -d /tmp/nanopb/.git || git clone https://github.com/nanopb/nanopb /tmp/nanopb
+    PYTHON="$(pwd)/venv/bin/python" \
+      NANOPB_GENERATOR_MODULE=nanopb.generator.nanopb_generator \
+      NANOPB_DIR=/tmp/nanopb \
+      make examples-metered
+    build/examples/metered_quantities_write_example_c --demo
 
 ## Run
 
 Write the standard demo payloads to `/tmp`:
 
-    build/examples/metered_quantities_write_example
+    build/examples/metered_quantities_write_example_c
 
 Run the writer quick-start walkthrough:
 
-    build/examples/metered_quantities_write_example --demo
+    build/examples/metered_quantities_write_example_c --demo
 
 Run the reader quick-start walkthrough:
 
-    build/examples/metered_quantities_read_example --demo
+    build/examples/metered_quantities_read_example_c --demo
 
 Decode the instantaneous payload:
 
-    build/examples/metered_quantities_read_example instantaneous \
+    build/examples/metered_quantities_read_example_c instantaneous \
       /tmp/geisa-metered-instantaneous.bin
 
 Decode the billing payload:
 
-    build/examples/metered_quantities_read_example billing \
+    build/examples/metered_quantities_read_example_c billing \
       /tmp/geisa-metered-billing.bin

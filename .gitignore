@@ -2,3 +2,4 @@
 .vscode/
 tmp/
 node_modules/
+venv/

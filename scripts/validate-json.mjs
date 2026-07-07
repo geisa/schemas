@@ -5,52 +5,35 @@
 // Licensed under the Apache License, Version 2.0. See LICENSE.
 //-----------------------------------------------------------------------------
 
-import { readdir, readFile } from "node:fs/promises";
+import { readFile } from "node:fs/promises";
+import { execFile } from "node:child_process";
 import path from "node:path";
+import { promisify } from "node:util";
 
 const ROOT = process.cwd();
-const EXCLUDED_DIRS = new Set([
-  ".git",
-  ".codex",
-  "build",
-  "dist",
-  "node_modules",
-  "tmp"
-]);
+const run = promisify(execFile);
 
-async function* walk(dir) {
-  const entries = await readdir(dir, { withFileTypes: true });
-
-  for (const entry of entries) {
-    const fullPath = path.join(dir, entry.name);
-
-    if (entry.isDirectory()) {
-      if (!EXCLUDED_DIRS.has(entry.name)) {
-        yield* walk(fullPath);
-      }
-      continue;
-    }
-
-    if (entry.isFile() && entry.name.endsWith(".json")) {
-      yield fullPath;
-    }
-  }
+async function listTrackedJsonFiles() {
+  const { stdout } = await run("git", ["ls-files", "*.json"]);
+  return stdout
+    .split("\n")
+    .map((filePath) => filePath.trim())
+    .filter(Boolean);
 }
 
 let count = 0;
 let hasError = false;
 
-for await (const filePath of walk(ROOT)) {
+for (const filePath of await listTrackedJsonFiles()) {
   count += 1;
-  const relPath = path.relative(ROOT, filePath);
 
   try {
-    const contents = await readFile(filePath, "utf8");
+    const contents = await readFile(path.join(ROOT, filePath), "utf8");
     JSON.parse(contents);
   } catch (err) {
     hasError = true;
     const message = err instanceof Error ? err.message : String(err);
-    console.error(`${relPath}: ${message}`);
+    console.error(`${filePath}: ${message}`);
   }
 }
 

@@ -7,14 +7,18 @@ Licensed under the Apache License, Version 2.0. See LICENSE.
 
 # GEISA Schema Examples
 
-This directory contains reference example code for GEISA schema and
-protobuf envelope examples.
+This directory contains reference example code for GEISA schema and protobuf
+envelope examples.
 
 The C++ writer examples emit binary protobuf envelopes. The reader examples
-decode those envelopes and print JSON-like diagnostic output. Many examples
-include a `--demo` mode for a quick local walkthrough.
+decode those envelopes and print JSON-like diagnostic output. The embedded C
+examples use nanopb for the same protobuf message contracts. For the embedded C
+path, writer `--demo` modes are the primary end-to-end walkthrough entry
+points: they generate the standard `/tmp` payloads and then decode them
+immediately. Reader `--demo` modes are decode-only and expect those standard
+`/tmp` payloads to already exist.
 
-## Building the C++ examples
+## Building examples
 
 From the repository root:
 
@@ -25,17 +29,35 @@ Compiled example binaries are written to:
 
     build/examples/
 
+The embedded C build uses the repository `venv` for nanopb generation plus an
+external nanopb runtime source tree:
+
+    bash scripts/setup-dev-venv.sh
+    test -d /tmp/nanopb/.git || git clone https://github.com/nanopb/nanopb /tmp/nanopb
+    PYTHON="$(pwd)/venv/bin/python" \
+    NANOPB_GENERATOR_MODULE=nanopb.generator.nanopb_generator \
+    NANOPB_DIR=/tmp/nanopb \
+    make examples-c
+
+You can also run `make setup-dev` from the repository root to call the same
+bootstrap script.
+
+If you already have a working `protoc-gen-nanopb` executable, you can use it
+instead by setting `NANOPB_GENERATOR=protoc-gen-nanopb` or an explicit plugin
+path.
+
 ## Directory organization
 
 - `*.cpp`: C++ protobuf writer/reader examples
+- `*.c`: embedded C protobuf writer/reader examples using nanopb
 - `*.json`: JSON examples aligned to schemas
-- `helpers/example_utils.h`: shared example-only helper utilities
-  (not part of the GEISA APIs or specification)
+- `helpers/*.h`: shared example-only helper utilities
 - `README-*.md`: topic-specific guides
 
 ## Topic guides
 
 - Platform Discovery: `README-discovery.md`
+- Connection status: `README-conn-status.md`
 - Networking / app-message: `README-networking.md`
 - Actuators: `README-actuators.md`
 - Sensors: `README-sensors.md`
@@ -43,36 +65,39 @@ Compiled example binaries are written to:
 - Metered quantities: `README-metered-quantities.md`
 - Application manifests: `README-manifests.md`
 
-## Why are most examples in C++?
+## C++ and embedded C paths
 
-Most example programs are written in C++ because they are intended to
-cover the active schema set consistently, and some GEISA protobuf files use
-proto3 `optional` fields.
+The repository currently ships both C++ and embedded C example paths.
 
-The protobuf toolchain supports proto3 optional field presence, but the
-language generator plugins must also support that feature. The C toolchain in
-use by this repo relies on protobuf-c / `protoc-gen-c`, which does not support
-the proto3 `optional` fields used by some schemas. As a result, examples that
-depend on those schemas cannot be built through the C generation path. Open
-issue on
-protobuf-c: [Add support for "optional" field for proto3 files][protobuf-c-476].
+Embedded C examples are available for:
 
-The `metered_quantities` contract also includes an embedded C example
-path built with nanopb. Most examples still use C++ so
-that the repository has one working example path across the broader schema
-set, including schemas that use proto3 optional fields.
+- actuators
+- app-message / networking
+- conn-status
+- metered quantities
+- sensors
+- Platform Discovery
 
-Embedded C examples are available separately through:
+Where embedded C examples exist, they are the preferred example path because
+the nanopb-based build is the path being kept aligned with proto3 optional
+support and current embedded review needs. The C++ examples remain available
+as reference examples and may be removed in a later cleanup.
 
-    make examples-c NANOPB_DIR=/path/to/nanopb
+The legacy `make c` protobuf-c generation path remains available for standalone
+code generation, but it is not the primary C example path.
 
-The aggregate `examples-c` target builds the metered quantities examples.
+Waveform remains on the C++ example path for GEISA 0.9. The Platform Discovery
+embedded C example includes waveform metadata in the discovery response; it
+does not convert the waveform frame example path.
+
+When `/tmp/nanopb` already exists as a valid nanopb checkout, `make examples`
+builds both the C++ and embedded C example sets. Use `make examples-c` when
+you want the embedded C path explicitly and fail-fast on missing nanopb
+prerequisites.
 
 Note that these examples are not part of the GEISA API specification, and do
-not imply that GEISA applications must be written in C++. GEISA APIs are
+not imply that GEISA applications must be written in C or C++. GEISA APIs are
 defined at the protocol level using MQTT topics and protobuf envelopes, with
 some payloads carrying opaque application bytes selected by `content-type`.
 Applications may use the MQTT/protobuf implementation that best fits their
 execution environment, language, and platform constraints.
-
-[protobuf-c-476]: https://github.com/protobuf-c/protobuf-c/issues/476
