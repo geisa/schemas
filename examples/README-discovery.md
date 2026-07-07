@@ -32,9 +32,8 @@ Compiled binaries are written to:
 
     build/examples/
 
-The embedded C Platform Discovery examples are the preferred path in this
-branch. The C++ examples remain available as reference examples and may be
-removed in a later cleanup.
+The embedded C Platform Discovery examples are the supported path in this
+branch.
 
 ## Quick start
 
@@ -70,8 +69,3 @@ Decode those payloads:
 
     build/examples/discovery_read_example_c --req /tmp/discovery-request.bin
     build/examples/discovery_read_example_c --rsp /tmp/discovery-response.bin
-
-The C++ examples remain available through `make examples-cpp`:
-
-    build/examples/discovery_write_request_example --demo
-    build/examples/discovery_write_response_example --demo

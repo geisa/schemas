@@ -39,9 +39,7 @@ Compiled binaries are written to:
 
     build/examples/
 
-The embedded C sensor examples are the preferred path in this branch. The C++
-examples remain available as reference examples and may be removed in a later
-cleanup.
+The embedded C sensor examples are the supported path in this branch.
 
 ## Quick start
 
@@ -68,7 +66,3 @@ Write a sample sensor response payload:
 Decode that payload:
 
     build/examples/sensor_read_example_c /tmp/sensor-response.bin
-
-The C++ examples remain available through `make examples-cpp`:
-
-    build/examples/sensor_write_response_example --demo
