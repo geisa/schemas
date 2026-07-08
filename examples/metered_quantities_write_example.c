@@ -16,7 +16,7 @@
 // - GEISA 0.9 billing profile required billing fields
 // - proto3 optional scalar presence
 // - fixed-point micro-unit electrical values
-// - true power factor as a unitless ratio
+// - power factor as a unitless ratio
 // - a harmonic array with bounded nanopb storage
 //
 // The example builds generated message structs in memory and encodes them to

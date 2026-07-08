@@ -16,7 +16,7 @@ embedded C generation path (nanopb).
 - GEISA 0.9 billing profile required billing fields
 - proto3 optional scalar presence
 - fixed-point electrical values in micro-units
-- true power factor as a unitless ratio
+- power factor as a unitless ratio
 - billing power factor is interval/window-qualified through
   `measurement-period-s`
 - bounded harmonic arrays suitable for nanopb static allocation

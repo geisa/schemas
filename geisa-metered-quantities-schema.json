@@ -2,7 +2,7 @@
   "$schema": "https://json-schema.org/draft/2020-12/schema",
   "$comment": "Copyright 2025-2026, Contributors to the Grid Edge Interoperability & Security Alliance (GEISA), a Series of LF Projects, LLC. Licensed under the Apache License, Version 2.0. See LICENSE.",
   "title": "GEISA Metered Quantities v0.9.0",
-  "description": "Canonical structure for GEISA metered billing and instantaneous quantity messages aligned to metered_quantities.proto. For metered quantities, fields ending in -micro-w, -micro-wh, -micro-var, -micro-varh, -micro-va, -micro-vah, -micro-v, and -micro-a carry integer fixed-point micro-unit values.",
+  "description": "Canonical structure for GEISA metered billing and instantaneous quantity messages aligned to metered_quantities.proto. For metered quantities, fields ending in -micro-w, -micro-wh, -micro-var, -micro-varh, -micro-va, -micro-vah, -micro-v, and -micro-a carry integer fixed-point micro-unit values. In metering contexts, -micro-varh corresponds to common VARh-style reactive-energy wording and -micro-vah corresponds to common VAh-style apparent-energy wording.",
   "$defs": {
     "geisaTypePhase": {
       "type": "string",
@@ -26,7 +26,7 @@
           "minimum": 0
         },
         "quantity": {
-          "description": "Fixed-point quantity value in the micro-unit encoded by the containing field name, for example microwatts, microwatt-hours, microvars, microvar-hours, microvolt-amperes, or microvolt-ampere-hours.",
+          "description": "Fixed-point quantity value in the micro-unit encoded by the containing field name, for example microwatts, microwatt-hours, microvars, microvar-hours (commonly VARh in metering contexts), microvolt-amperes, or microvolt-ampere-hours (commonly VAh in metering contexts).",
           "type": "integer"
         }
       },
@@ -90,34 +90,61 @@
         "reactive-energy-micro-varh-rec": { "type": "integer" },
         "reactive-energy-micro-varh-sum": { "type": "integer" },
         "reactive-energy-micro-varh-net": { "type": "integer" },
-        "reactive-energy-micro-varh-q1-plus-q4": { "type": "integer" },
-        "reactive-energy-micro-varh-q2-plus-q3": { "type": "integer" },
-        "reactive-energy-micro-varh-q1": { "type": "integer" },
-        "reactive-energy-micro-varh-q2": { "type": "integer" },
-        "reactive-energy-micro-varh-q3": { "type": "integer" },
-        "reactive-energy-micro-varh-q4": { "type": "integer" },
-        "apparent-energy-micro-vah-del-arithmetic": { "type": "integer" },
-        "apparent-energy-micro-vah-rec-arithmetic": { "type": "integer" },
-        "apparent-energy-micro-vah-sum-arithmetic": { "type": "integer" },
+        "reactive-energy-micro-varh-q1-plus-q4": {
+          "description": "Reactive energy in microvar-hours, Q1+Q4 metering quadrants, fundamental + harmonics.",
+          "type": "integer"
+        },
+        "reactive-energy-micro-varh-q2-plus-q3": {
+          "description": "Reactive energy in microvar-hours, Q2+Q3 metering quadrants, fundamental + harmonics.",
+          "type": "integer"
+        },
+        "reactive-energy-micro-varh-q1": {
+          "description": "Reactive energy in microvar-hours, Q1 metering quadrant, fundamental + harmonics.",
+          "type": "integer"
+        },
+        "reactive-energy-micro-varh-q2": {
+          "description": "Reactive energy in microvar-hours, Q2 metering quadrant, fundamental + harmonics.",
+          "type": "integer"
+        },
+        "reactive-energy-micro-varh-q3": {
+          "description": "Reactive energy in microvar-hours, Q3 metering quadrant, fundamental + harmonics.",
+          "type": "integer"
+        },
+        "reactive-energy-micro-varh-q4": {
+          "description": "Reactive energy in microvar-hours, Q4 metering quadrant, fundamental + harmonics.",
+          "type": "integer"
+        },
+        "apparent-energy-micro-vah-del-arithmetic": {
+          "description": "Arithmetic apparent energy in microvolt-ampere-hours, commonly VAh in metering contexts.",
+          "type": "integer"
+        },
+        "apparent-energy-micro-vah-rec-arithmetic": {
+          "description": "Arithmetic apparent energy in microvolt-ampere-hours, commonly VAh in metering contexts.",
+          "type": "integer"
+        },
+        "apparent-energy-micro-vah-sum-arithmetic": {
+          "description": "Arithmetic apparent energy in microvolt-ampere-hours, commonly VAh in metering contexts.",
+          "type": "integer"
+        },
         "active-energy-micro-wh-del-fundamental": { "type": "integer" },
         "active-energy-micro-wh-rec-fundamental": { "type": "integer" },
         "apparent-energy-micro-vah-sum-vectorial": { "type": "integer" },
         "apparent-energy-micro-vah-del-q1-plus-q4-vectorial": { "type": "integer" },
         "apparent-energy-micro-vah-rec-q2-plus-q3-vectorial": { "type": "integer" },
-        "power-factor-del-true": {
-          "description": "True power factor magnitude in the range 0.0 to 1.0 for delivered energy; sign and quadrant semantics are not encoded in the PF sign, and reactive-power sign and/or PF angle provide directional context.",
+        "power-factor-del-arithmetic": {
+          "description": "Arithmetic power factor magnitude in the range 0.0 to 1.0 for delivered energy; sign and quadrant semantics are not encoded in the PF sign, and reactive-power sign and/or PF angle provide directional context.",
           "type": "number",
           "minimum": 0,
           "maximum": 1
         },
-        "power-factor-rec-true": {
-          "description": "True power factor magnitude in the range 0.0 to 1.0 for received energy; sign and quadrant semantics are not encoded in the PF sign, and reactive-power sign and/or PF angle provide directional context.",
+        "power-factor-rec-arithmetic": {
+          "description": "Arithmetic power factor magnitude in the range 0.0 to 1.0 for received energy; sign and quadrant semantics are not encoded in the PF sign, and reactive-power sign and/or PF angle provide directional context.",
           "type": "number",
           "minimum": 0,
           "maximum": 1
         },
-        "power-factor-sum-true": {
-          "description": "True power factor magnitude in the range 0.0 to 1.0 for summed energy; sign and quadrant semantics are not encoded in the PF sign, and reactive-power sign and/or PF angle provide directional context.",
+        "power-factor-sum-arithmetic": {
+          "description": "Arithmetic power factor magnitude in the range 0.0 to 1.0 for summed energy; sign and quadrant semantics are not encoded in the PF sign, and reactive-power sign and/or PF angle provide directional context.",
           "type": "number",
           "minimum": 0,
           "maximum": 1
@@ -276,8 +303,8 @@
         "apparent-power-micro-va-sum-vectorial": {
           "type": "integer"
         },
-        "power-factor-true": {
-          "description": "True power factor magnitude in the range 0.0 to 1.0, system, fundamental + harmonics; sign and quadrant semantics are not encoded in the PF sign, and reactive-power sign and/or PF angle provide directional context.",
+        "power-factor-arithmetic": {
+          "description": "Arithmetic power factor magnitude in the range 0.0 to 1.0, system, fundamental + harmonics; sign and quadrant semantics are not encoded in the PF sign, and reactive-power sign and/or PF angle provide directional context.",
           "type": "number",
           "minimum": 0,
           "maximum": 1
@@ -356,8 +383,8 @@
         "current-angle-deg": {
           "type": "number"
         },
-        "power-factor-true": {
-          "description": "True power factor magnitude in the range 0.0 to 1.0, per phase, fundamental + harmonics; sign and quadrant semantics are not encoded in the PF sign, and reactive-power sign and/or PF angle provide directional context.",
+        "power-factor": {
+          "description": "Power factor magnitude in the range 0.0 to 1.0, per phase, fundamental + harmonics; sign and quadrant semantics are not encoded in the PF sign, and reactive-power sign and/or PF angle provide directional context.",
           "type": "number",
           "minimum": 0,
           "maximum": 1

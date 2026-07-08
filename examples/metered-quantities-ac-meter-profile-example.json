@@ -10,7 +10,7 @@
       "active-power-micro-w-sum": 173250000,
       "reactive-power-micro-var-sum": 18400000,
       "apparent-power-micro-va-sum": 174226000,
-      "power-factor-true": 0.992,
+      "power-factor": 0.992,
       "current-angle-deg": -6.1,
       "voltage-angle-deg": 0.0,
       "current-thd-percent": 2.1,
@@ -24,7 +24,7 @@
       "active-power-micro-w-sum": 346500000,
       "reactive-power-micro-var-sum": 18400000,
       "apparent-power-micro-va-sum-arithmetic": 349418000,
-      "power-factor-true": 0.991
+      "power-factor-arithmetic": 0.991
     }
   }
 }

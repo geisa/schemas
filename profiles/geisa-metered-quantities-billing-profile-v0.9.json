@@ -32,7 +32,7 @@
                     "message-version",
                     "timestamp-us",
                     "active-energy-micro-wh-del",
-                    "power-factor-sum-true",
+                    "power-factor-sum-arithmetic",
                     "metadata"
                   ],
                   "properties": {

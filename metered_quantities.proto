@@ -12,7 +12,7 @@ message GeisaTypeMeasurementMetadata {
 
 message GeisaTypeMaxDemand {
 	uint64 max_demand_time_us = 1;	// Timestamp in microseconds UNIX epoch time for the recorded maximum demand
-	optional int64 quantity = 2;	// Fixed-point quantity in the micro-unit encoded by the containing field name, for example microwatts, microwatt-hours, microvars, microvar-hours, microvolt-amperes, or microvolt-ampere-hours
+	optional int64 quantity = 2;	// Fixed-point quantity in the micro-unit encoded by the containing field name, for example microwatts, microwatt-hours, microvars, microvar-hours (commonly VARh in metering contexts), microvolt-amperes, or microvolt-ampere-hours (commonly VAh in metering contexts)
 }
 
 message GeisaBillingQuantities_Summation_Total {
@@ -24,29 +24,29 @@ message GeisaBillingQuantities_Summation_Total {
 	optional int64 active_energy_micro_wh_sum = 5;	// Active energy in microwatt-hours, total sum, fundamental + harmonics
 	optional int64 active_energy_micro_wh_net = 6;	// Active energy in microwatt-hours, total net, fundamental + harmonics
 
-	optional int64 reactive_energy_micro_varh_del = 20;	// Reactive energy in microvar-hours, total delivered, fundamental + harmonics
+	optional int64 reactive_energy_micro_varh_del = 20;	// Reactive energy in microvar-hours (commonly VARh in metering contexts), total delivered, fundamental + harmonics
 	optional int64 reactive_energy_micro_varh_rec = 21;	// Reactive energy in microvar-hours, total received, fundamental + harmonics
 	optional int64 reactive_energy_micro_varh_sum = 22;	// Reactive energy in microvar-hours, total sum, fundamental + harmonics
 	optional int64 reactive_energy_micro_varh_net = 23;	// Reactive energy in microvar-hours, total net, fundamental + harmonics
-	optional int64 reactive_energy_micro_varh_q1_plus_q4 = 24;	// Reactive energy in microvar-hours, Q1+Q4, fundamental + harmonics
-	optional int64 reactive_energy_micro_varh_q2_plus_q3 = 25;	// Reactive energy in microvar-hours, Q2+Q3, fundamental + harmonics
-	optional int64 reactive_energy_micro_varh_q1 = 26;	// Reactive energy in microvar-hours, Q1, fundamental + harmonics
-	optional int64 reactive_energy_micro_varh_q2 = 27;	// Reactive energy in microvar-hours, Q2, fundamental + harmonics
-	optional int64 reactive_energy_micro_varh_q3 = 28;	// Reactive energy in microvar-hours, Q3, fundamental + harmonics
-	optional int64 reactive_energy_micro_varh_q4 = 29;	// Reactive energy in microvar-hours, Q4, fundamental + harmonics
+	optional int64 reactive_energy_micro_varh_q1_plus_q4 = 24;	// Reactive energy in microvar-hours, Q1+Q4 metering quadrants, fundamental + harmonics
+	optional int64 reactive_energy_micro_varh_q2_plus_q3 = 25;	// Reactive energy in microvar-hours, Q2+Q3 metering quadrants, fundamental + harmonics
+	optional int64 reactive_energy_micro_varh_q1 = 26;	// Reactive energy in microvar-hours, Q1 metering quadrant, fundamental + harmonics
+	optional int64 reactive_energy_micro_varh_q2 = 27;	// Reactive energy in microvar-hours, Q2 metering quadrant, fundamental + harmonics
+	optional int64 reactive_energy_micro_varh_q3 = 28;	// Reactive energy in microvar-hours, Q3 metering quadrant, fundamental + harmonics
+	optional int64 reactive_energy_micro_varh_q4 = 29;	// Reactive energy in microvar-hours, Q4 metering quadrant, fundamental + harmonics
 
-	optional int64 apparent_energy_micro_vah_del_arithmetic = 40;	// Arithmetic apparent energy in microvolt-ampere-hours, total delivered, fundamental + harmonics
-	optional int64 apparent_energy_micro_vah_rec_arithmetic = 41;	// Arithmetic apparent energy in microvolt-ampere-hours, total received, fundamental + harmonics
-	optional int64 apparent_energy_micro_vah_sum_arithmetic = 42;	// Arithmetic apparent energy in microvolt-ampere-hours, total sum, fundamental + harmonics
+	optional int64 apparent_energy_micro_vah_del_arithmetic = 40;	// Arithmetic apparent energy in microvolt-ampere-hours (commonly VAh in metering contexts), total delivered, fundamental + harmonics
+	optional int64 apparent_energy_micro_vah_rec_arithmetic = 41;	// Arithmetic apparent energy in microvolt-ampere-hours (commonly VAh in metering contexts), total received, fundamental + harmonics
+	optional int64 apparent_energy_micro_vah_sum_arithmetic = 42;	// Arithmetic apparent energy in microvolt-ampere-hours (commonly VAh in metering contexts), total sum, fundamental + harmonics
 	optional int64 active_energy_micro_wh_del_fundamental = 43;	// Active energy in microwatt-hours, total delivered, fundamental only
 	optional int64 active_energy_micro_wh_rec_fundamental = 44;	// Active energy in microwatt-hours, total received, fundamental only
 	optional int64 apparent_energy_micro_vah_sum_vectorial = 45;	// Vectorial apparent energy in microvolt-ampere-hours, total sum, fundamental + harmonics
 	optional int64 apparent_energy_micro_vah_del_q1_plus_q4_vectorial = 46;	// Vectorial apparent energy in microvolt-ampere-hours, delivered, Q1+Q4, fundamental + harmonics
 	optional int64 apparent_energy_micro_vah_rec_q2_plus_q3_vectorial = 47;	// Vectorial apparent energy in microvolt-ampere-hours, received, Q2+Q3, fundamental + harmonics
 
-	optional double power_factor_del_true = 100;	// Unitless true power factor magnitude in the range 0.0 to 1.0 for delivered energy; sign and quadrant semantics are not encoded in the PF sign, and reactive-power sign and/or PF angle provide directional context
-	optional double power_factor_rec_true = 101;	// Unitless true power factor magnitude in the range 0.0 to 1.0 for received energy; sign and quadrant semantics are not encoded in the PF sign, and reactive-power sign and/or PF angle provide directional context
-	optional double power_factor_sum_true = 102;	// Unitless true power factor magnitude in the range 0.0 to 1.0 for summed energy; sign and quadrant semantics are not encoded in the PF sign, and reactive-power sign and/or PF angle provide directional context
+	optional double power_factor_del_arithmetic = 100;	// Unitless arithmetic power factor magnitude in the range 0.0 to 1.0 for delivered energy; sign and quadrant semantics are not encoded in the PF sign, and reactive-power sign and/or PF angle provide directional context
+	optional double power_factor_rec_arithmetic = 101;	// Unitless arithmetic power factor magnitude in the range 0.0 to 1.0 for received energy; sign and quadrant semantics are not encoded in the PF sign, and reactive-power sign and/or PF angle provide directional context
+	optional double power_factor_sum_arithmetic = 102;	// Unitless arithmetic power factor magnitude in the range 0.0 to 1.0 for summed energy; sign and quadrant semantics are not encoded in the PF sign, and reactive-power sign and/or PF angle provide directional context
 	optional double power_factor_sum_vectorial = 103;	// Unitless vectorial power factor magnitude in the range 0.0 to 1.0 for summed energy based on vectorially aggregated apparent power; this is not displacement power factor
 
 	optional int64 reactive_energy_micro_varh_del_fundamental = 120;	// Reactive energy in microvar-hours, total delivered, fundamental only
@@ -150,7 +150,7 @@ message GeisaTypeInstantaneousQuantities_System {
 	optional int64 reactive_power_micro_var_sum = 5;	// Reactive power in microvars, system sum, fundamental + harmonics
 	optional int64 apparent_power_micro_va_sum_arithmetic = 6;	// Arithmetic apparent power in microvolt-amperes, system sum, fundamental + harmonics
 	optional int64 apparent_power_micro_va_sum_vectorial = 7;	// Vectorial apparent power in microvolt-amperes, system sum, fundamental + harmonics
-	optional double power_factor_true = 8;	// Unitless true power factor magnitude in the range 0.0 to 1.0, system, fundamental + harmonics; sign and quadrant semantics are not encoded in the PF sign, and reactive-power sign and/or PF angle provide directional context
+	optional double power_factor_arithmetic = 8;	// Unitless arithmetic power factor magnitude in the range 0.0 to 1.0, system, fundamental + harmonics; sign and quadrant semantics are not encoded in the PF sign, and reactive-power sign and/or PF angle provide directional context
 	optional double power_factor_vectorial = 9;	// Unitless vectorial power factor magnitude in the range 0.0 to 1.0, system, fundamental + harmonics, based on vectorially aggregated apparent power; this is not displacement power factor
 	optional int64 reactive_power_micro_var_sum_arithmetic = 10;	// Arithmetic reactive power in microvars, system sum, fundamental + harmonics
 	optional double power_factor_angle_arithmetic_deg = 11;	// Arithmetic power factor angle in degrees, system, fundamental + harmonics
@@ -174,7 +174,7 @@ message GeisaTypeInstantaneousQuantities_PerPhase {
 	optional int64 apparent_power_micro_va_sum = 7;	// Apparent power in microvolt-amperes, per phase sum, fundamental + harmonics
 	optional double voltage_angle_deg = 8;	// Phase voltage angle in degrees, relative to phase A voltage
 	optional double current_angle_deg = 9;	// Phase current angle in degrees, relative to same-phase voltage, fundamental + harmonics
-	optional double power_factor_true = 10;	// Unitless true power factor magnitude in the range 0.0 to 1.0, per phase, fundamental + harmonics; sign and quadrant semantics are not encoded in the PF sign, and reactive-power sign and/or PF angle provide directional context
+	optional double power_factor = 10;	// Unitless power factor magnitude in the range 0.0 to 1.0, per phase, fundamental + harmonics; sign and quadrant semantics are not encoded in the PF sign, and reactive-power sign and/or PF angle provide directional context
 	optional int64 current_micro_a_fundamental = 11;	// Current rms in microamps, per phase, fundamental only
 	optional int64 voltage_micro_v_fundamental = 12;	// Voltage rms in microvolts, per phase, fundamental only
 	optional double current_thd_percent = 13;	// Current THD percentage, 0-100 semantics, equivalent to SenML ratio * 100
