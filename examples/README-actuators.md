@@ -35,9 +35,7 @@ Example binaries are written to:
 
     build/examples/
 
-The embedded C actuator examples are the preferred path in this branch. The
-C++ examples remain available as reference examples and may be removed in a
-later cleanup.
+The embedded C actuator examples are the supported path in this repo.
 
 ## Example JSON files
 
@@ -68,19 +66,3 @@ The embedded C writer emits the standard `/tmp` payloads with no arguments and
 runs the end-to-end walkthrough with:
 
     build/examples/actuator_write_response_example_c --demo
-
-## C++ examples
-
-- `build/examples/actuator_read_example`
-- `build/examples/actuator_write_response_example`
-
-`actuator_read_example` requires an explicit decode mode:
-
-    build/examples/actuator_read_example --get-req <file>
-    build/examples/actuator_read_example --get-rsp <file>
-    build/examples/actuator_read_example --set-req <file>
-    build/examples/actuator_read_example --set-rsp <file>
-
-Run the C++ demo writer flow:
-
-    build/examples/actuator_write_response_example --demo

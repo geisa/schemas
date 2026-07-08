@@ -45,6 +45,14 @@ Repository venv is ready.
 
 Next embedded C example build:
   test -d /tmp/nanopb/.git || git clone https://github.com/nanopb/nanopb /tmp/nanopb
-  make clean
-  PYTHON="$ROOT_DIR/venv/bin/python" NANOPB_GENERATOR_MODULE=nanopb.generator.nanopb_generator NANOPB_DIR=/tmp/nanopb make examples-c
+  make examples-c
+
+The Makefile uses the repository venv Python directly when available, so shell
+activation of venv is not required for Makefile targets.
+
+Use NANOPB_DIR or NANOPB_RUNTIME_DIR only if your nanopb checkout lives
+somewhere other than /tmp/nanopb.
+
+Use NANOPB_GENERATOR or NANOPB_GENERATOR_MODULE only when you need to override
+the default generator path explicitly.
 EOF

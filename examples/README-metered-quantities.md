@@ -39,25 +39,17 @@ the nanopb generator settings explicitly.
 
 Generate metered nanopb bindings only:
 
-    PYTHON="$(pwd)/venv/bin/python" \
-    NANOPB_GENERATOR_MODULE=nanopb.generator.nanopb_generator \
     make metered-c
 
-To also compile the embedded C metered examples, point `NANOPB_DIR` or
-`NANOPB_RUNTIME_DIR` at a nanopb source tree containing `pb_common.c`,
-`pb_encode.c`, and `pb_decode.c`:
+To also compile the embedded C metered examples, provide a nanopb source tree
+containing `pb_common.c`, `pb_encode.c`, and `pb_decode.c`. The default Makefile
+path uses `/tmp/nanopb` when available:
 
     test -d /tmp/nanopb/.git || git clone https://github.com/nanopb/nanopb /tmp/nanopb
-    PYTHON="$(pwd)/venv/bin/python" \
-    NANOPB_GENERATOR_MODULE=nanopb.generator.nanopb_generator \
-    NANOPB_DIR=/tmp/nanopb \
     make examples-metered
 
 Or use the aggregate embedded C example path:
 
-    PYTHON="$(pwd)/venv/bin/python" \
-    NANOPB_GENERATOR_MODULE=nanopb.generator.nanopb_generator \
-    NANOPB_DIR=/tmp/nanopb \
     make examples-c
 
 If you already have a working `protoc-gen-nanopb` executable, you can use it
@@ -75,12 +67,9 @@ sufficient because it does not include those runtime C source files.
 
 A typical quick-start workflow is:
 
-    bash scripts/setup-dev-venv.sh
+    make setup-dev
     test -d /tmp/nanopb/.git || git clone https://github.com/nanopb/nanopb /tmp/nanopb
-    PYTHON="$(pwd)/venv/bin/python" \
-      NANOPB_GENERATOR_MODULE=nanopb.generator.nanopb_generator \
-      NANOPB_DIR=/tmp/nanopb \
-      make examples-metered
+    make examples-metered
     build/examples/metered_quantities_write_example_c --demo
 
 ## Run

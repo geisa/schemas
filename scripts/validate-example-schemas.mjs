@@ -13,8 +13,12 @@ import path from "node:path";
 import { isDeepStrictEqual } from "node:util";
 
 const ROOT = process.cwd();
+// Keep this pass focused on checked repository content rather than generated
+// output trees or local machine artifacts.
 const EXCLUDED_DIRS = new Set([".git", "build", "dist", "node_modules", "tmp"]);
 
+// Map each checked example family to the single schema it is expected to
+// satisfy so semantic validation stays explicit and reviewable.
 const SCHEMA_BY_PREFIX = [
   ["examples/actuator-", "geisa-actuator-schema.json"],
   ["examples/app-message-request-", "geisa-app-message-req-schema.json"],
@@ -130,6 +134,8 @@ function pointerSegments(ref)
 
 function resolveRef(schemaByName, currentSchemaName, ref)
 {
+  // The checked schema set relies on local refs and a small number of
+  // cross-file refs; resolve only that repo-local surface here.
   let schema = null;
   let resolvedSchemaName = currentSchemaName;
   let fragment = ref;
@@ -216,6 +222,8 @@ function typeMatches(value, typeName)
 
 function stripAnnotations(value)
 {
+  // Examples may carry reviewer-facing $comment fields even when payload
+  // validation should treat them as non-contract annotations.
   if (Array.isArray(value))
   {
     return value.map((entry) => stripAnnotations(entry));
@@ -240,6 +248,8 @@ function stripAnnotations(value)
 
 function validateSchema(value, schema, schemaByName, currentSchemaName, instancePath = "")
 {
+  // This validator intentionally implements the JSON Schema feature subset used
+  // by the checked example/schema set in this repository.
   if (schema === true)
   {
     return [];
@@ -460,6 +470,8 @@ function validateSchema(value, schema, schemaByName, currentSchemaName, instance
 async function main()
 {
   const schemaByName = new Map();
+  // Preload the explicitly-mapped schemas and any repo-local refs they use so
+  // example validation can stay file-based and deterministic.
   const pendingSchemaNames = [...new Set(SCHEMA_BY_PREFIX.map((entry) => entry[1]))].sort();
 
   while (pendingSchemaNames.length > 0)
@@ -509,6 +521,8 @@ async function main()
 
   if (hasError)
   {
+    // Fail the semantic-validation phase with a non-zero exit so npm/CI stops
+    // immediately on schema/example contract regressions.
     process.exit(1);
   }
 
@@ -518,5 +532,7 @@ async function main()
 main().catch((error) =>
 {
   console.error(error instanceof Error ? error.message : String(error));
+  // Treat loader or resolver failures the same way as validation failures for
+  // CI-facing lint runs.
   process.exit(1);
 });
