@@ -42,8 +42,8 @@ static inline const char *geisa_app_message_type_name(GeisaAppMessageType value)
 {
     switch (value)
     {
-    case GeisaAppMessageType_GEISA_APP_MESSAGE_TYPE_APP_CONFIGURATION:
-        return "GeisaAppMessageType_GEISA_APP_MESSAGE_TYPE_APP_CONFIGURATION";
+    case GeisaAppMessageType_GEISA_APP_MESSAGE_TYPE_CONFIG:
+        return "GeisaAppMessageType_GEISA_APP_MESSAGE_TYPE_CONFIG";
     case GeisaAppMessageType_GEISA_APP_MESSAGE_TYPE_COMMAND:
         return "GeisaAppMessageType_GEISA_APP_MESSAGE_TYPE_COMMAND";
     case GeisaAppMessageType_GEISA_APP_MESSAGE_TYPE_COMMAND_RESULT:

@@ -33,7 +33,7 @@ enum GeisaAppMessagePriority {
 // This is for GEISA app messaging, not direct app access to LwM2M/ADM.
 enum GeisaAppMessageType {
   GEISA_APP_MESSAGE_TYPE_UNSPECIFIED = 0;
-  GEISA_APP_MESSAGE_TYPE_APP_CONFIGURATION = 1;
+  GEISA_APP_MESSAGE_TYPE_CONFIG = 1;
   GEISA_APP_MESSAGE_TYPE_COMMAND = 2;
   GEISA_APP_MESSAGE_TYPE_COMMAND_RESULT = 3;
   GEISA_APP_MESSAGE_TYPE_STATUS = 4;
@@ -90,7 +90,9 @@ message GeisaAppMessage_Req {
   uint64 ttl_seconds = 5;
   // MIME type for the opaque payload bytes.
   string content_type = 6;
-  // Application payload bytes. The content_type tells receivers how to
+  // Application payload bytes. GEISA app-message requests SHALL contain a
+  // non-empty payload; empty payloads are invalid even though proto3 bytes
+  // fields can encode an empty value. The content_type tells receivers how to
   // interpret the bytes.
   bytes payload = 7;
 }

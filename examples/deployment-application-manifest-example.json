@@ -9,7 +9,7 @@
             "name": "Awesome App",
             "description": "This app makes your device awesome",
             "app-version": "1.0.0 splat",
-            "manifest-version": "1.0.0",
+            "manifest-version": "0.9.0",
             "artifacts": [
                 {
                     "$comment": "Deployment continues to use the same application artifact as the vendor manifest in this example.",
@@ -29,9 +29,9 @@
                 "waveform": false
             },
             "compatibility": {
-                "$comment": "Compatibility requirements are preserved from the vendor application manifest.",
-                "GEISA-API": "1.0.0",
-                "GEISA-LEE": "1.0.0",
+                "$comment": "Compatibility requirements are aligned with the vendor application manifest at GEISA API and LEE version 0.9.0.",
+                "GEISA-API": "0.9.0",
+                "GEISA-LEE": "0.9.0",
                 "GEISA-VEE": null,
                 "toolchain-id": "aarch64-linux-musleabihf neon",
                 "toolchain-version": "1.0.0"

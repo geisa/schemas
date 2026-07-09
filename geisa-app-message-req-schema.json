@@ -42,7 +42,7 @@
           "type": "string",
           "enum": [
             "GEISA_APP_MESSAGE_TYPE_UNSPECIFIED",
-            "GEISA_APP_MESSAGE_TYPE_APP_CONFIGURATION",
+            "GEISA_APP_MESSAGE_TYPE_CONFIG",
             "GEISA_APP_MESSAGE_TYPE_COMMAND",
             "GEISA_APP_MESSAGE_TYPE_COMMAND_RESULT",
             "GEISA_APP_MESSAGE_TYPE_STATUS",
@@ -68,7 +68,7 @@
           "minLength": 1
         },
         "payload-base64": {
-          "description": "Base64-encoded opaque payload bytes.",
+          "description": "Base64-encoded opaque payload bytes. GEISA app-message requests carry a non-empty application payload.",
           "type": "string",
           "contentEncoding": "base64",
           "minLength": 1
