@@ -410,10 +410,33 @@ static inline void print_discovery_waveform_json(const GeisaPlatformDiscovery_Wa
     geisa_print_json_escaped(discovery_waveform_sample_type_name(stream->sample_type));
     printf(",\"voltage-scale\":%.6g", stream->voltage_scale);
     printf(",\"current-scale\":%.6g", stream->current_scale);
+    printf(",\"voltage-channel-count\":%u", stream->voltage_channel_count);
+    printf(",\"current-channel-count\":%u", stream->current_channel_count);
+    printf(",\"other-channel-count\":%u", stream->other_channel_count);
     printf(",\"total-channel-count\":%u", stream->total_channel_count);
+    printf(",\"cycle-aligned\":%s", stream->cycle_aligned ? "true" : "false");
+    printf(",\"zero-crossing-aligned\":%s",
+           stream->zero_crossing_aligned ? "true" : "false");
     printf(",\"sample-rate-hz\":%u", stream->sample_rate_hz);
     printf(",\"samples-per-cycle\":%u", stream->samples_per_cycle);
     printf(",\"nominal-frequency-hz\":%u", stream->nominal_frequency_hz);
+    printf(",\"expected-frame-period-ms\":%u", stream->expected_frame_period_ms);
+    if (stream->voltage_filter_lowpass != 0)
+    {
+        printf(",\"voltage-filter-lowpass\":%d", stream->voltage_filter_lowpass);
+    }
+    if (stream->voltage_filter_highpass != 0)
+    {
+        printf(",\"voltage-filter-highpass\":%d", stream->voltage_filter_highpass);
+    }
+    if (stream->current_filter_lowpass != 0)
+    {
+        printf(",\"current-filter-lowpass\":%d", stream->current_filter_lowpass);
+    }
+    if (stream->current_filter_highpass != 0)
+    {
+        printf(",\"current-filter-highpass\":%d", stream->current_filter_highpass);
+    }
     putchar('}');
 }
 
