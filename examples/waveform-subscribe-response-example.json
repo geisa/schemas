@@ -9,6 +9,7 @@
     "sample-type": "int16",
     "voltage-channel-count": 1,
     "current-channel-count": 2,
+    "other-channel-count": 0,
     "total-channel-count": 3,
     "sample-rate-hz": 7680,
     "samples-per-cycle": 128,
@@ -17,6 +18,8 @@
     "zero-crossing-aligned": true,
     "voltage-scale": 0.003662109375,
     "current-scale": 0.001220703125,
-    "expected-frame-period-ms": 200
+    "expected-frame-period-ms": 200,
+    "voltage-filter-lowpass": 5000,
+    "current-filter-lowpass": 5000
   }
 }

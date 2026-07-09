@@ -81,7 +81,8 @@ This will create:
 
 …and then outputs:
 
-- decoded response metadata
+- decoded response metadata (including channel counts, sample type, and optional
+  filter metadata)
 - frame header fields
 - frame summary + per-channel min/max
 - first 10 time steps in both raw and scaled units
@@ -115,3 +116,11 @@ If `subscribed=true`, the response includes `socket_path`, which is either:
 
 - a unix socket path (Linux platforms), or
 - a file path for the local demo/fallback mode.
+
+The subscribe response also includes per-channel metadata:
+`voltage-channel-count`, `current-channel-count`, `other-channel-count`, and
+`total-channel-count` (where `total-channel-count == voltage-channel-count +
+current-channel-count + other-channel-count`). Optional filter metadata fields
+(`voltage-filter-lowpass`, `voltage-filter-highpass`, `current-filter-lowpass`,
+`current-filter-highpass`) are present when the platform exposes
+hardware/software filter characteristics.
