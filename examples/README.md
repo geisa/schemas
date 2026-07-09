@@ -27,6 +27,10 @@ From the repository root:
     make clean
     make examples
 
+To build examples if needed and run the demo-capable example binaries:
+
+    make demos
+
 Or run the default top-level entrypoint:
 
     make
@@ -56,6 +60,8 @@ Target summary:
   can be built with the available tools
 - `make langs`: supported binding/code generation only; no example binaries
 - `make examples`: all supported example binaries
+- `make demos`: build examples if needed and run the demo-capable example
+  binaries
 - `make examples-c`: embedded C / nanopb examples and clear prerequisite
   failure when nanopb is not ready
 - `make examples-cpp`: active C++ example binaries
@@ -106,6 +112,9 @@ When `/tmp/nanopb` already exists as a valid nanopb checkout, `make` and
 `make examples` build the supported C++ and embedded C example sets. Use
 `make examples-c` when you want the embedded C path explicitly and fail-fast on
 missing nanopb prerequisites.
+
+`make demos` uses the same embedded C / nanopb prerequisites as the embedded C
+example builds.
 
 Note that these examples are not part of the GEISA API specification, and do
 not imply that GEISA applications must be written in C or C++. GEISA APIs are

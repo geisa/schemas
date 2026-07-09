@@ -9,6 +9,7 @@
 # Primary targets:
 #   make / make all  - default repo artifacts plus all supported examples
 #   make examples    - all supported examples
+#   make demos       - build examples if needed and run supported demo programs
 #   make examples-c  - explicit embedded C / nanopb examples
 #   make examples-cpp - active C++ examples (waveform only)
 #   make langs       - supported binding/code generation only (no examples)
@@ -91,6 +92,7 @@ help:
 	  '' \
 	  'Examples:' \
 	  '  make examples      Build all supported examples.' \
+	  '  make demos         Build examples if needed and run supported demo programs.' \
 	  '  make examples-c    Build embedded C / nanopb examples.' \
 	  '  make examples-cpp  Build the active C++ example set (waveform only).' \
 	  '  make examples-actuator       Build actuator examples only.' \

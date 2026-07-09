@@ -157,6 +157,10 @@ Build the default example set:
 
     make examples
 
+Build examples if needed and run the supported example demo programs:
+
+    make demos
+
 Build the default repository targets:
 
     make
@@ -218,6 +222,10 @@ Example-specific build and run instructions are in the `examples/` directory:
 You can build the default example workflow directly from the repository root:
 
     make examples
+
+To build examples if needed and run the supported example demo programs:
+
+    make demos
 
 For the default repository build:
 

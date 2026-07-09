@@ -88,6 +88,9 @@ else
 	  '  make examples-c'
 endif
 
+demos:
+	scripts/run-demos.sh
+
 .PHONY: examples examples-cpp examples-c \
 	examples-actuator examples-app-message examples-conn-status \
-	examples-sensor examples-discovery examples-metered
+	examples-sensor examples-discovery examples-metered demos
