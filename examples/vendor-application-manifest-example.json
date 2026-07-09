@@ -9,7 +9,7 @@
             "name": "Awesome App",
             "description": "This app makes your device awesome",
             "app-version": "1.0.0 splat",
-            "manifest-version": "1.0.0",
+            "manifest-version": "0.9.0",
             "artifacts": [
                 {
                     "$comment": "Single application artifact example. Additional artifact types may be added in future GEISA revisions.",
@@ -29,9 +29,9 @@
                 "waveform": false
             },
             "compatibility": {
-                "$comment": "Application requires GEISA API and LEE version 1.0.0, does not require VEE support, and identifies a vendor-defined toolchain target.",
-                "GEISA-API": "1.0.0",
-                "GEISA-LEE": "1.0.0",
+                "$comment": "Application requires GEISA API and LEE version 0.9.0, does not require VEE support, and identifies a vendor-defined toolchain target.",
+                "GEISA-API": "0.9.0",
+                "GEISA-LEE": "0.9.0",
                 "GEISA-VEE": null,
                 "toolchain-id": "aarch64-linux-musleabihf neon",
                 "toolchain-version": "1.0.0"

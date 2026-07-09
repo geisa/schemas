@@ -75,7 +75,7 @@
         },
         "geisaArtifact": {
             "type": "object",
-            "$comment": "A GEISA app will have at least one artifact.  GEISA 1.0.0 supports a single type.  Other image types may be added in the future.",
+            "$comment": "A GEISA app will have at least one artifact. This schema version supports a single artifact type. Other image types may be added in the future.",
             "required": [
                 "image-name",
                 "image-type",
@@ -171,7 +171,7 @@
                         },
                         "manifest-version": {
                             "description": "Version number of the GEISA manifest format per the GEISA specification in use.",
-                            "const": "1.0.0"
+                            "const": "0.9.0"
                         },
                         "api-access": {
                             "type": "object",
