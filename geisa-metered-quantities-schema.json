@@ -255,8 +255,21 @@
     },
     "geisaBillingQuantities": {
       "type": "object",
+      "$comment": "A billing wrapper SHALL contain at least one billing section. Individual quantities within each section remain optional because register capabilities vary.",
       "required": [
         "message-version"
+      ],
+      "anyOf": [
+        {
+          "required": [
+            "summation-total"
+          ]
+        },
+        {
+          "required": [
+            "demand-total"
+          ]
+        }
       ],
       "properties": {
         "message-version": {
