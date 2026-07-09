@@ -7,8 +7,10 @@
 
 import { readFile } from "node:fs/promises";
 import { execFile } from "node:child_process";
+import path from "node:path";
 import { promisify } from "node:util";
 
+const ROOT = process.cwd();
 const run = promisify(execFile);
 
 async function listTrackedJsonFiles() {
@@ -26,7 +28,7 @@ for (const filePath of await listTrackedJsonFiles()) {
   count += 1;
 
   try {
-    const contents = await readFile(filePath, "utf8");
+    const contents = await readFile(path.join(ROOT, filePath), "utf8");
     JSON.parse(contents);
   } catch (err) {
     hasError = true;

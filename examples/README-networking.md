@@ -48,7 +48,7 @@ Example binaries are written to:
 
     build/examples/
 
-The embedded C app-message examples are the supported path in this branch.
+The embedded C app-message examples are the supported path in this repo.
 
 ## Embedded C examples
 

@@ -13,7 +13,7 @@ envelope examples.
 The remaining C++ example emits and decodes binary protobuf envelopes for the
 waveform control-plane path. The embedded C examples use nanopb for the same
 protobuf message contracts in the actuator, app-message, conn-status, sensor,
-and Platform Discovery areas.
+Platform Discovery, and metered quantities areas.
 
 For the embedded C path, writer `--demo` modes are the primary end-to-end
 walkthrough entry points: they generate payloads in `/tmp` and then decode
@@ -27,6 +27,10 @@ From the repository root:
     make clean
     make examples
 
+To build examples if needed and run the demo-capable example binaries:
+
+    make demos
+
 Or run the default top-level entrypoint:
 
     make
@@ -38,17 +42,13 @@ Compiled example binaries are written to:
 The embedded C build uses the repository `venv` for nanopb generation plus an
 external nanopb runtime source tree:
 
-    bash scripts/setup-dev-venv.sh
+    make setup-dev
     test -d /tmp/nanopb/.git || git clone https://github.com/nanopb/nanopb /tmp/nanopb
-    PYTHON="$(pwd)/venv/bin/python" \
-    NANOPB_GENERATOR_MODULE=nanopb.generator.nanopb_generator \
-    NANOPB_DIR=/tmp/nanopb \
     make examples-c
 
-You can also run `make setup-dev` from the repository root to call the same
-bootstrap script. Shell activation of the repository `venv` is not required for
-the Makefile targets; the build uses the repository venv Python directly when
-available.
+The Makefile uses the repository `venv` Python directly when available, so
+shell activation of the repository `venv` is not required.  The build will
+use the repository venv Python directly when available.
 
 If you already have a working `protoc-gen-nanopb` executable, you can use it
 instead by setting `NANOPB_GENERATOR=protoc-gen-nanopb` or an explicit plugin
@@ -60,6 +60,8 @@ Target summary:
   can be built with the available tools
 - `make langs`: supported binding/code generation only; no example binaries
 - `make examples`: all supported example binaries
+- `make demos`: build examples if needed and run the demo-capable example
+  binaries
 - `make examples-c`: embedded C / nanopb examples and clear prerequisite
   failure when nanopb is not ready
 - `make examples-cpp`: active C++ example binaries
@@ -77,6 +79,7 @@ Target summary:
 ## Topic guides
 
 - Platform Discovery: `README-discovery.md`
+- Metered quantities: `README-metered-quantities.md`
 - Connection status: `README-conn-status.md`
 - Networking / app-message: `README-networking.md`
 - Actuators: `README-actuators.md`
@@ -93,13 +96,13 @@ Embedded C examples are available for:
 - conn-status
 - sensors
 - Platform Discovery
+- metered quantities
 
-Where embedded C examples exist, they are the preferred example path for this
-branch because the nanopb-based build is the path being kept aligned with
-proto3 optional support and current embedded review needs.
+Embedded C examples are the preferred example path for this repository because
+the nanopb-based build supports proto3 optional fields.
 
 The legacy `make c` protobuf-c generation path remains available for standalone
-code generation, but it is not the primary C example path in this branch.
+code generation, but it is not the primary C example path for this repository.
 
 The currently supported C++ example path is waveform. The Platform Discovery
 embedded C example includes waveform metadata in the discovery response; it
@@ -109,6 +112,9 @@ When `/tmp/nanopb` already exists as a valid nanopb checkout, `make` and
 `make examples` build the supported C++ and embedded C example sets. Use
 `make examples-c` when you want the embedded C path explicitly and fail-fast on
 missing nanopb prerequisites.
+
+`make demos` uses the same embedded C / nanopb prerequisites as the embedded C
+example builds.
 
 Note that these examples are not part of the GEISA API specification, and do
 not imply that GEISA applications must be written in C or C++. GEISA APIs are

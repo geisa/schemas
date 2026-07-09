@@ -61,11 +61,12 @@ $(eval $(call DEFINE_EMBEDDED_FAMILY,app-message,app_message_write_response_exam
 $(eval $(call DEFINE_EMBEDDED_FAMILY,conn-status,conn_status_write_example conn_status_read_example,conn_status,conn_status))
 $(eval $(call DEFINE_EMBEDDED_FAMILY,sensor,sensor_write_response_example sensor_read_example,sensor,status sensor))
 $(eval $(call DEFINE_EMBEDDED_FAMILY,discovery,discovery_write_request_example discovery_write_response_example discovery_read_example,discovery,status sensor waveform discovery))
+$(eval $(call DEFINE_EMBEDDED_FAMILY,metered,metered_quantities_write_example metered_quantities_read_example,metered_quantities,metered))
 
 examples-cpp: $(CPP_EXAMPLES)
 	@echo "Built active C++ examples in $(EXAMPLESDIR) (waveform only)"
 
-examples-c: nanopb-prereqs examples-actuator examples-app-message examples-conn-status examples-sensor examples-discovery
+examples-c: nanopb-prereqs examples-actuator examples-app-message examples-conn-status examples-sensor examples-discovery examples-metered
 	@echo "Built embedded C examples in $(EXAMPLESDIR)"
 
 DEFAULT_EXAMPLE_TARGETS := examples-cpp
@@ -84,9 +85,12 @@ else
 	  '  make setup-dev' \
 	  '  test -d /tmp/nanopb/.git || git clone https://github.com/nanopb/nanopb /tmp/nanopb' \
 	  '  make clean' \
-	  '  PYTHON="'"$(CURDIR)"'/venv/bin/python" NANOPB_GENERATOR_MODULE=nanopb.generator.nanopb_generator NANOPB_DIR=/tmp/nanopb make examples-c'
+	  '  make examples-c'
 endif
+
+demos:
+	scripts/run-demos.sh
 
 .PHONY: examples examples-cpp examples-c \
 	examples-actuator examples-app-message examples-conn-status \
-	examples-sensor examples-discovery
+	examples-sensor examples-discovery examples-metered demos

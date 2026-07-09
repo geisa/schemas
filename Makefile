@@ -9,6 +9,7 @@
 # Primary targets:
 #   make / make all  - default repo artifacts plus all supported examples
 #   make examples    - all supported examples
+#   make demos       - build examples if needed and run supported demo programs
 #   make examples-c  - explicit embedded C / nanopb examples
 #   make examples-cpp - active C++ examples (waveform only)
 #   make langs       - supported binding/code generation only (no examples)
@@ -87,9 +88,11 @@ help:
 	  '  make conn-status-c Generate conn-status nanopb bindings.' \
 	  '  make sensor-c      Generate sensor nanopb bindings.' \
 	  '  make discovery-c   Generate discovery nanopb bindings.' \
+	  '  make metered-c     Generate metered quantities nanopb bindings.' \
 	  '' \
 	  'Examples:' \
 	  '  make examples      Build all supported examples.' \
+	  '  make demos         Build examples if needed and run supported demo programs.' \
 	  '  make examples-c    Build embedded C / nanopb examples.' \
 	  '  make examples-cpp  Build the active C++ example set (waveform only).' \
 	  '  make examples-actuator       Build actuator examples only.' \
@@ -97,6 +100,7 @@ help:
 	  '  make examples-conn-status    Build conn-status examples only.' \
 	  '  make examples-sensor         Build sensor examples only.' \
 	  '  make examples-discovery      Build discovery examples only.' \
+	  '  make examples-metered        Build metered quantities examples only.' \
 	  '' \
 	  'Utilities:' \
 	  '  make clean         Remove generated outputs under build/.' \

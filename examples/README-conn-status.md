@@ -29,7 +29,7 @@ Compiled binaries are written to:
 
     build/examples/
 
-The embedded C conn-status examples are the preferred path in this branch. A
+The embedded C conn-status examples are the preferred path in this repo. A
 matching C++ example family does not exist here.
 
 ## Quick start

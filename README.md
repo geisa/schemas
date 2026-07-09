@@ -30,17 +30,13 @@ specification to enable creation of GEISA conformant implementations. The
 content is intended to help users understand the structure, conformance, and
 intent of GEISA messages and payloads.
 
-Most API message payloads are defined in the GEISA specification as well as
-here in proto files, documented in JSON schemas, implemented with example
-code, and further documented with example payload contents.
-
-While efforts have been made to keep items provided in multiple places,
-formats, or examples consistent and free of ambiguity, an implementer should
-be able to resolve conflicts or discrepancies found within this content.
+Most API message payloads are covered in the GEISA specification as well as
+here in the proto files, documented in JSON schemas, example code, and
+further documented in this repo with example payload contents.
 
 For items with proto files, the proto files are authoritative, while JSON
-schemas, examples, and lists in the GEISA specification for the same item are
-not.
+schemas, examples, and any conflicting documentation in the GEISA specification
+for the same item are not.
 
 Profile schemas under `profiles/` are additive overlays on top of the base JSON
 schemas. They are intended for conformance validation and implementation
@@ -55,18 +51,14 @@ The repository build targets assume these tools are available on `PATH`:
 - `make`
 - `protoc` (Protocol Buffers compiler)
 
-The C++ example build target also requires:
+Linting uses Node.js and `npm`. Install the repository Node dependencies before
+running lint commands:
 
-- a C++17 compiler, such as `c++`, `g++`, or `clang++`
-- `pkg-config`
-- protobuf development headers and libraries discoverable through
-  `pkg-config protobuf`
+    npm ci
 
-The legacy C generation target (`make c`) requires protobuf-c support,
-including `protoc-gen-c` on `PATH`. It is a best-effort generator path and is
-not the supported embedded C path for protos that use proto3 optional fields.
+Generated outputs are written under `build/`.
 
-The embedded C example path requires:
+The preferred C example path requires:
 
 - a nanopb generator available either as `protoc-gen-nanopb` or through
   `NANOPB_GENERATOR_MODULE=nanopb.generator.nanopb_generator`
@@ -92,26 +84,32 @@ The `.options` bounds support generated example code and embedded C memory
 layout. They are not GEISA protocol limits and do not define universal device
 requirements.
 
-For this branch, the supported nanopb generator environment is the repository
-`venv`. Create or refresh it with:
+The supported nanopb generator environment is the repository `venv`. Create or
+refresh it with:
 
-    bash scripts/setup-dev-venv.sh
+    make setup-dev
 
 The embedded C runtime C files still come from an external nanopb source
-checkout passed through `NANOPB_DIR` or `NANOPB_RUNTIME_DIR`.
+checkout. By default, the Makefile uses `/tmp/nanopb` when it contains the
+required nanopb runtime sources; use `NANOPB_DIR` or `NANOPB_RUNTIME_DIR` to
+point at a different checkout.
 
-Linting uses Node.js and `npm`. Install the repository Node dependencies before
-running lint commands:
+The C++ example build target also requires:
 
-    npm ci
+- a C++17 compiler, such as `c++`, `g++`, or `clang++`
+- `pkg-config`
+- protobuf development headers and libraries discoverable through
+  `pkg-config protobuf`
 
-Generated outputs are written under `build/`.
+The legacy C generation target (`make c`) requires protobuf-c support,
+including `protoc-gen-c` on `PATH`. It is a best-effort generator path and is
+not the supported embedded C path for protos that use proto3 optional fields.
 
 ## Building protobuf outputs
 
 The Makefile generates protobuf outputs into `build/`.
 
-Generate the default binary protobuf descriptor outputs:
+Build the default repository targets:
 
     make
 
@@ -151,11 +149,19 @@ Generate Platform Discovery embedded C bindings only:
 
     make discovery-c
 
+Generate metered quantities embedded C bindings only:
+
+    make metered-c
+
 Build the default example set:
 
     make examples
 
-Build the newcomer-friendly default entrypoint:
+Build examples if needed and run the supported example demo programs:
+
+    make demos
+
+Build the default repository targets:
 
     make
 
@@ -196,9 +202,9 @@ The `make langs` target intentionally omits legacy protobuf-c generation so it
 does not fail on repo protos that use proto3 optional. Legacy protobuf-c code
 generation remains available separately through `make c`.
 
-For GEISA 0.9, waveform remains on the C++ example path. The embedded C
-examples currently cover actuator, app-message, conn-status, sensor, and
-Platform Discovery payloads.
+Currently, waveform remains on the C++ example path. The embedded C examples
+cover actuator, app-message, conn-status, sensor, Platform Discovery, and
+metered quantities payloads.
 
 ## Examples
 
@@ -208,6 +214,7 @@ Example-specific build and run instructions are in the `examples/` directory:
 - `examples/README-actuators.md`
 - `examples/README-conn-status.md`
 - `examples/README-discovery.md`
+- `examples/README-metered-quantities.md`
 - `examples/README-networking.md`
 - `examples/README-waveform.md`
 - `examples/README-sensors.md`
@@ -216,7 +223,11 @@ You can build the default example workflow directly from the repository root:
 
     make examples
 
-For the default newcomer-friendly repo build:
+To build examples if needed and run the supported example demo programs:
+
+    make demos
+
+For the default repository build:
 
     make
 
@@ -231,51 +242,40 @@ To build the embedded C example set explicitly:
 
 This compiles the example binaries into `build/examples/`.
 
-A typical supported C++ example workflow is:
+A typical embedded C workflow from the repository root is:
+
+    make setup-dev
+    test -d /tmp/nanopb/.git || git clone https://github.com/nanopb/nanopb /tmp/nanopb
+    make clean
+    make examples-c
+
+The Makefile uses the repository `venv` Python directly when available, so
+shell activation of the repository `venv` is not required. Once the venv has
+been set up and `/tmp/nanopb` contains a nanopb source checkout, subsequent
+`make examples` or `make examples-c` will build without issue.
+
+The currently supported C++ example path is waveform:
 
     make clean
     make examples-cpp
-
-A typical embedded C workflow is the verified module path from the repository
-root:
-
-    bash scripts/setup-dev-venv.sh
-    test -d /tmp/nanopb/.git || git clone https://github.com/nanopb/nanopb /tmp/nanopb
-    make clean
-    PYTHON="$(pwd)/venv/bin/python" \
-    NANOPB_GENERATOR_MODULE=nanopb.generator.nanopb_generator \
-    NANOPB_DIR=/tmp/nanopb \
-    make examples-c
-
-This is the supported generator path for this branch. The `PYTHON=...` setting
-keeps generation anchored to the repository `venv` instead of whichever Python
-interpreter happens to be first on `PATH`.  Once the venv has been set up along
-with the nanopb directory, subsequent make examples or examples-c will build
-without issue.
-
-`make setup-dev` runs the same bootstrap script if you prefer a Makefile
-entrypoint. Shell activation of the repository `venv` is not required for the
-Makefile targets; the build uses the repository venv Python directly when
-available.
 
 If you already have a working `protoc-gen-nanopb` executable, you can use it
 instead by setting `NANOPB_GENERATOR=protoc-gen-nanopb` or an explicit plugin
 path as a shorter alternate path.
 
 Then run the relevant binary from `build/examples/`. The topic-specific README
-files include additional notes and, where useful, example command lines for the
-supported C++ and embedded C paths.
+files include additional notes and example command lines for the supported
+embedded C and C++ examples.
 
-Where embedded C examples exist, they are the preferred example path for this
-branch because the nanopb-based build is the path being kept aligned with
-proto3 optional support and current embedded review needs. The remaining C++
-example path is the waveform example, which does not yet have an equivalent
-embedded C example in this branch.
+Embedded C examples are the preferred example path for this repo as the
+nanopb-based build enables proper proto3 optional support. The remaining C++
+example is for waveform, which does not yet have an equivalent C example but
+will be updated in the future.
 
-For the embedded C examples, writer `--demo` modes are the primary end-to-end
-walkthrough entry points: they generate the standard `/tmp` payloads and then
+For the C examples, writer `--demo` modes are the primary end-to-end
+walkthrough entry points: they generate payloads in `/tmp` and then
 read them back through the companion decoder. Reader `--demo` modes are
-decode-only and expect those standard `/tmp` payloads to already exist.
+decode-only and expect those `/tmp` payloads to already exist.
 
 ## Lint and validation
 

@@ -54,7 +54,7 @@ nanopb-module-pbcs = $(foreach module,$(1),$(NANOPB_$(module)_PBC))
 #   3. Define NANOPB_<module>_OPTIONS (path to sidecar .options file, may be empty)
 #   4. Define NANOPB_<module>_DEPS (space-separated module names this proto depends on)
 # The DEFINE_NANOPB_MODULE macro below auto-generates stamp rules and variables.
-NANOPB_MODULES := status actuator app_message conn_status sensor waveform discovery
+NANOPB_MODULES := status actuator app_message conn_status sensor waveform discovery metered
 
 NANOPB_status_STEM := geisa-status
 NANOPB_status_OPTIONS := $(NANOPB_OPTIONS_DIR)/geisa-status.options
@@ -83,6 +83,10 @@ NANOPB_waveform_DEPS := status
 NANOPB_discovery_STEM := discovery
 NANOPB_discovery_OPTIONS := $(NANOPB_OPTIONS_DIR)/discovery.options
 NANOPB_discovery_DEPS := status sensor waveform
+
+NANOPB_metered_STEM := metered_quantities
+NANOPB_metered_OPTIONS := $(NANOPB_OPTIONS_DIR)/metered_quantities.options
+NANOPB_metered_DEPS :=
 
 define DEFINE_NANOPB_MODULE
 NANOPB_$(1)_PROTO := $$(NANOPB_$(1)_STEM).proto
@@ -115,5 +119,6 @@ app-message-c: $(call nanopb-module-stamps,app_message)
 conn-status-c: $(call nanopb-module-stamps,conn_status)
 sensor-c: $(call nanopb-module-stamps,status sensor)
 discovery-c: $(call nanopb-module-stamps,status sensor waveform discovery)
+metered-c: $(call nanopb-module-stamps,metered)
 
-.PHONY: nanopb-prereqs actuator-c app-message-c conn-status-c sensor-c discovery-c
+.PHONY: nanopb-prereqs actuator-c app-message-c conn-status-c sensor-c discovery-c metered-c

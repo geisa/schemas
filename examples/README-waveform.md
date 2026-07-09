@@ -7,7 +7,7 @@ Licensed under the Apache License, Version 2.0. See LICENSE.
 
 # Waveform example (C++)
 
-This is the remaining supported C++ example in this branch.
+This is the remaining supported C++ example in this repo.
 
 This example demonstrates GEISA waveform control-plane protobuf payloads and
 the waveform frame format (geisa_waveform_frame).

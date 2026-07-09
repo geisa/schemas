@@ -39,7 +39,7 @@ Compiled binaries are written to:
 
     build/examples/
 
-The embedded C sensor examples are the supported path in this branch.
+The embedded C sensor examples are the supported path in this repo.
 
 ## Quick start
 

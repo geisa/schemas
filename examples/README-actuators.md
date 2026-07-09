@@ -35,7 +35,7 @@ Example binaries are written to:
 
     build/examples/
 
-The embedded C actuator examples are the supported path in this branch.
+The embedded C actuator examples are the supported path in this repo.
 
 ## Example JSON files
 

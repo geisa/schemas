@@ -13,16 +13,19 @@ import path from "node:path";
 import { isDeepStrictEqual } from "node:util";
 
 const ROOT = process.cwd();
-// Limit this pass to checked repository content, not generated output.
+// Keep this pass focused on checked repository content rather than generated
+// output trees or local machine artifacts.
 const EXCLUDED_DIRS = new Set([".git", "build", "dist", "node_modules", "tmp"]);
 
-// Example families map to one schema each so semantic validation stays
-// explicit and easy to review.
+// Map each checked example family to the single schema it is expected to
+// satisfy so semantic validation stays explicit and reviewable.
 const SCHEMA_BY_PREFIX = [
   ["examples/actuator-", "geisa-actuator-schema.json"],
   ["examples/app-message-request-", "geisa-app-message-req-schema.json"],
   ["examples/app-message-response-", "geisa-app-message-rsp-schema.json"],
   ["examples/deployment-", "geisa-application-manifest-schema.json"],
+  ["examples/metered-quantities-ac-meter-profile-", "profiles/geisa-metered-quantities-ac-meter-profile-v0.9.json"],
+  ["examples/metered-quantities-billing-profile-", "profiles/geisa-metered-quantities-billing-profile-v0.9.json"],
   ["examples/platform-discovery-", "geisa-discovery-schema.json"],
   ["examples/sensor-", "geisa-sensor-schema.json"],
   ["examples/vendor-", "geisa-application-manifest-schema.json"],
@@ -46,6 +49,39 @@ async function loadJson(relPath)
 {
   const contents = await readFile(path.join(ROOT, relPath), "utf8");
   return JSON.parse(contents);
+}
+
+function referencedSchemaNames(schema, currentSchemaName, seen = new Set())
+{
+  if (schema === null || typeof schema !== "object")
+  {
+    return seen;
+  }
+
+  if (Array.isArray(schema))
+  {
+    for (const entry of schema)
+    {
+      referencedSchemaNames(entry, currentSchemaName, seen);
+    }
+    return seen;
+  }
+
+  if (typeof schema.$ref === "string")
+  {
+    const [filePart] = schema.$ref.split("#", 2);
+    if (filePart !== "")
+    {
+      seen.add(path.normalize(path.join(path.dirname(currentSchemaName), filePart)));
+    }
+  }
+
+  for (const entry of Object.values(schema))
+  {
+    referencedSchemaNames(entry, currentSchemaName, seen);
+  }
+
+  return seen;
 }
 
 async function* walkJsonFiles(dir)
@@ -98,7 +134,8 @@ function pointerSegments(ref)
 
 function resolveRef(schemaByName, currentSchemaName, ref)
 {
-  // Resolve the local and cross-file refs exercised by the checked schemas.
+  // The checked schema set relies on local refs and a small number of
+  // cross-file refs; resolve only that repo-local surface here.
   let schema = null;
   let resolvedSchemaName = currentSchemaName;
   let fragment = ref;
@@ -185,7 +222,8 @@ function typeMatches(value, typeName)
 
 function stripAnnotations(value)
 {
-  // Examples may carry $comment for reviewers; payload validation ignores it.
+  // Examples may carry reviewer-facing $comment fields even when payload
+  // validation should treat them as non-contract annotations.
   if (Array.isArray(value))
   {
     return value.map((entry) => stripAnnotations(entry));
@@ -210,8 +248,8 @@ function stripAnnotations(value)
 
 function validateSchema(value, schema, schemaByName, currentSchemaName, instancePath = "")
 {
-  // This validator intentionally covers the subset of JSON Schema features used
-  // by the checked example/schema set.
+  // This validator intentionally implements the JSON Schema feature subset used
+  // by the checked example/schema set in this repository.
   if (schema === true)
   {
     return [];
@@ -431,12 +469,27 @@ function validateSchema(value, schema, schemaByName, currentSchemaName, instance
 
 async function main()
 {
-  const schemaNames = [...new Set(SCHEMA_BY_PREFIX.map((entry) => entry[1]))].sort();
   const schemaByName = new Map();
+  // Preload the explicitly-mapped schemas and any repo-local refs they use so
+  // example validation can stay file-based and deterministic.
+  const pendingSchemaNames = [...new Set(SCHEMA_BY_PREFIX.map((entry) => entry[1]))].sort();
 
-  for (const schemaName of schemaNames)
+  while (pendingSchemaNames.length > 0)
   {
+    const schemaName = pendingSchemaNames.shift();
+    if (schemaByName.has(schemaName))
+    {
+      continue;
+    }
+
     schemaByName.set(schemaName, await loadJson(schemaName));
+    for (const refSchemaName of referencedSchemaNames(schemaByName.get(schemaName), schemaName))
+    {
+      if (!schemaByName.has(refSchemaName))
+      {
+        pendingSchemaNames.push(refSchemaName);
+      }
+    }
   }
 
   let validatedCount = 0;
@@ -466,9 +519,10 @@ async function main()
     }
   }
 
-  // Exit non-zero on the first failing phase so npm run lint stays CI-friendly.
   if (hasError)
   {
+    // Fail the semantic-validation phase with a non-zero exit so npm/CI stops
+    // immediately on schema/example contract regressions.
     process.exit(1);
   }
 
@@ -478,5 +532,7 @@ async function main()
 main().catch((error) =>
 {
   console.error(error instanceof Error ? error.message : String(error));
+  // Treat loader or resolver failures the same way as validation failures for
+  // CI-facing lint runs.
   process.exit(1);
 });
