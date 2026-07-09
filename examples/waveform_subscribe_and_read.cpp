@@ -245,6 +245,7 @@ void WriteRspSampleAndFrame(const std::string& rsp_path,
   rsp.set_sample_type(WAVEFORM_SAMPLE_TYPE_INT16);
   rsp.set_voltage_channel_count(1);
   rsp.set_current_channel_count(2);
+  rsp.set_other_channel_count(0);
   rsp.set_total_channel_count(3);
   rsp.set_sample_rate_hz(7680);
   rsp.set_samples_per_cycle(128);
@@ -254,6 +255,8 @@ void WriteRspSampleAndFrame(const std::string& rsp_path,
   rsp.set_voltage_scale(0.010359);
   rsp.set_current_scale(0.001220703125);
   rsp.set_expected_frame_period_ms(200);
+  rsp.set_voltage_filter_lowpass(5000);
+  rsp.set_current_filter_lowpass(5000);
 
   if (!serialize_protobuf_to_file(rsp_path.c_str(),
                                   rsp,
@@ -300,14 +303,23 @@ void ReadRspAndProcessFrame(const std::string& path) {
   // verify channel layout and sample scaling assumptions before parsing
   std::cout << "socket_path=\"" << rsp.socket_path() << "\"\n";
   std::cout << "sample_type=" << rsp.sample_type()
+            << " voltage_channel_count=" << rsp.voltage_channel_count()
+            << " current_channel_count=" << rsp.current_channel_count()
+            << " other_channel_count=" << rsp.other_channel_count()
             << " total_channel_count=" << rsp.total_channel_count()
             << " sample_rate_hz=" << rsp.sample_rate_hz()
             << " samples_per_cycle=" << rsp.samples_per_cycle()
             << " nominal_frequency_hz=" << rsp.nominal_frequency_hz()
             << " cycle_aligned=" << (rsp.cycle_aligned() ? "true" : "false")
             << " zero_crossing_aligned="
-            << (rsp.zero_crossing_aligned() ? "true" : "false")
-            << "\n";
+            << (rsp.zero_crossing_aligned() ? "true" : "false");
+  if (rsp.voltage_filter_lowpass() != 0) {
+    std::cout << " voltage_filter_lowpass=" << rsp.voltage_filter_lowpass();
+  }
+  if (rsp.current_filter_lowpass() != 0) {
+    std::cout << " current_filter_lowpass=" << rsp.current_filter_lowpass();
+  }
+  std::cout << "\n";
 
   std::vector<uint8_t> frame;
   // Demo/dev fallback: if socket_path points to a regular file, read raw bytes

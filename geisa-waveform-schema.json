@@ -84,8 +84,13 @@
           "type": "integer",
           "minimum": 0
         },
+        "other-channel-count": {
+          "description": "Number of additional non-voltage, non-current channels present in each sample time step, if any.",
+          "type": "integer",
+          "minimum": 0
+        },
         "total-channel-count": {
-          "description": "Total number of channels present in each sample time step. This SHALL equal voltage-channel-count plus current-channel-count.",
+          "description": "Total number of channels present in each sample time step. This SHALL equal voltage-channel-count plus current-channel-count plus other-channel-count.",
           "type": "integer",
           "minimum": 1
         },
@@ -124,6 +129,26 @@
           "description": "Expected period between delivered waveform frames in milliseconds.",
           "type": "integer",
           "minimum": 1
+        },
+        "voltage-filter-lowpass": {
+          "description": "Low-pass filter cutoff in hertz if present. Zero or omitted means no filter.",
+          "type": "integer",
+          "minimum": 0
+        },
+        "voltage-filter-highpass": {
+          "description": "High-pass filter cutoff in hertz if present. Zero or omitted means no filter.",
+          "type": "integer",
+          "minimum": 0
+        },
+        "current-filter-lowpass": {
+          "description": "Low-pass filter cutoff in hertz if present. Zero or omitted means no filter.",
+          "type": "integer",
+          "minimum": 0
+        },
+        "current-filter-highpass": {
+          "description": "High-pass filter cutoff in hertz if present. Zero or omitted means no filter.",
+          "type": "integer",
+          "minimum": 0
         }
       },
       "additionalProperties": false
@@ -180,8 +205,13 @@
           "type": "integer",
           "minimum": 0
         },
+        "other-channel-count": {
+          "description": "Number of additional non-voltage, non-current channels present in each sample time step, if any.",
+          "type": "integer",
+          "minimum": 0
+        },
         "total-channel-count": {
-          "description": "Total number of channels present in each sample time step. This SHALL equal voltage-channel-count plus current-channel-count.",
+          "description": "Total number of channels present in each sample time step. This SHALL equal voltage-channel-count plus current-channel-count plus other-channel-count.",
           "type": "integer",
           "minimum": 1
         },
@@ -220,6 +250,26 @@
           "description": "Expected period between delivered waveform frames in milliseconds.",
           "type": "integer",
           "minimum": 1
+        },
+        "voltage-filter-lowpass": {
+          "description": "Low-pass filter cutoff in hertz if present. Zero or omitted means no filter.",
+          "type": "integer",
+          "minimum": 0
+        },
+        "voltage-filter-highpass": {
+          "description": "High-pass filter cutoff in hertz if present. Zero or omitted means no filter.",
+          "type": "integer",
+          "minimum": 0
+        },
+        "current-filter-lowpass": {
+          "description": "Low-pass filter cutoff in hertz if present. Zero or omitted means no filter.",
+          "type": "integer",
+          "minimum": 0
+        },
+        "current-filter-highpass": {
+          "description": "High-pass filter cutoff in hertz if present. Zero or omitted means no filter.",
+          "type": "integer",
+          "minimum": 0
         }
       },
       "additionalProperties": false,
@@ -241,6 +291,7 @@
               "sample-type",
               "voltage-channel-count",
               "current-channel-count",
+              "other-channel-count",
               "total-channel-count",
               "sample-rate-hz",
               "samples-per-cycle",

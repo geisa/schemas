@@ -87,12 +87,16 @@ message GeisaWaveform_Req {
  * This is the outer message for a Waveform API response.
  */
 message GeisaWaveform_Rsp {
-    GeisaStatus status = 1;
+  // ----- Envelope / disposition (1-9) -----
+
+  GeisaStatus status = 1;
 
   /*
    * Operation result.
    */
   GeisaWaveform_Status waveform_status = 2;
+
+  // ----- Identity / access (10-19) -----
 
   /*
    * Waveform stream identifier.
@@ -104,13 +108,13 @@ message GeisaWaveform_Rsp {
    * Applications SHALL use waveform metadata to interpret a stream and SHALL
    * NOT infer stream characteristics by parsing the stream_id value.
    */
-  string stream_id = 3;
+  string stream_id = 10;
 
   /*
    * Whether the requesting application instance is subscribed to the waveform
    * stream after processing this request.
    */
-  bool subscribed = 4;
+  bool subscribed = 11;
 
   /*
    * Runtime AF_UNIX SOCK_SEQPACKET socket path for this application instance.
@@ -122,69 +126,99 @@ message GeisaWaveform_Rsp {
    * the application is not subscribed. The socket path is runtime state for
    * the requesting application instance and is NOT static discovery metadata.
    */
-  string socket_path = 5;
+  string socket_path = 12;
+
+  // ----- Structural stream layout (20-39) -----
 
   /*
    * Sample encoding used in waveform frames delivered on the returned socket.
    */
-  GeisaWaveform_SampleType sample_type = 6;
+  GeisaWaveform_SampleType sample_type = 20;
 
   /*
    * Number of voltage channels present in each sample time step.
    */
-  uint32 voltage_channel_count = 7;
+  uint32 voltage_channel_count = 21;
 
   /*
-   * Number of current channels present in each sample time step
+   * Number of current channels present in each sample time step.
    */
-  uint32 current_channel_count = 8;
+  uint32 current_channel_count = 22;
+
+  /*
+   * Number of additional non-voltage, non-current channels present in each
+   * sample time step, if any.
+   *
+   * This field SHALL be populated in successful subscribe responses so
+   * applications can compute the full channel layout from the subscribe
+   * response alone without consulting Platform Discovery.
+   */
+  uint32 other_channel_count = 23;
 
   /*
    * Total number of channels present in each sample time step.
+   * This SHALL equal voltage_channel_count + current_channel_count +
+   * other_channel_count.
    */
-  uint32 total_channel_count = 9;
+  uint32 total_channel_count = 24;
 
   /*
    * Sampling rate in hertz for the waveform stream.
    */
-  uint32 sample_rate_hz = 10;
+  uint32 sample_rate_hz = 25;
 
   /*
    * Samples per cycle for the waveform stream, when applicable.
    */
-  uint32 samples_per_cycle = 11;
+  uint32 samples_per_cycle = 26;
 
   /*
    * Nominal AC frequency in hertz, when applicable.
    */
-  uint32 nominal_frequency_hz = 12;
+  uint32 nominal_frequency_hz = 27;
 
   /*
    * Whether delivered frames are aligned to cycle boundaries.
    */
-  bool cycle_aligned = 13;
+  bool cycle_aligned = 28;
 
   /*
    * Whether delivered frames are aligned to a zero-crossing reference.
    */
-  bool zero_crossing_aligned = 14;
+  bool zero_crossing_aligned = 29;
+
+  // ----- Timing / cadence / alignment (40-59) -----
+
+  /*
+   * Expected period between delivered waveform frames in milliseconds.
+   */
+  uint32 expected_frame_period_ms = 40;
+
+  // ----- Scale metadata (60-79) -----
 
   /*
    * Scaling factor for voltage channels when integer sample formats are used
    * (INT16, INT32). For floating-point sample formats (FLOAT32, FLOAT64),
    * implementations SHOULD omit this field or set it to 1.0.
    */
-  double voltage_scale = 15;
+  double voltage_scale = 60;
 
   /*
    * Scaling factor for current channels when integer sample formats are used.
    * For floating-point sample formats, implementations may omit this field or
    * set it to 1.0 by convention.
    */
-  double current_scale = 16;
+  double current_scale = 61;
+
+  // ----- Optional filter metadata (80-99) -----
 
   /*
-   * Expected period between delivered waveform frames in milliseconds.
+   * Optional filter cutoff metadata in hertz, if exposed by the platform.
+   * If both lowpass and highpass are present for a channel type, a bandpass
+   * filter is implied.
    */
-  uint32 expected_frame_period_ms = 17;
+  int32 voltage_filter_lowpass = 80;
+  int32 voltage_filter_highpass = 81;
+  int32 current_filter_lowpass = 82;
+  int32 current_filter_highpass = 83;
 }

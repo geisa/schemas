@@ -66,6 +66,7 @@ enum GeisaPlatformDiscovery_DeviceType {
   TYPE_COMPUTE_CARD = 2;
   TYPE_NETWORK_CARD = 3;
   TYPE_COPROCESSOR_CARD = 4;
+  TYPE_CUSTOM = 100; // Platform or module types that do not match a GEISA-defined type
 }
 
 
