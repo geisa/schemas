@@ -3,7 +3,7 @@
     "geisa-application-manifest": {
         "$comment": "Example deployment manifest derived from the vendor application manifest. Shows operator-approved effective settings for deployment on a specific class of platform.",
         "manifest": {
-            "$comment": "Application identity and compatibility are preserved from the vendor application manifest unless explicitly overridden below.",
+            "$comment": "Application identity and compatibility are carried forward from the vendor application manifest. Deployment-time changes apply to operator policy, configuration, and allocated resources as defined below.",
             "app-id": "org.lfenergy.geisa.testapp",
             "author": "GEISA Developer",
             "name": "Awesome App",
