@@ -21,7 +21,7 @@
       ],
       "properties": {
         "max-demand-time-us": {
-          "description": "UTC epoch time in microseconds for the recorded maximum demand.",
+          "description": "UTC Unix epoch time in microseconds, measured from 1970-01-01T00:00:00Z, for the recorded maximum demand.",
           "type": "integer",
           "minimum": 0
         },
@@ -34,7 +34,7 @@
     },
     "geisaMeasurementMetadata": {
       "type": "object",
-      "description": "Optional measurement metadata for metered quantities when the source provides observation window or quality context. measurement-period-s is the averaging or integration window for interval-derived values such as billing summations, billing power factor, demand, and THD/TDD summaries; it is not message cadence.",
+      "description": "Optional measurement metadata for metered quantities when the source provides an observation window or quality context. measurement-period-s is the averaging or integration window for interval-derived values such as billing summations, billing power factor, demand, and THD/TDD summaries; it is not message cadence. Additional metadata fields may be added in future versions as common implementation needs are identified.",
       "properties": {
         "measurement-period-s": {
           "description": "Averaging or integration window in seconds for interval-derived values such as billing summations, billing power factor, demand, and THD/TDD summaries; this is not message cadence.",
@@ -78,7 +78,7 @@
           "minimum": 0
         },
         "timestamp-us": {
-          "description": "UTC epoch time in microseconds indicating when the billing summation snapshot was generated.",
+          "description": "UTC Unix epoch time in microseconds, measured from 1970-01-01T00:00:00Z, indicating when the billing snapshot was generated.",
           "type": "integer",
           "minimum": 0
         },
@@ -203,7 +203,7 @@
           "minimum": 0
         },
         "timestamp-us": {
-          "description": "UTC epoch time in microseconds indicating when the demand snapshot was generated.",
+          "description": "UTC Unix epoch time in microseconds, measured from 1970-01-01T00:00:00Z, indicating when the demand snapshot was generated.",
           "type": "integer",
           "minimum": 0
         },
@@ -255,7 +255,7 @@
     },
     "geisaBillingQuantities": {
       "type": "object",
-      "$comment": "A billing wrapper SHALL contain at least one billing section. Individual quantities within each section remain optional because register capabilities vary.",
+      "$comment": "A top-level geisaBillingQuantities payload SHALL contain at least one billing section. Individual quantities within each section remain optional because register capabilities may vary.",
       "required": [
         "message-version"
       ],
@@ -297,7 +297,7 @@
           "minimum": 0
         },
         "timestamp-us": {
-          "description": "UTC epoch time in microseconds indicating when the system instantaneous quantity snapshot was generated.",
+          "description": "UTC Unix epoch time in microseconds, measured from 1970-01-01T00:00:00Z, indicating when the system instantaneous quantity snapshot was generated.",
           "type": "integer",
           "minimum": 0
         },
@@ -470,7 +470,7 @@
           "minimum": 0
         },
         "timestamp-us": {
-          "description": "UTC epoch time in microseconds indicating when the auxiliary instantaneous quantity snapshot was generated.",
+          "description": "UTC Unix epoch time in microseconds, measured from 1970-01-01T00:00:00Z, indicating when the snapshot was generated.",
           "type": "integer",
           "minimum": 0
         },
@@ -501,7 +501,7 @@
           "minimum": 0
         },
         "timestamp-us": {
-          "description": "UTC epoch time in microseconds indicating when the harmonic snapshot was generated.",
+          "description": "UTC Unix epoch time in microseconds, measured from 1970-01-01T00:00:00Z, indicating when the harmonic snapshot was generated.",
           "type": "integer",
           "minimum": 0
         },
@@ -550,7 +550,7 @@
           "minimum": 0
         },
         "timestamp-us": {
-          "description": "UTC epoch time in microseconds indicating when the top-level instantaneous quantity snapshot was generated.",
+          "description": "UTC Unix epoch time in microseconds, measured from 1970-01-01T00:00:00Z, indicating when the top-level instantaneous quantity snapshot was generated.",
           "type": "integer",
           "minimum": 0
         },

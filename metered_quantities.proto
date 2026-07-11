@@ -11,13 +11,13 @@ message GeisaTypeMeasurementMetadata {
 }
 
 message GeisaTypeMaxDemand {
-	uint64 max_demand_time_us = 1;	// Timestamp in microseconds UNIX epoch time for the recorded maximum demand
+	uint64 max_demand_time_us = 1;	// UTC Unix epoch time in microseconds, measured from 1970-01-01T00:00:00Z, for the recorded maximum demand
 	optional int64 quantity = 2;	// Fixed-point quantity in the micro-unit encoded by the containing field name, for example microwatts, microwatt-hours, microvars, microvar-hours (commonly VARh in metering contexts), microvolt-amperes, or microvolt-ampere-hours (commonly VAh in metering contexts)
 }
 
 message GeisaBillingQuantities_Summation_Total {
 	uint32 message_version = 1;	// Example: 1,2 …
-	uint64 timestamp_us = 2;	// Timestamp in microseconds UNIX epoch time
+	uint64 timestamp_us = 2;	// UTC Unix epoch time in microseconds, measured from 1970-01-01T00:00:00Z
 
 	optional int64 active_energy_micro_wh_del = 3;	// Active energy in microwatt-hours, total delivered, fundamental + harmonics
 	optional int64 active_energy_micro_wh_rec = 4;	// Active energy in microwatt-hours, total received, fundamental + harmonics
@@ -80,7 +80,7 @@ message GeisaBillingQuantities_Summation_Total {
 
 message GeisaBillingQuantities_Demand_Total {
 	uint32 message_version = 1;	// Example: 1,2 …
-	uint64 timestamp_us = 2;	// Timestamp in microseconds UNIX epoch time
+	uint64 timestamp_us = 2;	// UTC Unix epoch time in microseconds, measured from 1970-01-01T00:00:00Z
 
 	GeisaTypeMaxDemand active_power_micro_w_del = 3;	// Active power in microwatts, total delivered, fundamental + harmonics
 	GeisaTypeMaxDemand active_power_micro_w_rec = 4;	// Active power in microwatts, total received, fundamental + harmonics
@@ -144,7 +144,7 @@ enum GeisaTypePhase {
 
 message GeisaTypeInstantaneousQuantities_System {
 	uint32 message_version = 1;	// Example: 1,2 …
-	uint64 timestamp_us = 2;	// Timestamp in microseconds UNIX epoch time
+	uint64 timestamp_us = 2;	// UTC Unix epoch time in microseconds, measured from 1970-01-01T00:00:00Z
 	optional double frequency_hz = 3;	// Frequency in hertz
 	optional int64 active_power_micro_w_sum = 4;	// Active power in microwatts, system sum, fundamental + harmonics
 	optional int64 reactive_power_micro_var_sum = 5;	// Reactive power in microvars, system sum, fundamental + harmonics
@@ -194,7 +194,7 @@ message GeisaTypeInstantaneousQuantities_PerPhase {
 
 message GeisaTypeInstantaneousQuantities_Other {
 	uint32 message_version = 1;	// Example: 1,2 …
-	uint64 timestamp_us = 2;	// Timestamp in microseconds UNIX epoch time
+	uint64 timestamp_us = 2;	// UTC Unix epoch time in microseconds, measured from 1970-01-01T00:00:00Z
 	optional int64 neutral_current_imputed_micro_a = 3;	// Current rms in microamps, neutral imputed, fundamental + harmonics
 	optional int64 load_side_voltage_micro_v = 4;	// Load-side voltage in microvolts
 	GeisaTypeMeasurementMetadata metadata = 5;
@@ -209,7 +209,7 @@ message GeisaTypeHarmonic {
 // Although instantaneous quantities, harmonics are considered in a category of their own.
 message GeisaInstantaneousQuantities_Harmonic {
 	uint32 message_version = 1;	// Example: 1,2 …
-	uint64 timestamp_us = 2;	// Timestamp in microseconds UNIX epoch time
+	uint64 timestamp_us = 2;	// UTC Unix epoch time in microseconds, measured from 1970-01-01T00:00:00Z
 	optional int64 phase_a_current_harmonic_2nd_micro_a = 3;	// Current rms in microamps, phase A, 2nd harmonic
 	optional int64 phase_b_current_harmonic_2nd_micro_a = 4;	// Current rms in microamps, phase B, 2nd harmonic
 	optional int64 phase_c_current_harmonic_2nd_micro_a = 5;	// Current rms in microamps, phase C, 2nd harmonic
@@ -226,7 +226,7 @@ message GeisaInstantaneousQuantities_Harmonic {
 // Message topic: geisa/api/instantaneous-data
 message GeisaInstantaneousQuantities {
 	uint32 message_version = 1;	// Example: 1,2 …
-	uint64 timestamp_us = 2;	// Timestamp in microseconds UNIX epoch time
+	uint64 timestamp_us = 2;	// UTC Unix epoch time in microseconds, measured from 1970-01-01T00:00:00Z
 	GeisaTypeInstantaneousQuantities_PerPhase phase_a = 3;
 	GeisaTypeInstantaneousQuantities_PerPhase phase_b = 4;
 	GeisaTypeInstantaneousQuantities_PerPhase phase_c = 5;
