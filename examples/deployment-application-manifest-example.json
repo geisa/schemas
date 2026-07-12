@@ -17,12 +17,19 @@
                     "image-type": "appoverlay",
                     "image-size": 262144,
                     "uncompressed-size": 1048576,
-                    "signature": "AAAABBBBCCCCDDDDEEEEFFFF0000111122223333444455556666777788889999"
+                    "signature": {
+                      "signatureType": "ECDSA",
+                      "signatureLength": 64,
+                      "signatureHex": "AAAABBBBCCCCDDDDEEEEFFFF0000111122223333444455556666777788889999AAAABBBBCCCCDDDDEEEEFFFF0000111122223333444455556666777788889999",
+                      "$comment": "The signature Reference should match the Subject Idenfitier of the signing certificate.",
+                      "signatureReference": "C=US, ST=Any State, L=Any Town, O=Awesome App Publisher"
+                    }
                 }
             ],
             "api-access": {
-                "$comment": "API access is accepted unchanged from the vendor application manifest in this example.",
-                "actuator": true,
+                "$comment": "Operator denied requested actuator-control, otherwise API access is accepted unchanged from the vendor application manifest in this example.",
+                "actuator-status": true,
+                "actuator-control": false,
                 "messaging": true,
                 "instantaneous": false,
                 "sensor": true,
@@ -77,6 +84,12 @@
                 "storage-nonpersistent": 0
             }
         },
-        "signature": "052c3a40b5714de38965291d366a28df034023ed0fd423c004d56d3c1ad20d8e"
+        "signature": {
+            "signatureType": "ECDSA",
+            "signatureLength": 64,
+            "signatureHex": "052c3a40b5714de38965291d366a28df034023ed0fd423c004d56d3c1ad20d8e052c3a40b5714de38965291d366a28df034023ed0fd423c004d56d3c1ad20d8e",
+            "$comment": "The signature Reference should match the Subject Idenfitier of the signing certificate.",
+            "signatureReference": "C=US, ST=Any State, L=Any Town, O=Local Electric Utility"
+        }
     }
 }

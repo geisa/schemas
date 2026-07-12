@@ -17,12 +17,19 @@
                     "image-type": "appoverlay",
                     "image-size": 262144,
                     "uncompressed-size": 1048576,
-                    "signature": "AAAABBBBCCCCDDDDEEEEFFFF0000111122223333444455556666777788889999"
+                    "signature": {
+                      "signatureType": "ECDSA",
+                      "signatureLength": 64,
+                      "signatureHex": "AAAABBBBCCCCDDDDEEEEFFFF0000111122223333444455556666777788889999AAAABBBBCCCCDDDDEEEEFFFF0000111122223333444455556666777788889999",
+                      "$comment": "The signature Reference should match the Subject Idenfitier of the signing certificate.",
+                      "signatureReference": "C=US, ST=Any State, L=Any Town, O=Awesome App Publisher"
+                    }
                 }
             ],
             "api-access": {
                 "$comment": "Requested GEISA API access. Final granted access remains subject to platform and operator policy.",
-                "actuator": true,
+                "actuator-status": true,
+                "actuator-control": true,
                 "messaging": true,
                 "instantaneous": false,
                 "sensor": true,
@@ -77,6 +84,12 @@
                 "storage-nonpersistent": 0
             }
         },
-        "signature": "052c3a40b5714de38965291d366a28df034023ed0fd423c004d56d3c1ad20d8e"
+        "signature": {
+            "signatureType": "ECDSA",
+            "signatureLength": 64,
+            "signatureHex": "0000111122223333444455556666777788889999AAAABBBBCCCCDDDDEEEEFFFFAAAABBBBCCCCDDDDEEEEFFFF0000111122223333444455556666777788889999",
+            "$comment": "The signature Reference should match the Subject Idenfitier of the signing certificate.",
+            "signatureReference": "C=US, ST=Any State, L=Any Town, O=Awesome App Publisher"
+        }
     }
 }
