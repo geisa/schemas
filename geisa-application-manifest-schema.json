@@ -2,7 +2,7 @@
     "$schema": "https://json-schema.org/draft/2020-12/schema",
   "$comment": "Copyright 2025-2026, Contributors to the Grid Edge Interoperability & Security Alliance (GEISA), a Series of LF Projects, LLC. Licensed under the Apache License, Version 2.0. See LICENSE.",
     "title": "GEISA Application Manifest vX.Y.Z",
-    "description": "Canonical manifest structure for a GEISA application. Vendors may supply this as a vendor application manifest, and operators may use the same structure for a deployment manifest.",
+    "description": "Canonical manifest structure for a GEISA application.  Vendors must supply this as a vendor application manifest, and ADM conformant systems must use the same structure for a deployment manifest.",
         "$defs": {
         "transportAddressPort": {
             "type": "array",
@@ -50,12 +50,35 @@
                 }
             ]
         },
-        "sha256Signature": {
-            "type": "string",
-            "description": "SHA256 hash of in hexadecimal.",
-            "pattern": "^[0-9A-Fa-f]+$",
-            "minLength": 64,
-            "maxLength": 64
+        "signatureBlock": {
+            "type": "object",
+            "$comment": "Digital signature for an artifact or the manifest",
+            "required": [
+              "signatureType",
+              "signatureLength",
+              "signatureHex"
+            ],
+            "$comment": "If signatureReference is not included conformant systems should make a best effort to determine which certificates to validate the signature against.  Best practice is to include signatureReference.",
+            "properties": {
+                "signatureType": {
+                    "enum": [ "ECDSA", "MLDSA"],
+                    "$comment": "GEISA currently defines ECDSA and MLDSA as valid signature types.  Other types may be added in the future."
+                },
+                "signatureLength": {
+                    "type": "integer",
+                    "$comment": "The length of the signature in bytes, once convertered from hexadecimal text back into binary.  Provided to allow basic validation"
+                },
+                "signatureHex": {
+                    "type": "string",
+                    "description": "Hexadecimal text encoding of the binary signature.  Should be twice the size of the binary singature because of the encording process.",
+                    "pattern": "^[0-9A-Fa-f]+$",
+                    "minLength": 128
+                },
+                "signatureReference": {
+                    "type": "string",
+                    "description": "CN of the x509 certificate of the signer.  Used to faciliate looking up the signature for validation."
+                }
+            }
         },
         "fixedVersion": {
             "type": "string",
@@ -108,7 +131,7 @@
                     "minimum": 1
                 },
                 "signature": {
-                    "$ref": "#/$defs/sha256Signature"
+                    "$ref": "#/$defs/signatureBlock"
                 }
             }
         }
@@ -176,27 +199,39 @@
                         "api-access": {
                             "type": "object",
                             "properties": {
-                                "actuator": {
-                                    "description": "Whether the application requires access to the actuator API.",
+                                "actuator-status": {
+                                    "description": "Whether the application has / requires read access to the actuator API.",
+                                    "type": "boolean"
+                                },
+                                "actuator-control": {
+                                    "description": "Whether the application has / requires write access to the actuator API.",
                                     "type": "boolean"
                                 },
                                 "messaging": {
-                                    "description": "Whether the application requires access to the messaging API.",
+                                    "description": "Whether the application has / requires access to the messaging API.",
                                     "type": "boolean"
                                 },
                                 "instantaneous": {
-                                    "description": "Whether the application requires access to the instantaneous data API.",
+                                    "description": "Whether the application has / requires access to the instantaneous data API.",
                                     "type": "boolean"
                                 },
                                 "sensor": {
-                                    "description": "Whether the application requires access to the sensor data API.",
+                                    "description": "Whether the application has / requires access to the sensor data API.",
                                     "type": "boolean"
                                 },
                                 "waveform": {
-                                    "description": "Whether the application requires access to the waveform data API.",
+                                    "description": "Whether the application has / requires access to the waveform data API.",
                                     "type": "boolean"
                                 }
-                            }
+                            },
+                            "anyOf": [
+                                { "required": ["actuator-control"] },
+                                { "required": ["actuator-status"] },
+                                { "required": ["messaging"] },
+                                { "required": ["instantaneous"] },
+                                { "required": ["sensor"] },
+                                { "required": ["waveform"] }
+                            ]
                         },
                         "artifacts": {
                             "type": "array",
@@ -250,27 +285,27 @@
                             ],
                             "properties": {
                                 "app-cpu": {
-                                    "description": "The minimum percentage of CPU this application requires.",
+                                    "description": "The minimum percentage of CPU this application requires / is granted.",
                                     "type": "integer",
                                     "minimum": 1
                                 },
                                 "app-ram": {
-                                    "description": "The amount of RAM in KiB the application requires.",
+                                    "description": "The amount of RAM in KiB the application requires / is granted.",
                                     "type": "integer",
                                     "minimum": 1
                                 },
                                 "storage-persistent": {
-                                    "description": "The amount of storage in KiB the application requires.",
+                                    "description": "The amount of storage in KiB the application requires / is granted.",
                                     "type": "integer",
                                     "minimum": 0
                                 },
                                 "storage-nonpersistent": {
-                                    "description": "The amount of non-persistent storage (temp space) the application requires.",
+                                    "description": "The amount of non-persistent storage (temp space) the application requires / is granted.",
                                     "type": "integer",
                                     "minimum": 0
                                 },
                                 "threads": {
-                                    "description": "The minimum number of threads the application requires.",
+                                    "description": "The minimum number of threads the application requires / is granted.",
                                     "type": "integer",
                                     "minimum": 1
                                 }
@@ -280,12 +315,12 @@
                             "type": "object",
                             "properties": {
                                 "FAN": {
-                                    "description": "Whether the application needs direct access to the FAN / Utility Network.",
+                                    "description": "Whether the application needs / is granted direct access to the FAN / Utility Network.",
                                     "type": "boolean",
                                     "$comment": "This setting is independent of access to the messaging API."
                                 },
                                 "HAN": {
-                                    "description": "Whether the applications needs direct access to the HAN / Consumer Network.",
+                                    "description": "Whether the applications needs / is granted direct access to the HAN / Consumer Network.",
                                     "type": "boolean",
                                     "$comment": "This setting is independent of access to the messaging API."
                                 },
@@ -392,7 +427,7 @@
                     }
                 },
                 "signature": {
-                    "$ref": "#/$defs/sha256Signature"
+                    "$ref": "#/$defs/signatureBlock"
                 }
             }
         }
