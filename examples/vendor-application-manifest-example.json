@@ -33,7 +33,8 @@
                 "messaging": true,
                 "instantaneous": false,
                 "sensor": true,
-                "waveform": false
+                "waveform": false,
+                "app-to-app": false
             },
             "compatibility": {
                 "$comment": "Application requires GEISA API and LEE version 0.9.0, does not require VEE support, and identifies a vendor-defined toolchain target.",
