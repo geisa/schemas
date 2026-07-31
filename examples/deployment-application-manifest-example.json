@@ -33,7 +33,8 @@
                 "messaging": true,
                 "instantaneous": false,
                 "sensor": true,
-                "waveform": false
+                "waveform": false,
+                "app-to-app": false
             },
             "compatibility": {
                 "$comment": "Compatibility requirements are aligned with the vendor application manifest at GEISA API and LEE version 0.9.0.",

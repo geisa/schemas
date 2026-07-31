@@ -222,6 +222,10 @@
                                 "waveform": {
                                     "description": "Whether the application has / requires access to the waveform data API.",
                                     "type": "boolean"
+                                },
+                                "app-to-app": {
+                                    "description": "Whether the application has / requires access to the application to application API.",
+                                    "type": "boolean"
                                 }
                             },
                             "anyOf": [
@@ -230,7 +234,8 @@
                                 { "required": ["messaging"] },
                                 { "required": ["instantaneous"] },
                                 { "required": ["sensor"] },
-                                { "required": ["waveform"] }
+                                { "required": ["waveform"] },
+                                { "required": ["app-to-app"] }
                             ]
                         },
                         "artifacts": {
@@ -349,6 +354,39 @@
                                 "local": {
                                     "description": "Allowed data rates and addresses for local device network (HAN).",
                                     "$ref": "#/$defs/networkAccessRequirements"
+                                }
+                            }
+                        },
+                        "app-to-app": {
+                            "type": "object",
+                            "properties": {
+                                "publish": {
+                                    "description": "A list of service name(s) this application publishes for subscription by other applications in a pub/sub style.",
+                                    "type": "array",
+                                    "items": {
+                                        "type": "string"
+                                    }
+                                },
+                                "subscribe": {
+                                    "description": "A list of service name(s) published by other applications that this application subscribes to in a pub/sub style.",
+                                    "type": "array",
+                                    "items": {
+                                        "type": "string"
+                                    }
+                                },
+                                "respond": {
+                                    "description": "A list of service name(s) this application responds to in a req/rsp style.",
+                                    "type": "array",
+                                    "items": {
+                                        "type": "string"
+                                    }
+                                },
+                                "request": {
+                                    "description": "A list of service name(s) responded by other applications that this application requests in a req/rsp style.",
+                                    "type": "array",
+                                    "items": {
+                                        "type": "string"
+                                    }
                                 }
                             }
                         },
