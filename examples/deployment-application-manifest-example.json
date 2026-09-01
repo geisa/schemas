@@ -41,7 +41,7 @@
                 "GEISA-API": "0.9.0",
                 "GEISA-LEE": "0.9.0",
                 "GEISA-VEE": null,
-                "toolchain-id": "aarch64-linux-musleabihf neon",
+                "toolchain-id": "aarch64-unknown-linux-musl",
                 "toolchain-version": "1.0.0"
             },
             "default-configuration": {
@@ -77,9 +77,8 @@
                 }
             },
             "resources": {
-                "$comment": "Operator-adjusted resource allocation. CPU and persistent storage are reduced relative to the vendor manifest while other minimum resources remain unchanged.",
+                "$comment": "Operator-approved resource allocation limits. CPU and persistent storage are reduced relative to the vendor manifest while the other approved limits remain unchanged.",
                 "app-cpu": 15,
-                "threads": 1,
                 "app-ram": 200,
                 "storage-persistent": 1500,
                 "storage-nonpersistent": 0
