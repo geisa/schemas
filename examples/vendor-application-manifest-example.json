@@ -1,7 +1,7 @@
 {
     "$comment": "Copyright 2025-2026, Contributors to the Grid Edge Interoperability & Security Alliance (GEISA), a Series of LF Projects, LLC. Licensed under the Apache License, Version 2.0. See LICENSE.",
     "geisa-application-manifest": {
-        "$comment": "Example vendor application manifest. Defines vendor-supplied application identity, compatibility requirements, defaults, requested permissions, and minimum resources prior to operator review or deployment-time override.",
+        "$comment": "Example vendor application manifest. Defines vendor-supplied application identity, compatibility, defaults, requested permissions, and requested resource values before operator review, possible adjustment, and deployment approval.",
         "manifest": {
             "$comment": "Core application metadata and vendor-recommended settings.",
             "app-id": "org.lfenergy.geisa.testapp",
@@ -41,7 +41,7 @@
                 "GEISA-API": "0.9.0",
                 "GEISA-LEE": "0.9.0",
                 "GEISA-VEE": null,
-                "toolchain-id": "aarch64-linux-musleabihf neon",
+                "toolchain-id": "aarch64-unknown-linux-musl",
                 "toolchain-version": "1.0.0"
             },
             "default-configuration": {
@@ -51,7 +51,7 @@
                 "oscillation-overthruster": "enabled"
             },
             "default-launch-strategy": {
-                "$comment": "Vendor-recommended launch and restart behavior. Final enforcement may be subject to platform and operator policy. Watchdog behavior remains under broader discussion.",
+                "$comment": "Vendor-recommended launch and restart behavior. Final enforcement may be subject to platform and operator policy. The watchdog setting requests or expects GEISA application watchdog behavior.",
                 "auto-restart": true,
                 "max-restarts": 5,
                 "restart-period": 60,
@@ -77,9 +77,8 @@
                 }
             },
             "resources": {
-                "$comment": "Vendor-requested minimum resource requirements.",
+                "$comment": "Vendor-requested resource allocation limits for operator review.",
                 "app-cpu": 20,
-                "threads": 1,
                 "app-ram": 200,
                 "storage-persistent": 2000,
                 "storage-nonpersistent": 0
