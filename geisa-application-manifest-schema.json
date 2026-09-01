@@ -310,7 +310,7 @@
                                     "minimum": 0
                                 },
                                 "threads": {
-                                    "description": "Maximum number of threads available to the application. Required for VEE applications; optional and likely ununsed for LEE applications.",
+                                    "description": "Maximum number of threads available to the application. Required for VEE applications; optional for LEE applications.",
                                     "type": "integer",
                                     "minimum": 1
                                 }
