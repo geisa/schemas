@@ -1,5 +1,11 @@
 # GEISA schemas
 
+## REPO MOVED
+
+Development has moved in full to [`geisa/specification/schemas`](https://github.com/geisa/specification/tree/main/schemas). This repository is retained temporarily for historical purposes only.
+
+## Purpose
+
 This repository contains the [protobuf](https://protobuf.dev/) and
 [JSON Schema](https://json-schema.org/) schemas used by the
 [Grid Edge Interoperability and Security Alliance
@@ -25,9 +31,8 @@ At a high level, this repository contains:
 - `examples/helpers/*.h` files with shared example-only helper code.
 - `examples/README*.md` example-specific build and run notes.
 
-This schemas repository SHALL be used in conjunction with the GEISA
-specification to enable creation of GEISA conformant implementations. The
-content is intended to help users understand the structure, conformance, and
+Current GEISA schema development is maintained under the Specification repository at [`specification/schemas`](https://github.com/geisa/specification/tree/main/schemas).
+The content is intended to help users understand the structure, conformance, and
 intent of GEISA messages and payloads.
 
 Most API message payloads are covered in the GEISA specification as well as
